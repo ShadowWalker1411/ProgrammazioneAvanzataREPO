@@ -3,12 +3,18 @@ FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get install -y python3-pip python3-dev
 
-RUN pip3 install pika
+COPY ./requirements.txt /app/requirements.txt
+
+WORKDIR /app
+
+RUN pip3 install pika && \
+    pip3 install -r requirements.txt
 
 WORKDIR /app
 
 COPY . /app
 
-ENTRYPOINT [ "python3" ]
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
-CMD [ "app.py" ]
+CMD celery -A app worker -l info

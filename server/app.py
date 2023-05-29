@@ -1,18 +1,22 @@
 from flask import Flask
-import pika
-import time
+from celery import Celery
 
-app = Flask(__name__)
+flask_app = Flask(__name__)
+celery_app = Celery('app', broker='amqp://admin:admin@rabbitmq:5672', backend='rpc://')
 
 
-@app.route('/')
+@flask_app.route('/')
 def index():
     return 'OK'
 
 
-@app.route('/add-job')
-def add():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
+@flask_app.route('/start-job')
+def start():
+    flask_app.logger.info("Invoking Method ")
+    r = celery_app.send_task('app.longtime_add', kwargs={'x': 1, 'y': 2}).delay()
+    flask_app.logger.info(r.backend)
+    return r.id
+    """connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
     channel = connection.channel()
     channel.queue_declare(queue='task_queue', durable=True)
     channel.basic_publish(
@@ -24,9 +28,19 @@ def add():
         ))
     connection.close()
     body="CIAO MAX",
+    return " [x] Sent: %s" % body"""
 
-    return " [x] Sent: %s" % body
+@flask_app.route('/status/<job_id>')
+def status(job_id):
+    status = celery_app.AsyncResult(job_id, app=celery_app)
+    print("Invoking Method ")
+    return "Status of the Job " + str(status.state)
+
+@flask_app.route('/result/<job_id>')
+def task_result(job_id):
+    result = celery_app.AsyncResult(job_id).result
+    return "Result of the Job " + str(result)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    flask_app.run(debug=True, host='0.0.0.0')
