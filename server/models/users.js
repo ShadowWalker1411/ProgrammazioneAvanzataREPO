@@ -30,6 +30,11 @@ const User = database_1.default.define("user", {
         type: sequelize_1.default.INTEGER,
         allowNull: false,
         defaultValue: process.env.CREDITS || 5000
+    },
+    admin: {
+        type: sequelize_1.default.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 });
 exports.default = User;

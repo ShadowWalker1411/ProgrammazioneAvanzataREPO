@@ -27,7 +27,7 @@ RUN npm install i npm@latest -g
 
 WORKDIR /src
 
-COPY package.json package-lock.json ./
+COPY package.json package*.json ./
 
 RUN npm install
 

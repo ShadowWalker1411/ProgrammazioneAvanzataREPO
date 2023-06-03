@@ -82,8 +82,9 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const login = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const USER = yield users_1.default.findOne({ where: { username: request.body.username, password: request.body.password } });
-        var token = jsonwebtoken_1.default.sign({ id: "userid" }, process.env.SECRET_KEY || "", {
+        const USER = yield users_1.default.findOne({ where: { username: request.body.username, password: request.body.password } }); //TODO Add cryptography
+        console.log(USER);
+        var token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("id") }, process.env.SECRET_KEY || "", {
             expiresIn: 604800 // 7 giorni
         });
         return response.status(200).json({ "user": USER, "token": token });

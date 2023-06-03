@@ -68,8 +68,9 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 
 const login = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const USER = await User.findOne({where: {username: request.body.username, password: request.body.password}})
-        var token = jwt.sign({ id: "userid" }, process.env.SECRET_KEY || "", {
+        const USER = await User.findOne({where: {username: request.body.username, password: request.body.password}}) //TODO Add cryptography
+        console.log(USER)
+        var token = jwt.sign({ id: USER?.get("id") }, process.env.SECRET_KEY || "", {
             expiresIn: 604800 // 7 giorni
         });
         return response.status(200).json({"user": USER, "token": token})
