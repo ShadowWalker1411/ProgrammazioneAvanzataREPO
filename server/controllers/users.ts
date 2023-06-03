@@ -3,6 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const getOneById = async (id: number) => {
+    const USER = await User.findByPk(id)
+    return USER
+}
+
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const ALL = await User.findAll()
@@ -14,7 +19,7 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
 
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const USER = await User.findByPk(request.params.id)
+        const USER = await getOneById(parseInt(request.params.id))
         return response.status(200).json(USER)
     } catch (error) {
         return response.status(500).json(error)
@@ -68,16 +73,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 
 const login = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const USER = await User.findOne({where: {username: request.body.username, password: request.body.password}}) //TODO Add cryptography
-        console.log(USER)
-        if(USER) {
-            var token = jwt.sign({ id: USER?.get("id") }, process.env.SECRET_KEY || "", {
-                expiresIn: 604800 // 7 giorni
-            });
-        return response.status(200).json({"user": USER, "token": token})
-        }else{
-            return response.status(401).json({"message": "Username o password non corretti"})
-        }
+        const USER = await User.findOne({where: {username: request.body.username, password: bcrypt.hashSync(request.body.password, 8)}})
         if (!USER) {
             return response.status(401).json({message: "Invalid Credentials"})
         }
@@ -90,7 +86,7 @@ const login = async (request: Request, response: Response, next: NextFunction) =
 
 const controller = {
     getAll,
-    getById,
+    getById, getOneById,
     create,
     updateById,
     deleteById,

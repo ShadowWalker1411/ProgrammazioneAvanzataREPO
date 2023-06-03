@@ -15,6 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const users_1 = __importDefault(require("./../models/users"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const USER = yield users_1.default.findByPk(id);
+    return USER;
+});
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield users_1.default.findAll();
@@ -26,7 +30,7 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
 });
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const USER = yield users_1.default.findByPk(request.params.id);
+        const USER = yield getOneById(parseInt(request.params.id));
         return response.status(200).json(USER);
     }
     catch (error) {
@@ -82,7 +86,7 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const login = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const USER = yield users_1.default.findOne({ where: { username: request.body.username, password: request.body.password } }); //TODO Add cryptography
+        const USER = yield users_1.default.findOne({ where: { username: request.body.username, password: bcrypt_1.default.hashSync(request.body.password, 8) } });
         if (!USER) {
             return response.status(401).json({ message: "Invalid Credentials" });
         }
@@ -95,7 +99,7 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
 });
 const controller = {
     getAll,
-    getById,
+    getById, getOneById,
     create,
     updateById,
     deleteById,
