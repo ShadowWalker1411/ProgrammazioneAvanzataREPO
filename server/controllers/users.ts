@@ -70,10 +70,14 @@ const login = async (request: Request, response: Response, next: NextFunction) =
     try {
         const USER = await User.findOne({where: {username: request.body.username, password: request.body.password}}) //TODO Add cryptography
         console.log(USER)
-        var token = jwt.sign({ id: USER?.get("id") }, process.env.SECRET_KEY || "", {
-            expiresIn: 604800 // 7 giorni
-        });
+        if(USER) {
+            var token = jwt.sign({ id: USER?.get("id") }, process.env.SECRET_KEY || "", {
+                expiresIn: 604800 // 7 giorni
+            });
         return response.status(200).json({"user": USER, "token": token})
+        }else{
+            return response.status(401).json({"message": "Username o password non corretti"})
+        }
     } catch (error) {
         return response.status(500).json(error)
     }
