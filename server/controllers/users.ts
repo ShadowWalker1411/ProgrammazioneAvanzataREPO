@@ -69,11 +69,11 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 const login = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const USER = await User.findOne({where: {username: request.body.username, password: request.body.password}}) //TODO Add cryptography
-        console.log(USER)
-        var token = jwt.sign({ id: USER?.get("id") }, process.env.SECRET_KEY || "", {
-            expiresIn: 604800 // 7 giorni
-        });
-        return response.status(200).json({"user": USER, "token": token})
+        if (!USER) {
+            return response.status(401).json({message: "Invalid Credentials"})
+        }
+        const token = jwt.sign({ id: USER?.get("id") }, process.env.SECRET_KEY || "", {expiresIn: "1h"})
+        return response.status(200).json({token})
     } catch (error) {
         return response.status(500).json(error)
     }
