@@ -26,16 +26,46 @@ services:
       - server
 
   server:
-    build: server
-    volumes:
-      - ./server:/app
+    container_name: server
+    image: server:0.0.5
+    build: 
+      context: server
     ports:
-      - 8000:5000
+      - "3001:3001"
     environment:
-      - LC_ALL=C.UTF-8
-      - LANG=C.UTF-8
-    depends_on:
-      - rabbitmq
+    - EXTERNAL_PORT=3001
+    - PGDATABASE=pgdb
+    - PGUSER=pguser
+    - PGPASSWORD=pguser
+    - PGHOST=postgres
+    - CREDITS=5000
+    - SECRET_KEY=califragilisticospiralitoso
+    #build: server
+    #volumes:
+    #  - ./server:/app
+    #ports:
+    #  - 8000:5000
+    #environment:
+    #  - LC_ALL=C.UTF-8
+    #  - LANG=C.UTF-8
+    #depends_on:
+    #  - rabbitmq
+
+  postgres:
+    container_name: postgres
+    image: "postgres:12"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=pguser
+      - POSTGRES_DB=pgdb
+    volumes:
+      - nps_data:/var/lib/postgresql/data
+
+volumes:
+  nps_data: {}
+
 
 
 

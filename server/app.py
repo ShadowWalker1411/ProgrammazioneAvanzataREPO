@@ -7,13 +7,13 @@ celery_app = Celery('app', broker='amqp://admin:admin@rabbitmq:5672', backend='r
 
 @flask_app.route('/')
 def index():
-    return 'OK'
+    return 'Start a job: /start-job/<x>'
 
 
-@flask_app.route('/start-job')
-def start():
+@flask_app.route('/start-job/<x>')
+def start(x):
     flask_app.logger.info("Invoking Method ")
-    r = celery_app.send_task('app.longtime_add', kwargs={'x': 1, 'y': 2}).delay()
+    r = celery_app.send_task('app.longtime_add', kwargs={'x': int(x), 'y': 2})#.delay()
     flask_app.logger.info(r.backend)
     return r.id
     """connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
