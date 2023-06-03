@@ -9,9 +9,9 @@ const middleware_1 = require("../middlewares/middleware");
 const router = express_1.default.Router();
 router
     .get('/', users_1.default.getAll)
-    .get('/:id', middleware_1.checkAuth, users_1.default.getById)
+    .get('/:id', middleware_1.checkAuth, middleware_1.checkAdmin, users_1.default.getById)
     .post('/', users_1.default.create)
-    .put('/:id', users_1.default.updateById)
-    .delete('/:id', users_1.default.deleteById);
+    .put('/:id', middleware_1.checkAuth, users_1.default.updateById)
+    .delete('/:id', middleware_1.checkAuth, users_1.default.deleteById);
 router.post('/login', users_1.default.login);
 exports.default = router;

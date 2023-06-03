@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkAuth = exports.checkAdmin = exports.checkToken = void 0;
+const users_1 = __importDefault(require("../controllers/users"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const checkToken = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking token");
@@ -38,25 +39,30 @@ const checkToken = (request, response, next) => __awaiter(void 0, void 0, void 0
 exports.checkToken = checkToken;
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking admin");
-    next();
+    const USER = yield users_1.default.getOneById(parseInt(request.id));
+    if ((USER === null || USER === void 0 ? void 0 : USER.get("admin")) === true) {
+        next();
+    }
+    else {
+        response.status(401).send("Unauthorized");
+    }
 });
 exports.checkAdmin = checkAdmin;
 const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    console.log("Checking authentication");
+    console.log("Checking auth");
     const token = (_a = request.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
     if (token) {
         try {
-            const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "").toString();
-            const decodedJSON = JSON.parse(decoded);
-            console.log(decodedJSON);
-            /*const id = request.params.id
-            if (id === decodedJSON.id) {
-                next()
-            } else {
-                response.status(401).send("Unauthorized")
-            }*/
-            next();
+            const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "");
+            const id = (request.method === 'POST') ? request.body.id : request.params.id;
+            if (id == decoded.id) {
+                request.id = decoded.id;
+                next();
+            }
+            else {
+                response.status(401).send("Unauthorized");
+            }
         }
         catch (error) {
             response.status(401).send({ message: 'Token not valid.' });
