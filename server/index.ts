@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 import sequelize from './utils/database'
 
-import dev from './routes/dev'
+//import dev from './routes/dev'
 import users from './routes/users'
 
 const app = express()
@@ -20,7 +20,7 @@ app.get("/", (request: Request, response: Response) => {
     response.send("Hello World")
 })
 
-app.use('/dev', dev)
+//app.use('/dev', dev)
 app.use('/users', users);
 
 (async () => {

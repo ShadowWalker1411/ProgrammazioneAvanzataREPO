@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const users_1 = __importDefault(require("./../models/users"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const joi_1 = __importDefault(require("joi"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const USER = yield users_1.default.findByPk(id);
     return USER;
@@ -37,12 +38,43 @@ const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, f
         return response.status(500).json(error);
     }
 });
+const createUserSchema = joi_1.default.object({
+    username: joi_1.default.string().alphanum().min(3).max(15).required()
+        .messages({
+        'string.alphanum': 'Il nome utente può contenere solo caratteri alfanumerici',
+        'string.min': 'Il nome utente deve contenere almeno 3 caratteri',
+        'string.max': 'Il nome utente può contenere al massimo 15 caratteri',
+        'any.required': 'Il nome utente è obbligatorio',
+    }),
+    email: joi_1.default.string().email().required()
+        .custom((value, helpers) => {
+        if (!value.includes('@')) {
+            return helpers.error('any.invalid');
+        }
+        return value;
+    })
+        .messages({
+        'string.email': 'Inserisci un indirizzo email valido',
+        'any.required': 'L\'indirizzo email è obbligatorio',
+        'any.invalid': 'L\'indirizzo email deve contenere il simbolo "@"',
+    }),
+    password: joi_1.default.string().min(6).required()
+        .messages({
+        'string.min': 'La password deve avere almeno {#limit} caratteri',
+        'any.required': 'La password è obbligatoria',
+    }),
+});
 const create = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { error, value } = createUserSchema.validate(request.body);
+        if (error) {
+            return response.status(400).json({ error: error.details });
+        }
+        const hashedPassword = bcrypt_1.default.hashSync(value.password, 8);
         const USER_MODEL = {
-            username: request.body.username,
-            email: request.body.email,
-            password: bcrypt_1.default.hashSync(request.body.password, 8)
+            username: value.username,
+            email: value.email,
+            password: hashedPassword,
         };
         try {
             const USER = yield users_1.default.create(USER_MODEL);
@@ -56,12 +88,21 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(500).json(error);
     }
 });
+const updateUserSchema = joi_1.default.object({
+    username: joi_1.default.string().alphanum().min(3).max(15).optional(),
+    email: joi_1.default.string().email().optional(),
+    password: joi_1.default.string().min(6).optional(),
+});
 const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { error, value } = updateUserSchema.validate(request.body);
+        if (error) {
+            return response.status(400).json({ message: error.details[0].message });
+        }
         const USER_MODEL = {
-            username: request.body.username,
-            email: request.body.email,
-            password: bcrypt_1.default.hashSync(request.body.password, 8)
+            username: value.username || undefined,
+            email: value.email || undefined,
+            password: value.password ? bcrypt_1.default.hashSync(value.password, 8) : undefined,
         };
         try {
             const NROWS = yield users_1.default.update(USER_MODEL, { where: { id: request.params.id } });
@@ -86,12 +127,16 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const login = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const USER = yield users_1.default.findOne({ where: { username: request.body.username, password: bcrypt_1.default.hashSync(request.body.password, 8) } });
-        if (!USER) {
+        const USER = yield users_1.default.findOne({ where: { username: request.body.username } });
+        console.log(USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'));
+        console.log(request.body.password);
+        if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
+            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("id") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
+            return response.status(200).json({ token });
+        }
+        else {
             return response.status(401).json({ message: "Invalid Credentials" });
         }
-        const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("id") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
-        return response.status(200).json({ token });
     }
     catch (error) {
         return response.status(500).json(error);

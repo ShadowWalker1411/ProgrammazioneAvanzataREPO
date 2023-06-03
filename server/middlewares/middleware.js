@@ -12,31 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkAuth = exports.checkAdmin = exports.checkToken = void 0;
+exports.checkAuth = exports.checkAdmin = void 0;
 const users_1 = __importDefault(require("../controllers/users"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const checkToken = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Checking token");
-    if (request.query.token) {
-        try {
-            const parsedValue = parseInt(request.query.token, 10);
-            if (isNaN(parsedValue)) {
-                throw new Error('Invalid number');
-            }
-            if (parsedValue === 0) {
-                response.status(401).send("Unauthorized");
-            }
-            next();
-        }
-        catch (error) {
-            return response.status(400).send('Invalid token');
-        }
-    }
-    else {
-        return response.status(400).send('Invalid token');
-    }
-});
-exports.checkToken = checkToken;
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking admin");
     const USER = yield users_1.default.getOneById(parseInt(request.id));
@@ -65,11 +43,11 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
             }
         }
         catch (error) {
-            response.status(401).send({ message: 'Token not valid.' });
+            response.status(401).send({ message: 'Token not valid' });
         }
     }
     else {
-        response.status(401).send({ message: 'Token not provided.' });
+        response.status(401).send({ message: 'Token not provided' });
     }
 });
 exports.checkAuth = checkAuth;

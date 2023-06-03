@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const database_1 = __importDefault(require("./utils/database"));
-const dev_1 = __importDefault(require("./routes/dev"));
+//import dev from './routes/dev'
 const users_1 = __importDefault(require("./routes/users"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -28,7 +28,7 @@ app.use((request, response, next) => {
 app.get("/", (request, response) => {
     response.send("Hello World");
 });
-app.use('/dev', dev_1.default);
+//app.use('/dev', dev)
 app.use('/users', users_1.default);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
