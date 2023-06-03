@@ -1,0 +1,22 @@
+{
+  "name": "programmazioneavanzatarepo",
+  "version": "1.0.0",
+  "description": "A simple job worker that uses RabbitMQ for job management. Full doc and explanation [here](https://medium.com/@naveed125/background-processing-with-rabbitmq-python-and-flask-5ca62acf409c).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.0",
+    "sequelize": "^6.31.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2"
+  }
+}
