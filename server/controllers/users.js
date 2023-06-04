@@ -31,7 +31,7 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
 });
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const USER = yield getOneById(parseInt(request.params.id));
+        const USER = yield getOneById(parseInt(request.params.UID));
         return response.status(200).json(USER);
     }
     catch (error) {
@@ -74,7 +74,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
             password: value.password ? bcrypt_1.default.hashSync(value.password, 8) : undefined,
         };
         try {
-            const NROWS = yield users_1.default.update(USER_MODEL, { where: { id: request.params.id } });
+            const NROWS = yield users_1.default.update(USER_MODEL, { where: { id: request.params.UID } });
             return response.status(200).json(NROWS);
         }
         catch (error) {
@@ -87,7 +87,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield users_1.default.destroy({ where: { id: request.params.id } });
+        const NROWS = yield users_1.default.destroy({ where: { id: request.params.UID } });
         return response.status(200).json(NROWS);
     }
     catch (error) {
@@ -100,7 +100,7 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
         console.log(USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'));
         console.log(request.body.password);
         if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
-            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("id") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
+            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("UID") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
             return response.status(200).json({ token });
         }
         else {

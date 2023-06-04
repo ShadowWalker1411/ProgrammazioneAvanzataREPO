@@ -1,37 +1,32 @@
 import Sequelize from "sequelize"
 import sequelize from "../utils/database"
 
-const User = sequelize.define("user", {
+const Dataset = sequelize.define("dataset", {
     UID: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
     },
-    username: {
+    name: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
     },
-    email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-    },
-    password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    credits: {
+    tags: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: process.env.CREDITS || 5000
+        defaultValue: 0
     },
-    admin: {
-        type: Sequelize.BOOLEAN,
+    numClasses: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: false
-    }
+        defaultValue: 2
+    },
+    userUID: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+    },
 })
 
-export default User
+export default Dataset

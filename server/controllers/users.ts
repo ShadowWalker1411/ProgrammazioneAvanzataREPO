@@ -20,7 +20,7 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
 
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const USER = await getOneById(parseInt(request.params.id))
+        const USER = await getOneById(parseInt(request.params.UID))
         return response.status(200).json(USER)
     } catch (error) {
         return response.status(500).json(error)
@@ -63,7 +63,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
             password: value.password ? bcrypt.hashSync(value.password, 8) : undefined,
         };
         try {
-            const NROWS = await User.update(USER_MODEL, { where: { id: request.params.id } });
+            const NROWS = await User.update(USER_MODEL, { where: { id: request.params.UID } });
             return response.status(200).json(NROWS);
         } catch (error) {
             return response.status(500).json(error);
@@ -75,7 +75,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await User.destroy({where: {id: request.params.id}})
+        const NROWS = await User.destroy({where: {id: request.params.UID}})
         return response.status(200).json(NROWS)
     } catch (error) {
         return response.status(500).json(error)
@@ -89,7 +89,7 @@ const login = async (request: Request, response: Response, next: NextFunction) =
         console.log(USER?.getDataValue('password'))
         console.log(request.body.password)
         if(bcrypt.compareSync(request.body.password, USER?.getDataValue('password'))){
-            const token = jwt.sign({ id: USER?.get("id") }, process.env.SECRET_KEY || "", {expiresIn: "1h"})
+            const token = jwt.sign({ id: USER?.get("UID") }, process.env.SECRET_KEY || "", {expiresIn: "1h"})
         return response.status(200).json({token})
         }else{
             return response.status(401).json({message: "Invalid Credentials"})

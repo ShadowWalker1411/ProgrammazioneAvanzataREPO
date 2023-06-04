@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 const checkAdmin = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking admin")
-    const USER = await controller.getOneById(parseInt((request as any).id))
+    const USER = await controller.getOneById(parseInt((request as any).UID))
     if (USER?.get("admin") === true) {
         next()
     } else {
@@ -18,9 +18,9 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     if (token) {
         try {
             const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "")
-            const id = (request.method === 'POST') ? request.body.id : request.params.id;
-            if (id == decoded.id) {
-                (request as any).id = decoded.id
+            const UID = (request.method === 'POST') ? request.body.UID : request.params.UID;
+            if (UID == decoded.UID) {
+                (request as any).UID = decoded.UID
                 next()
             } else {
                 response.status(401).send("Unauthorized")

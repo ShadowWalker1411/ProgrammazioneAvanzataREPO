@@ -5,36 +5,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = __importDefault(require("sequelize"));
 const database_1 = __importDefault(require("../utils/database"));
-const User = database_1.default.define("user", {
+const Dataset = database_1.default.define("dataset", {
     UID: {
         type: sequelize_1.default.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
     },
-    username: {
+    name: {
         type: sequelize_1.default.STRING,
         allowNull: false,
         unique: true,
     },
-    email: {
-        type: sequelize_1.default.STRING,
-        allowNull: false,
-        unique: true,
-    },
-    password: {
-        type: sequelize_1.default.STRING,
-        allowNull: false,
-    },
-    credits: {
+    tags: {
         type: sequelize_1.default.INTEGER,
         allowNull: false,
-        defaultValue: process.env.CREDITS || 5000
+        defaultValue: 0
     },
-    admin: {
-        type: sequelize_1.default.BOOLEAN,
+    numClasses: {
+        type: sequelize_1.default.INTEGER,
         allowNull: false,
-        defaultValue: false
-    }
+        defaultValue: 2
+    },
+    userUID: {
+        type: sequelize_1.default.INTEGER,
+        allowNull: false,
+    },
 });
-exports.default = User;
+exports.default = Dataset;

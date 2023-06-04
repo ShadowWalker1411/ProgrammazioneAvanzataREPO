@@ -17,7 +17,7 @@ const users_1 = __importDefault(require("../controllers/users"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking admin");
-    const USER = yield users_1.default.getOneById(parseInt(request.id));
+    const USER = yield users_1.default.getOneById(parseInt(request.UID));
     if ((USER === null || USER === void 0 ? void 0 : USER.get("admin")) === true) {
         next();
     }
@@ -33,9 +33,9 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
     if (token) {
         try {
             const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "");
-            const id = (request.method === 'POST') ? request.body.id : request.params.id;
-            if (id == decoded.id) {
-                request.id = decoded.id;
+            const UID = (request.method === 'POST') ? request.body.UID : request.params.UID;
+            if (UID == decoded.UID) {
+                request.UID = decoded.UID;
                 next();
             }
             else {
