@@ -45,7 +45,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         const MODEL_MODEL = {
             name: value.name,
             datasetUID: value.datasetUID,
-            userUID: value.userUID,
+            userUID: request.UID,
         };
         try {
             const MODEL = yield models_1.default.create(MODEL_MODEL);
@@ -61,14 +61,13 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
 });
 const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { error, value } = updateUserSchema.validate(request.body);
+        const { error, value } = updateModelSchema.validate(request.body);
         if (error) {
             return response.status(400).json({ message: error.details[0].message });
         }
         const MODEL_MODEL = {
             name: value.name,
-            datasetUID: value.datasetUID,
-            userUID: value.userUID,
+            datasetUID: value.datasetUID
         };
         try {
             const NROWS = yield models_1.default.update(MODEL_MODEL, { where: { id: request.params.UID } });
@@ -95,7 +94,7 @@ const createModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).required(),
     datasetUID: joi_1.default.string().email().required(),
 });
-const updateUserSchema = joi_1.default.object({
+const updateModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).optional(),
     datasetUID: joi_1.default.string().email().optional(),
 });

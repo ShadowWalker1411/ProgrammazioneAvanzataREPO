@@ -35,7 +35,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            userUID: value.userUID,
+            userUID: (request as any).UID
         }
         try {
             const DATASET = await Dataset.create(DATSET_MODEL)
@@ -58,7 +58,6 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            userUID: value.userUID,
         }
         try {
             const NROWS = await Dataset.update(DATSET_MODEL, { where: { id: request.params.UID } })
@@ -83,16 +82,14 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 const createDatasetSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).required(),
     tags: Joi.number().min(0).max(1023).required(),
-    numClasses: Joi.number().min(0).max(255).required(),
-    userUID: Joi.number().min(0).max(10000).required(),
+    numClasses: Joi.number().min(0).max(255).required()
 });
 
 
 const updateDatasetSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).optional(),
     tags: Joi.number().min(0).max(1023).optional(),
-    numClasses: Joi.number().min(0).max(255).optional(),
-    userUID: Joi.number().min(0).max(10000).optional(),
+    numClasses: Joi.number().min(0).max(255).optional()
 });
 
 const controller = {

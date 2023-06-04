@@ -46,7 +46,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            userUID: value.userUID,
+            userUID: request.UID
         };
         try {
             const DATASET = yield datasets_1.default.create(DATSET_MODEL);
@@ -70,7 +70,6 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            userUID: value.userUID,
         };
         try {
             const NROWS = yield datasets_1.default.update(DATSET_MODEL, { where: { id: request.params.UID } });
@@ -96,14 +95,12 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 const createDatasetSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).required(),
     tags: joi_1.default.number().min(0).max(1023).required(),
-    numClasses: joi_1.default.number().min(0).max(255).required(),
-    userUID: joi_1.default.number().min(0).max(10000).required(),
+    numClasses: joi_1.default.number().min(0).max(255).required()
 });
 const updateDatasetSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).optional(),
     tags: joi_1.default.number().min(0).max(1023).optional(),
-    numClasses: joi_1.default.number().min(0).max(255).optional(),
-    userUID: joi_1.default.number().min(0).max(10000).optional(),
+    numClasses: joi_1.default.number().min(0).max(255).optional()
 });
 const controller = {
     getAll,
