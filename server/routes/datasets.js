@@ -9,10 +9,10 @@ const datasets_2 = require("../middlewares/datasets");
 const users_1 = require("../middlewares/users");
 const router = express_1.default.Router();
 router
-    .get('/all', users_1.checkAuth, users_1.checkAdmin, datasets_1.default.getAll)
-    .get('/', datasets_1.default.getAllMine)
-    .get('/:id', users_1.checkAuth, datasets_2.checkOwner, datasets_1.default.getById)
-    .post('/', users_1.checkAuth, datasets_1.default.create)
-    .put('/:id', users_1.checkAuth, datasets_2.checkOwner, datasets_1.default.updateById)
-    .delete('/:id', users_1.checkAuth, datasets_2.checkOwner, datasets_1.default.deleteById);
+    .get('/all', datasets_2.checkAuth, users_1.checkAdmin, datasets_1.default.getAll)
+    .get('/', datasets_2.checkAuth, datasets_1.default.getAllMine)
+    .get('/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.getById)
+    .post('/', datasets_2.checkAuth, datasets_1.default.create)
+    .put('/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.updateById)
+    .delete('/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.deleteById);
 exports.default = router;

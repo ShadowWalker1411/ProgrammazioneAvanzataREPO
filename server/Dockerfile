@@ -29,7 +29,7 @@ WORKDIR /src
 
 COPY ../package.json ../package*.json ./
 
-RUN npm install -g express pg sequelize jsonwebtoken bcrypt joi
+# RUN npm install -g express pg sequelize jsonwebtoken bcrypt joi
 
 RUN npm install
 

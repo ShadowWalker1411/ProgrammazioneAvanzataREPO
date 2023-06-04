@@ -1,7 +1,7 @@
 import express from 'express'
 import controller from '../controllers/datasets'
-import { checkOwner } from '../middlewares/datasets';
-import { checkAuth, checkAdmin } from '../middlewares/users';
+import { checkAuth, checkOwner } from '../middlewares/datasets';
+import { checkAdmin } from '../middlewares/users';
 
 const router = express.Router();
 

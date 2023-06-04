@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const database_1 = __importDefault(require("./utils/database"));
-//import dev from './routes/dev'
 const users_1 = __importDefault(require("./routes/users"));
+const datasets_1 = __importDefault(require("./routes/datasets"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -29,6 +29,7 @@ app.get("/", (request, response) => {
     response.send("Hello World");
 });
 app.use('/users', users_1.default);
+app.use('/datasets', datasets_1.default);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield database_1.default.sync({ alter: true });

@@ -18,14 +18,9 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const DATASET = yield datasets_1.default.findByPk(id);
     return DATASET;
 });
-// NEW
 const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
     const DATASETS = yield datasets_1.default.findAll({ where: { userUID: userUID } });
     return DATASETS;
-});
-// NEW
-const getUserUIDById = (UID) => __awaiter(void 0, void 0, void 0, function* () {
-    const DATASET = yield datasets_1.default.findByPk(UID);
 });
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -36,10 +31,9 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(500).json(error);
     }
 });
-// NEW
 const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const DATASETS = yield getAllByUserUID(request.UID);
+        const DATASETS = yield getAllByUserUID(parseInt(request.UID));
         return response.status(200).json(DATASETS);
     }
     catch (error) {
@@ -48,7 +42,7 @@ const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const DATASET = yield getOneById(parseInt(request.params.UID));
+        const DATASET = yield getOneById(parseInt(request.params.id));
         return response.status(200).json(DATASET);
     }
     catch (error) {
@@ -91,7 +85,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
             numClasses: value.numClasses,
         };
         try {
-            const NROWS = yield datasets_1.default.update(DATSET_MODEL, { where: { id: request.params.UID } });
+            const NROWS = yield datasets_1.default.update(DATSET_MODEL, { where: { UID: request.params.id } });
             return response.status(200).json(NROWS);
         }
         catch (error) {
@@ -104,7 +98,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield datasets_1.default.destroy({ where: { id: request.params.UID } });
+        const NROWS = yield datasets_1.default.destroy({ where: { UID: request.params.id } });
         return response.status(200).json(NROWS);
     }
     catch (error) {

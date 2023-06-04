@@ -17,10 +17,10 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     const token = request.headers.authorization?.split(" ")[1]
     if (token) {
         try {
-            const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "")
-            const UID = (request.method === 'POST') ? request.body.UID : request.params.UID;
-            if (UID == decoded.UID) {
-                (request as any).UID = decoded.UID
+            const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
+            const UID = (request.method === 'POST') ? request.body.UID : request.params.UID
+            if (UID == decoded.id) {
+                (request as any).UID = decoded.id
                 next()
             } else {
                 response.status(401).send("Unauthorized")

@@ -12,7 +12,6 @@ const getAllByUserUID = async (userUID: number) => {
     return DATASETS
 }
 
-
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const ALL = await Dataset.findAll()
@@ -24,7 +23,7 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
 
 const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const DATASETS = await getAllByUserUID((request as any).UID)
+        const DATASETS = await getAllByUserUID(parseInt((request as any).UID))
         return response.status(200).json(DATASETS)
     } catch (error) {
         return response.status(500).json(error)
@@ -33,7 +32,7 @@ const getAllMine = async (request: Request, response: Response, next: NextFuncti
 
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const DATASET = await getOneById(parseInt(request.params.UID))
+        const DATASET = await getOneById(parseInt(request.params.id))
         return response.status(200).json(DATASET)
     } catch (error) {
         return response.status(500).json(error)
@@ -75,7 +74,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
             numClasses: value.numClasses,
         }
         try {
-            const NROWS = await Dataset.update(DATSET_MODEL, { where: { id: request.params.UID } })
+            const NROWS = await Dataset.update(DATSET_MODEL, { where: { UID: request.params.id } })
             return response.status(200).json(NROWS)
         } catch (error) {
             return response.status(500).json(error)
@@ -87,7 +86,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await Dataset.destroy({where: {id: request.params.UID}})
+        const NROWS = await Dataset.destroy({where: {UID: request.params.id}})
         return response.status(200).json(NROWS)
     } catch (error) {
         return response.status(500).json(error)
