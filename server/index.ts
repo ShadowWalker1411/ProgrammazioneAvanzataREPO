@@ -20,7 +20,6 @@ app.get("/", (request: Request, response: Response) => {
     response.send("Hello World")
 })
 
-//app.use('/dev', dev)
 app.use('/users', users);
 
 (async () => {

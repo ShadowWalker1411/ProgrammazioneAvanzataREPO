@@ -28,7 +28,6 @@ app.use((request, response, next) => {
 app.get("/", (request, response) => {
     response.send("Hello World");
 });
-//app.use('/dev', dev)
 app.use('/users', users_1.default);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
