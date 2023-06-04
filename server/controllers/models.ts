@@ -7,10 +7,25 @@ const getOneById = async (id: number) => {
     return MODEL
 }
 
+const getAllByUserUID = async (userUID: number) => {
+    const MODEL = await Model.findAll({ where: { userUID: userUID } })
+    return MODEL
+}
+
+
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const ALL = await Model.findAll()
         return response.status(200).json(ALL)
+    } catch (error) {
+        return response.status(500).json(error)
+    }
+}
+
+const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const MODEL = await getAllByUserUID((request as any).UID)
+        return response.status(200).json(MODEL)
     } catch (error) {
         return response.status(500).json(error)
     }
@@ -94,6 +109,8 @@ const controller = {
     create,
     updateById,
     deleteById,
+    getAllByUserUID,
+    getAllMine
 }
 
 export default controller;
