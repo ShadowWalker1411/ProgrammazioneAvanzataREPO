@@ -100,10 +100,10 @@ const createDatasetSchema = joi_1.default.object({
     userUID: joi_1.default.number().min(0).max(10000).required(),
 });
 const updateDatasetSchema = joi_1.default.object({
-    name: joi_1.default.string().alphanum().min(3).max(15).required(),
+    name: joi_1.default.string().alphanum().min(3).max(15).optional(),
     tags: joi_1.default.number().min(0).max(1023).optional(),
     numClasses: joi_1.default.number().min(0).max(255).optional(),
-    userUID: joi_1.default.number().min(0).max(10000).required(),
+    userUID: joi_1.default.number().min(0).max(10000).optional(),
 });
 const controller = {
     getAll,

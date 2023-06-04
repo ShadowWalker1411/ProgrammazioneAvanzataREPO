@@ -89,10 +89,10 @@ const createDatasetSchema = Joi.object({
 
 
 const updateDatasetSchema = Joi.object({
-    name: Joi.string().alphanum().min(3).max(15).required(),
+    name: Joi.string().alphanum().min(3).max(15).optional(),
     tags: Joi.number().min(0).max(1023).optional(),
     numClasses: Joi.number().min(0).max(255).optional(),
-    userUID: Joi.number().min(0).max(10000).required(),
+    userUID: Joi.number().min(0).max(10000).optional(),
 });
 
 const controller = {
