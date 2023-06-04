@@ -3,14 +3,29 @@ import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 
 const getOneById = async (id: number) => {
-    const USER = await Dataset.findByPk(id)
-    return USER
+    const DATASET = await Dataset.findByPk(id)
+    return DATASET
 }
+
+const getAllByUserUID = async (userUID: number) => {
+    const DATASETS = await Dataset.findAll({ where: { userUID: userUID } })
+    return DATASETS
+}
+
 
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const ALL = await Dataset.findAll()
         return response.status(200).json(ALL)
+    } catch (error) {
+        return response.status(500).json(error)
+    }
+}
+
+const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const DATASETS = await getAllByUserUID((request as any).UID)
+        return response.status(200).json(DATASETS)
     } catch (error) {
         return response.status(500).json(error)
     }
@@ -93,8 +108,8 @@ const updateDatasetSchema = Joi.object({
 });
 
 const controller = {
-    getAll,
-    getById, getOneById,
+    getAll, getAllMine,
+    getById, getOneById, getAllByUserUID,
     create,
     updateById,
     deleteById,
