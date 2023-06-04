@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express'
 import sequelize from './utils/database'
 
-//import dev from './routes/dev'
 import users from './routes/users'
+import datasets from './routes/datasets'
 
 const app = express()
 
@@ -21,6 +21,7 @@ app.get("/", (request: Request, response: Response) => {
 })
 
 app.use('/users', users);
+app.use('/datasets', datasets);
 
 (async () => {
     try {

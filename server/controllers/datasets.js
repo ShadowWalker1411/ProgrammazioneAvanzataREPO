@@ -15,13 +15,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const datasets_1 = __importDefault(require("./../models/datasets"));
 const joi_1 = __importDefault(require("joi"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const USER = yield datasets_1.default.findByPk(id);
-    return USER;
+    const DATASET = yield datasets_1.default.findByPk(id);
+    return DATASET;
+});
+// NEW
+const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
+    const DATASETS = yield datasets_1.default.findAll({ where: { userUID: userUID } });
+    return DATASETS;
+});
+// NEW
+const getUserUIDById = (UID) => __awaiter(void 0, void 0, void 0, function* () {
+    const DATASET = yield datasets_1.default.findByPk(UID);
 });
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield datasets_1.default.findAll();
         return response.status(200).json(ALL);
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
+// NEW
+const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const DATASETS = yield getAllByUserUID(request.UID);
+        return response.status(200).json(DATASETS);
     }
     catch (error) {
         return response.status(500).json(error);
@@ -103,8 +122,8 @@ const updateDatasetSchema = joi_1.default.object({
     numClasses: joi_1.default.number().min(0).max(255).optional()
 });
 const controller = {
-    getAll,
-    getById, getOneById,
+    getAll, getAllMine,
+    getById, getOneById, getAllByUserUID,
     create,
     updateById,
     deleteById,
