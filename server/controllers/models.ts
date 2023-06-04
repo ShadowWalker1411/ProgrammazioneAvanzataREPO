@@ -104,6 +104,16 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
+const inference = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const MODEL = await getOneById(parseInt(request.params.id))
+        const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
+        console.log({ "MODEL": MODEL, "DATASET": DATASET }) // Row added because inference is always forced to our model with our dataset
+    } catch (error) {
+        return response.status(500).json(error)
+    }
+}
+
 const createModelSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).required(),
     datasetUID: Joi.number().required(),
@@ -122,7 +132,8 @@ const controller = {
     updateById,
     deleteById,
     getAllByUserUID,
-    getAllMine
+    getAllMine,
+    inference
 }
 
 export default controller;

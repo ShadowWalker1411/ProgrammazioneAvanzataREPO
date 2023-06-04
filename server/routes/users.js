@@ -13,5 +13,7 @@ router
     .post('/', users_1.default.create)
     .put('/:id', users_2.checkAuth, users_1.default.updateById)
     .delete('/:id', users_2.checkAuth, users_1.default.deleteById);
-router.post('/login', users_1.default.login);
+router
+    .post('/login', users_1.default.login)
+    .get('/credits/:id', users_2.checkAuth, users_1.default.getCredits);
 exports.default = router;

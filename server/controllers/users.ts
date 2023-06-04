@@ -102,6 +102,15 @@ const login = async (request: Request, response: Response, next: NextFunction) =
     }
 }
 
+const getCredits = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const USER = await getOneById(parseInt((request as any).UID))
+        return response.status(200).json({"credits": (USER as any).credits})
+    } catch (error) {
+        return response.status(500).json(error)
+    }
+}
+
 
 const createUserSchema = Joi.object({
     username: Joi.string().alphanum().min(3).max(15).required()
@@ -134,7 +143,7 @@ const controller = {
     create,
     updateById,
     deleteById,
-    login
+    login, getCredits
 }
 
 export default controller;

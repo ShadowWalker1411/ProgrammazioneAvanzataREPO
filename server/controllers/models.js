@@ -116,6 +116,16 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
+const inference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const MODEL = yield getOneById(parseInt(request.params.id));
+        const DATASET = yield datasets_1.default.findByPk(MODEL.datasetUID);
+        console.log({ "MODEL": MODEL, "DATASET": DATASET }); // Row added because inference is always forced to our model with our dataset
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
 const createModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).required(),
     datasetUID: joi_1.default.number().required(),
@@ -131,6 +141,7 @@ const controller = {
     updateById,
     deleteById,
     getAllByUserUID,
-    getAllMine
+    getAllMine,
+    inference
 };
 exports.default = controller;

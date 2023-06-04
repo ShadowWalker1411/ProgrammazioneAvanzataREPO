@@ -11,6 +11,8 @@ router
     .put('/:id', checkAuth, controller.updateById)
     .delete('/:id', checkAuth, controller.deleteById)
 
-router.post('/login', controller.login)
+router
+    .post('/login', controller.login)
+    .get('/credits/:id', checkAuth, controller.getCredits)
 
 export default router;

@@ -110,6 +110,15 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
         return response.status(500).json(error);
     }
 });
+const getCredits = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const USER = yield getOneById(parseInt(request.UID));
+        return response.status(200).json(USER.credits);
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
 const createUserSchema = joi_1.default.object({
     username: joi_1.default.string().alphanum().min(3).max(15).required()
         .messages({
@@ -140,6 +149,6 @@ const controller = {
     create,
     updateById,
     deleteById,
-    login
+    login, getCredits
 };
 exports.default = controller;
