@@ -1,7 +1,7 @@
 import Sequelize from "sequelize"
 import sequelize from "../utils/database"
 
-const Models = sequelize.define("model", {
+const Model = sequelize.define("models", {
     UID: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -23,4 +23,4 @@ const Models = sequelize.define("model", {
     },
 })
 
-export default Models
+export default Model
