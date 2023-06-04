@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = __importDefault(require("./../models/models"));
 const joi_1 = __importDefault(require("joi"));
+const datasets_1 = __importDefault(require("../models/datasets"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
     return MODEL;
@@ -60,12 +61,18 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
             datasetUID: value.datasetUID,
             userUID: request.UID,
         };
-        try {
-            const MODEL = yield models_1.default.create(MODEL_MODEL);
-            return response.status(201).json(MODEL);
+        const dataset = yield datasets_1.default.findByPk(value.datasetUID);
+        if (dataset) {
+            try {
+                const MODEL = yield models_1.default.create(MODEL_MODEL);
+                return response.status(201).json(MODEL);
+            }
+            catch (error) {
+                return response.status(500).json(error);
+            }
         }
-        catch (error) {
-            return response.status(500).json(error);
+        else {
+            return response.status(404).json({ error: 'Dataset not found' });
         }
     }
     catch (error) {
@@ -82,12 +89,18 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
             name: value.name,
             datasetUID: value.datasetUID
         };
-        try {
-            const NROWS = yield models_1.default.update(MODEL_MODEL, { where: { id: request.params.UID } });
-            return response.status(200).json(NROWS);
+        const dataset = yield datasets_1.default.findByPk(value.datasetUID);
+        if (dataset) {
+            try {
+                const NROWS = yield models_1.default.update(MODEL_MODEL, { where: { UID: request.params.id } });
+                return response.status(200).json(NROWS);
+            }
+            catch (error) {
+                return response.status(500).json(error);
+            }
         }
-        catch (error) {
-            return response.status(500).json(error);
+        else {
+            return response.status(404).json({ error: 'Dataset not found' });
         }
     }
     catch (error) {
@@ -96,7 +109,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield models_1.default.destroy({ where: { id: request.params.UID } });
+        const NROWS = yield models_1.default.destroy({ where: { UID: request.params.id } });
         return response.status(200).json(NROWS);
     }
     catch (error) {
@@ -105,11 +118,11 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const createModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).required(),
-    datasetUID: joi_1.default.string().email().required(),
+    datasetUID: joi_1.default.number().required(),
 });
 const updateModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).optional(),
-    datasetUID: joi_1.default.string().email().optional(),
+    datasetUID: joi_1.default.number().optional(),
 });
 const controller = {
     getAll,

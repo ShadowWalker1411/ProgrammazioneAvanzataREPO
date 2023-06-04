@@ -3,6 +3,7 @@ import sequelize from './utils/database'
 
 import users from './routes/users'
 import datasets from './routes/datasets'
+import models from './routes/models'
 
 const app = express()
 
@@ -22,6 +23,7 @@ app.get("/", (request: Request, response: Response) => {
 
 app.use('/users', users);
 app.use('/datasets', datasets);
+app.use('/models', models);
 
 (async () => {
     try {

@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const database_1 = __importDefault(require("./utils/database"));
 const users_1 = __importDefault(require("./routes/users"));
 const datasets_1 = __importDefault(require("./routes/datasets"));
+const models_1 = __importDefault(require("./routes/models"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -30,6 +31,7 @@ app.get("/", (request, response) => {
 });
 app.use('/users', users_1.default);
 app.use('/datasets', datasets_1.default);
+app.use('/models', models_1.default);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield database_1.default.sync({ alter: true });

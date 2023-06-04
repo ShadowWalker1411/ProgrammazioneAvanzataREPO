@@ -1,6 +1,8 @@
 import Model from './../models/models';
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
+import Dataset from '../models/datasets';
+
 
 const getOneById = async (id: number) => {
     const MODEL = await Model.findByPk(id)
@@ -51,11 +53,16 @@ const create = async (request: Request, response: Response, next: NextFunction) 
             datasetUID: value.datasetUID,
             userUID: (request as any).UID,
         }
-        try {
-            const MODEL = await Model.create(MODEL_MODEL)
-            return response.status(201).json(MODEL)
-        } catch (error) {
-            return response.status(500).json(error)
+        const dataset=await Dataset.findByPk(value.datasetUID)
+        if(dataset){
+            try {
+                const MODEL = await Model.create(MODEL_MODEL)
+                return response.status(201).json(MODEL)
+            } catch (error) {
+                return response.status(500).json(error)
+            }
+        }else{
+            return response.status(404).json({ error: 'Dataset not found' })
         }
     } catch (error) {
         return response.status(500).json(error)
@@ -72,11 +79,16 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
             name: value.name,
             datasetUID: value.datasetUID
         }
-        try {
-            const NROWS = await Model.update(MODEL_MODEL, { where: { id: request.params.UID } })
-            return response.status(200).json(NROWS)
-        } catch (error) {
-            return response.status(500).json(error)
+        const dataset=await Dataset.findByPk(value.datasetUID)
+        if(dataset){
+            try {
+                const NROWS = await Model.update(MODEL_MODEL, { where: { UID: request.params.id } })
+                return response.status(200).json(NROWS)
+            } catch (error) {
+                return response.status(500).json(error)
+            }
+        }else{
+            return response.status(404).json({ error: 'Dataset not found' })
         }
     } catch (error) {
         return response.status(500).json(error)
@@ -85,7 +97,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await Model.destroy({where: {id: request.params.UID}})
+        const NROWS = await Model.destroy({where: {UID: request.params.id}})
         return response.status(200).json(NROWS)
     } catch (error) {
         return response.status(500).json(error)
@@ -94,13 +106,13 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 
 const createModelSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).required(),
-    datasetUID: Joi.string().email().required(),
+    datasetUID: Joi.number().required(),
 })
 
 
 const updateModelSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).optional(),
-    datasetUID: Joi.string().email().optional(),
+    datasetUID: Joi.number().optional(),
 })
 
 const controller = {

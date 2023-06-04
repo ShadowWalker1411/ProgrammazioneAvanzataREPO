@@ -12,16 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkOwner = void 0;
+exports.checkOwner = exports.checkAuth = void 0;
 const models_1 = __importDefault(require("../controllers/models"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
-    const modelUID = (request.method === 'POST') ? request.body.UID : request.params.UID;
-    const userUID = request.UID;
+    const modelUID = (request.method === 'POST') ? request.body.id : request.params.id;
     const model = yield models_1.default.getOneById(modelUID);
     if (!model) {
         return response.status(404).json({ message: 'modello non trovato' });
     }
+    const userUID = request.UID;
     if (model.userUID == userUID) {
         next();
     }
@@ -32,3 +33,22 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.checkOwner = checkOwner;
+const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    console.log("Checking auth");
+    const token = (_a = request.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+    if (token) {
+        try {
+            const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "");
+            request.UID = decoded.id;
+            next();
+        }
+        catch (error) {
+            response.status(401).send({ message: 'Token not valid' });
+        }
+    }
+    else {
+        response.status(401).send({ message: 'Token not provided' });
+    }
+});
+exports.checkAuth = checkAuth;
