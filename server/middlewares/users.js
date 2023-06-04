@@ -33,7 +33,7 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
     if (token) {
         try {
             const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "");
-            const UID = (request.method === 'POST') ? request.body.UID : request.params.UID;
+            const UID = (request.method === 'POST') ? request.body.id : request.params.id;
             if (UID == decoded.id) {
                 request.UID = decoded.id;
                 next();

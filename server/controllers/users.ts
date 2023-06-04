@@ -68,7 +68,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         };
         
         try {
-            const NROWS = await User.update(USER_MODEL, { where: { id: request.params.id } });
+            const NROWS = await User.update(USER_MODEL, { where: { UID: request.params.id } });
             return response.status(200).json(NROWS);
         } catch (error) {
             return response.status(500).json(error);
@@ -80,7 +80,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await User.destroy({where: {id: request.params.id}})
+        const NROWS = await User.destroy({where: {UID: request.params.id}})
         return response.status(200).json(NROWS)
     } catch (error) {
         return response.status(500).json(error)

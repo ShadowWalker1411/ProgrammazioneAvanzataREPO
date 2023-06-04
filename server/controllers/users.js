@@ -74,7 +74,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
             password: value.password ? bcrypt_1.default.hashSync(value.password, 8) : undefined,
         };
         try {
-            const NROWS = yield users_1.default.update(USER_MODEL, { where: { id: request.params.id } });
+            const NROWS = yield users_1.default.update(USER_MODEL, { where: { UID: request.params.id } });
             return response.status(200).json(NROWS);
         }
         catch (error) {
@@ -87,7 +87,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield users_1.default.destroy({ where: { id: request.params.id } });
+        const NROWS = yield users_1.default.destroy({ where: { UID: request.params.id } });
         return response.status(200).json(NROWS);
     }
     catch (error) {

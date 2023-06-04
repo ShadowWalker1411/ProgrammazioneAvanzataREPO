@@ -18,7 +18,7 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     if (token) {
         try {
             const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
-            const UID = (request.method === 'POST') ? request.body.UID : request.params.UID
+            const UID = (request.method === 'POST') ? request.body.id : request.params.id
             if (UID == decoded.id) {
                 (request as any).UID = decoded.id
                 next()
