@@ -43,7 +43,7 @@ const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const MODEL = yield getOneById(parseInt(request.params.UID));
+        const MODEL = yield getOneById(parseInt(request.params.id));
         return response.status(200).json(MODEL);
     }
     catch (error) {

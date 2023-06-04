@@ -35,7 +35,7 @@ const getAllMine = async (request: Request, response: Response, next: NextFuncti
 
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const MODEL = await getOneById(parseInt(request.params.UID))
+        const MODEL = await getOneById(parseInt(request.params.id))
         return response.status(200).json(MODEL)
     } catch (error) {
         return response.status(500).json(error)
