@@ -7,15 +7,11 @@ const getOneById = async (id: number) => {
     return MODEL
 }
 
-const getAllByOwnerId = async (userUID: number) => {
-    const MODEL = await Model.findAll({ where: { userUID: userUID } })   
+const getAllByUserUID = async (userUID: number) => {
+    const MODEL = await Model.findAll({ where: { userUID: userUID } })
     return MODEL
 }
 
-const getOneByUID = async (userUID: number) => {
-    const USER = await Model.findOne({ where: { userUID: userUID } })
-    return USER
-}
 
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -26,10 +22,10 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
     }
 }
 
-const getAllMineMod = async (request: Request, response: Response, next: NextFunction) => {
+const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const ALL = await Model.findAll()
-        return response.status(200).json(ALL)
+        const MODEL = await getAllByUserUID((request as any).UID)
+        return response.status(200).json(MODEL)
     } catch (error) {
         return response.status(500).json(error)
     }
@@ -113,8 +109,8 @@ const controller = {
     create,
     updateById,
     deleteById,
-    getAllByOwnerId,
-    getOneByUID
+    getAllByUserUID,
+    getAllMine
 }
 
 export default controller;

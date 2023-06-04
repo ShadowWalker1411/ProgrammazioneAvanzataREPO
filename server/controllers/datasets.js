@@ -18,14 +18,9 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const DATASET = yield datasets_1.default.findByPk(id);
     return DATASET;
 });
-// NEW
 const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
     const DATASETS = yield datasets_1.default.findAll({ where: { userUID: userUID } });
     return DATASETS;
-});
-// NEW
-const getUserUIDById = (UID) => __awaiter(void 0, void 0, void 0, function* () {
-    const DATASET = yield datasets_1.default.findByPk(UID);
 });
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -36,7 +31,6 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(500).json(error);
     }
 });
-// NEW
 const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const DATASETS = yield getAllByUserUID(request.UID);

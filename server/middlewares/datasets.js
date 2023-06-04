@@ -17,11 +17,12 @@ const datasets_1 = __importDefault(require("../controllers/datasets"));
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
     const datasetUID = (request.method === 'POST') ? request.body.UID : request.params.UID;
+    const userUID = request.UID;
     const dataset = yield datasets_1.default.getOneById(datasetUID);
     if (!dataset) {
         return response.status(404).json({ message: 'Dataset not found' });
     }
-    if (dataset.userUID === datasetUID) {
+    if (dataset.userUID == userUID) {
         next();
     }
     else {

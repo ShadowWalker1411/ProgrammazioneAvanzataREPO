@@ -18,10 +18,23 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
     return MODEL;
 });
+const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
+    const MODEL = yield models_1.default.findAll({ where: { userUID: userUID } });
+    return MODEL;
+});
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield models_1.default.findAll();
         return response.status(200).json(ALL);
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
+const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const MODEL = yield getAllByUserUID(request.UID);
+        return response.status(200).json(MODEL);
     }
     catch (error) {
         return response.status(500).json(error);
@@ -104,5 +117,7 @@ const controller = {
     create,
     updateById,
     deleteById,
+    getAllByUserUID,
+    getAllMine
 };
 exports.default = controller;
