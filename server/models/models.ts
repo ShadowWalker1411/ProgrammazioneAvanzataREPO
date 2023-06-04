@@ -1,7 +1,7 @@
 import Sequelize from "sequelize"
 import sequelize from "../utils/database"
 
-const Models = sequelize.define("models", {
+const Models = sequelize.define("model", {
     UID: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -13,12 +13,11 @@ const Models = sequelize.define("models", {
         allowNull: false,
         unique: true,
     },
-    DatasetUID: {
+    datasetUID: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         allowNull: false,
     },
-    UserUID: {
+    userUID: {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
