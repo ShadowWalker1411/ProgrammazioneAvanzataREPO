@@ -31,12 +31,38 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
 });
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const USER = yield getOneById(parseInt(request.params.UID));
+        const USER = yield getOneById(parseInt(request.params.id));
         return response.status(200).json(USER);
     }
     catch (error) {
         return response.status(500).json(error);
     }
+});
+const createUserSchema = joi_1.default.object({
+    username: joi_1.default.string().alphanum().min(3).max(15).required()
+        .messages({
+        'string.alphanum': 'Il nome utente può contenere solo caratteri alfanumerici',
+        'string.min': 'Il nome utente deve contenere almeno 3 caratteri',
+        'string.max': 'Il nome utente può contenere al massimo 15 caratteri',
+        'any.required': 'Il nome utente è obbligatorio',
+    }),
+    email: joi_1.default.string().email().required()
+        .custom((value, helpers) => {
+        if (!value.includes('@')) {
+            return helpers.error('any.invalid');
+        }
+        return value;
+    })
+        .messages({
+        'any.invalid': 'L\'indirizzo email deve contenere il simbolo "@"',
+        'string.email': 'Inserisci un indirizzo email valido',
+        'any.required': 'L\'indirizzo email è obbligatorio',
+    }),
+    password: joi_1.default.string().min(6).required()
+        .messages({
+        'string.min': 'La password deve avere almeno 6 caratteri',
+        'any.required': 'La password è obbligatoria',
+    }),
 });
 const create = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -62,6 +88,11 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(500).json(error);
     }
 });
+const updateUserSchema = joi_1.default.object({
+    username: joi_1.default.string().alphanum().min(3).max(15).optional(),
+    email: joi_1.default.string().email().optional(),
+    password: joi_1.default.string().min(6).optional(),
+});
 const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { error, value } = updateUserSchema.validate(request.body);
@@ -69,12 +100,12 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
             return response.status(400).json({ message: error.details[0].message });
         }
         const USER_MODEL = {
-            username: value.username,
-            email: value.email,
+            username: value.username || undefined,
+            email: value.email || undefined,
             password: value.password ? bcrypt_1.default.hashSync(value.password, 8) : undefined,
         };
         try {
-            const NROWS = yield users_1.default.update(USER_MODEL, { where: { id: request.params.UID } });
+            const NROWS = yield users_1.default.update(USER_MODEL, { where: { id: request.params.id } });
             return response.status(200).json(NROWS);
         }
         catch (error) {
@@ -87,7 +118,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield users_1.default.destroy({ where: { id: request.params.UID } });
+        const NROWS = yield users_1.default.destroy({ where: { id: request.params.id } });
         return response.status(200).json(NROWS);
     }
     catch (error) {
@@ -100,7 +131,7 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
         console.log(USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'));
         console.log(request.body.password);
         if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
-            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("UID") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
+            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("id") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
             return response.status(200).json({ token });
         }
         else {
@@ -110,30 +141,6 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
     catch (error) {
         return response.status(500).json(error);
     }
-});
-const createUserSchema = joi_1.default.object({
-    username: joi_1.default.string().alphanum().min(3).max(15).required()
-        .messages({
-        'string.alphanum': 'Il nome utente può contenere solo caratteri alfanumerici',
-        'string.min': 'Il nome utente deve contenere almeno 3 caratteri',
-        'string.max': 'Il nome utente può contenere al massimo 15 caratteri',
-        'any.required': 'Il nome utente è obbligatorio',
-    }),
-    email: joi_1.default.string().email().required()
-        .messages({
-        'string.email': 'Inserisci un indirizzo email valido',
-        'any.required': 'L\'indirizzo email è obbligatorio',
-    }),
-    password: joi_1.default.string().min(6).required()
-        .messages({
-        'string.min': 'La password deve avere almeno 6 caratteri',
-        'any.required': 'La password è obbligatoria',
-    }),
-});
-const updateUserSchema = joi_1.default.object({
-    username: joi_1.default.string().alphanum().min(3).max(15).optional(),
-    email: joi_1.default.string().email().optional(),
-    password: joi_1.default.string().min(6).optional(),
 });
 const controller = {
     getAll,

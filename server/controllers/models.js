@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = __importDefault(require("./../models/models"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const joi_1 = __importDefault(require("joi"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
@@ -43,14 +42,13 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         if (error) {
             return response.status(400).json({ error: error.details });
         }
-        const hashedPassword = bcrypt_1.default.hashSync(value.password, 8);
-        const USER_MODEL = {
-            username: value.username,
-            email: value.email,
-            password: hashedPassword,
+        const MODEL_MODEL = {
+            name: value.name,
+            datasetUID: value.datasetUID,
+            userUID: value.userUID,
         };
         try {
-            const MODEL = yield models_1.default.create(USER_MODEL);
+            const MODEL = yield models_1.default.create(MODEL_MODEL);
             return response.status(201).json(MODEL);
         }
         catch (error) {

@@ -1,6 +1,5 @@
 import Model from './../models/models';
 import { Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcrypt';
 import Joi from 'joi';
 
 const getOneById = async (id: number) => {
@@ -32,15 +31,14 @@ const create = async (request: Request, response: Response, next: NextFunction) 
         if (error) {
             return response.status(400).json({ error: error.details });
         }
-        const hashedPassword = bcrypt.hashSync(value.password, 8);
-        const USER_MODEL = {
-            username: value.username,
-            email: value.email,
-            password: hashedPassword,
+        const MODEL_MODEL = {
+            name: value.name,
+            datasetUID: value.datasetUID,
+            userUID: value.userUID,
         };
 
         try {
-            const MODEL = await Model.create(USER_MODEL);
+            const MODEL = await Model.create(MODEL_MODEL);
             return response.status(201).json(MODEL);
         } catch (error) {
             return response.status(500).json(error);
