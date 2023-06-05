@@ -41,6 +41,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
       username: value.username,
       email: value.email,
       password: hashedPassword,
+      admin: value.admin || false
     };
 
     try {
@@ -64,17 +65,17 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         const USER_MODEL: any = {
             username: value.username || undefined,
             email: value.email || undefined,
-            password: value.password ? bcrypt.hashSync(value.password, 8) : undefined,
-        };
+            password: value.password ? bcrypt.hashSync(value.password, 8) : undefined
+        }
         
         try {
-            const NROWS = await User.update(USER_MODEL, { where: { UID: request.params.id } });
-            return response.status(200).json(NROWS);
+            const NROWS = await User.update(USER_MODEL, { where: { UID: request.params.id } })
+            return response.status(200).json(NROWS)
         } catch (error) {
-            return response.status(500).json(error);
+            return response.status(500).json(error)
         }
     } catch (error) {
-        return response.status(500).json(error);
+        return response.status(500).json(error)
     }
 };
 
@@ -90,7 +91,6 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 const login = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const USER = await User.findOne({where: {username: request.body.username}})
-        console.log(USER)
         if(bcrypt.compareSync(request.body.password, USER?.getDataValue('password'))){
             const token = jwt.sign({ id: USER?.get("UID") }, process.env.SECRET_KEY || "", {expiresIn: "1h"})
             return response.status(200).json({token})
@@ -111,6 +111,30 @@ const getCredits = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
+const addCredits = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const { error, value } = addCreditsSchema.validate(request.body);
+        if (error) {
+            return response.status(400).json({ message: error.details[0].message });
+        }
+        const USER = await User.findOne({where: {email: request.params.email}})
+        if (USER) {
+            const USER_MODEL: any = {
+                credits: value.credits + (USER as any).credits
+            }
+            try {
+                const NROWS = await User.update(USER_MODEL, { where: { email: request.params.email } })
+                return response.status(200).json(NROWS)
+            } catch (error) {
+                return response.status(500).json(error)
+            }
+        } else {
+            return response.status(404).json({ message: "User not found" })
+        }
+    } catch (error) {
+        return response.status(500).json(error)
+    }
+}
 
 const createUserSchema = Joi.object({
     username: Joi.string().alphanum().min(3).max(15).required()
@@ -129,13 +153,19 @@ const createUserSchema = Joi.object({
           'string.min': 'La password deve avere almeno 6 caratteri',
           'any.required': 'La password è obbligatoria',
       }),
-});
+      admin: Joi.boolean().optional()
+})
 
 const updateUserSchema = Joi.object({
     username: Joi.string().alphanum().min(3).max(15).optional(),
     email: Joi.string().email().optional(),
     password: Joi.string().min(6).optional(),
+    admin: Joi.boolean().optional()
 });
+
+const addCreditsSchema = Joi.object({
+    credits: Joi.number().integer().min(0).max(1000).optional(),
+})
 
 const controller = {
     getAll,
@@ -143,7 +173,7 @@ const controller = {
     create,
     updateById,
     deleteById,
-    login, getCredits
+    login, getCredits, addCredits
 }
 
 export default controller;

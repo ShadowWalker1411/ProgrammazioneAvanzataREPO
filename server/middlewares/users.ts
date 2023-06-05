@@ -18,6 +18,22 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     if (token) {
         try {
             const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
+            (request as any).UID = decoded.id
+            next()
+        } catch (error) {
+            response.status(401).send({ message: 'Token not valid' })
+        }
+    } else {
+        response.status(401).send({ message: 'Token not provided' })
+    }
+}
+
+const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
+    console.log("Checking owner")
+    const token = request.headers.authorization?.split(" ")[1]
+    if (token) {
+        try {
+            const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
             const UID = (request.method === 'POST') ? request.body.id : request.params.id
             if (UID == decoded.id) {
                 (request as any).UID = decoded.id
@@ -33,4 +49,4 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     }
 }
 
-export { checkAdmin, checkAuth }
+export { checkAdmin, checkAuth, checkOwner }

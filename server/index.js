@@ -22,8 +22,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((request, response, next) => {
     response.set('Access-Control-Allow-Origin', '*');
-    response.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    console.log("This is a middleware");
+    response.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     next();
 });
 app.get("/", (request, response) => {

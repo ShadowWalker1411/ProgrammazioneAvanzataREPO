@@ -49,6 +49,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
             username: value.username,
             email: value.email,
             password: hashedPassword,
+            admin: value.admin || false
         };
         try {
             const USER = yield users_1.default.create(USER_MODEL);
@@ -71,7 +72,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         const USER_MODEL = {
             username: value.username || undefined,
             email: value.email || undefined,
-            password: value.password ? bcrypt_1.default.hashSync(value.password, 8) : undefined,
+            password: value.password ? bcrypt_1.default.hashSync(value.password, 8) : undefined
         };
         try {
             const NROWS = yield users_1.default.update(USER_MODEL, { where: { UID: request.params.id } });
@@ -97,7 +98,6 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 const login = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const USER = yield users_1.default.findOne({ where: { username: request.body.username } });
-        console.log(USER);
         if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
             const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("UID") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
             return response.status(200).json({ token });
@@ -113,7 +113,34 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
 const getCredits = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const USER = yield getOneById(parseInt(request.UID));
-        return response.status(200).json(USER.credits);
+        return response.status(200).json({ "credits": USER.credits });
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
+const addCredits = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { error, value } = addCreditsSchema.validate(request.body);
+        if (error) {
+            return response.status(400).json({ message: error.details[0].message });
+        }
+        const USER = yield users_1.default.findOne({ where: { email: request.params.email } });
+        if (USER) {
+            const USER_MODEL = {
+                credits: value.credits + USER.credits
+            };
+            try {
+                const NROWS = yield users_1.default.update(USER_MODEL, { where: { email: request.params.email } });
+                return response.status(200).json(NROWS);
+            }
+            catch (error) {
+                return response.status(500).json(error);
+            }
+        }
+        else {
+            return response.status(404).json({ message: "User not found" });
+        }
     }
     catch (error) {
         return response.status(500).json(error);
@@ -137,11 +164,16 @@ const createUserSchema = joi_1.default.object({
         'string.min': 'La password deve avere almeno 6 caratteri',
         'any.required': 'La password è obbligatoria',
     }),
+    admin: joi_1.default.boolean().optional()
 });
 const updateUserSchema = joi_1.default.object({
     username: joi_1.default.string().alphanum().min(3).max(15).optional(),
     email: joi_1.default.string().email().optional(),
     password: joi_1.default.string().min(6).optional(),
+    admin: joi_1.default.boolean().optional()
+});
+const addCreditsSchema = joi_1.default.object({
+    credits: joi_1.default.number().integer().min(0).max(1000).optional(),
 });
 const controller = {
     getAll,
@@ -149,6 +181,6 @@ const controller = {
     create,
     updateById,
     deleteById,
-    login, getCredits
+    login, getCredits, addCredits
 };
 exports.default = controller;

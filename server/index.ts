@@ -12,8 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use((request: Request, response: Response, next: NextFunction) => {
     response.set('Access-Control-Allow-Origin', '*')
-    response.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-    console.log("This is a middleware")
+    response.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
     next()
 })
 

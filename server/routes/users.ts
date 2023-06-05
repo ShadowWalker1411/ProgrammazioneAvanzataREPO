@@ -1,18 +1,19 @@
 import express from 'express'
 import controller from '../controllers/users'
-import { checkAdmin, checkAuth } from '../middlewares/users';
+import { checkAdmin, checkAuth, checkOwner } from '../middlewares/users';
 
 const router = express.Router();
 
 router
     .get('/', controller.getAll)
-    .get('/:id', checkAuth, checkAdmin, controller.getById)
+    .get('/:id', checkOwner, controller.getById)
     .post('/', controller.create)
-    .put('/:id', checkAuth, controller.updateById)
-    .delete('/:id', checkAuth, controller.deleteById)
+    .put('/:id', checkOwner, controller.updateById)
+    .delete('/:id', checkOwner, controller.deleteById)
 
 router
     .post('/login', controller.login)
-    .get('/credits/:id', checkAuth, controller.getCredits)
+    .get('/credits/mine', checkAuth, controller.getCredits)
+    .post('/credits/:email', checkAuth, checkAdmin, controller.addCredits)
 
 export default router;
