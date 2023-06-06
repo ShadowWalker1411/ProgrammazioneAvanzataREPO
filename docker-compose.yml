@@ -14,7 +14,7 @@ services:
 
   worker:
     build: 
-    context: worker
+     context: worker
     volumes:
       - ./worker:/app
       - shared_images:/images
