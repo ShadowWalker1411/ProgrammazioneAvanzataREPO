@@ -3,21 +3,23 @@ import controller from '../controllers/datasets'
 import jwt from 'jsonwebtoken';
 
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
-    console.log("Checking owner")
-    const datasetUID = (request.method === 'POST') ? request.body.id : request.params.id;
-    const dataset = await controller.getOneById(datasetUID)
+    console.log("Checking owner");
+    const datasetUID = request.params.id; 
+    const dataset = await controller.getOneById(parseInt(datasetUID));
+    console.log(datasetUID);
     if (!dataset) {
-        return response.status(404).json({ message: 'Dataset not found' })
+        return response.status(404).json({ message: 'Dataset not found' });
     }
-    const userUID = (request as any).UID
+    const userUID = (request as any).UID;
     if ((dataset as any).userUID == userUID) {
-        next()
+        next();
     } else {
         response.status(403).json({
             message: 'You are not the owner of this dataset'
-        })
+        });
     }
-}
+};
+
 
 const checkAuth = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking auth")

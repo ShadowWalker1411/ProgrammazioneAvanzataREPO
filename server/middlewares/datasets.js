@@ -15,10 +15,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkOwner = exports.checkAuth = void 0;
 const datasets_1 = __importDefault(require("../controllers/datasets"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+/*const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
+    console.log("Checking owner")
+    const datasetUID = (request.method === 'POST') ? request.body.id : request.params.id;
+    const dataset = await controller.getOneById(datasetUID)
+    console.log(datasetUID)
+    if (!dataset) {
+        return response.status(404).json({ message: 'Dataset not found' })
+    }
+    const userUID = (request as any).UID
+    if ((dataset as any).userUID == userUID) {
+        next()
+    } else {
+        response.status(403).json({
+            message: 'You are not the owner of this dataset'
+        })
+    }
+}*/
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
-    const datasetUID = (request.method === 'POST') ? request.body.id : request.params.id;
-    const dataset = yield datasets_1.default.getOneById(datasetUID);
+    const datasetUID = request.params.id; // Utilizza request.params.id per recuperare l'ID del dataset
+    const dataset = yield datasets_1.default.getOneById(parseInt(datasetUID));
+    console.log(datasetUID);
     if (!dataset) {
         return response.status(404).json({ message: 'Dataset not found' });
     }

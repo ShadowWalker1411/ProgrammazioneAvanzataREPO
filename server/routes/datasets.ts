@@ -12,8 +12,8 @@ router
     .post('/', checkAuth, controller.create)
     .put('/:id', checkAuth, checkOwner, controller.updateById)
     .delete('/:id', checkAuth, checkOwner, controller.deleteById)
-    .post('/upload', checkAuth, controller.Upload)
-    .post('/uploads', checkAuth, controller.Uploads)
-    .post('/uploadZip', checkAuth, controller.UploadZip)
+    .post('/image/:id', checkAuth, checkOwner, controller.uploadImage)
+    .post('/images/:id', checkAuth, checkOwner, controller.uploadImages)
+    .post('/zip/:id', checkAuth, checkOwner, controller.uploadZip)
 
 export default router;

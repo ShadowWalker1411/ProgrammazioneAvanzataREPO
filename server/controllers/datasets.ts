@@ -99,7 +99,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
   
   //const upload = multer({ storage });
   
-  const Upload = async (request: Request, response: Response, next: NextFunction) => {
+  const uploadImage = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.diskStorage({
         destination: (request, file, cb) => {
           cb(null, '/images');
@@ -127,7 +127,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 
 
 
-  const Uploads = async (request: Request, response: Response, next: NextFunction) => {
+  const uploadImages = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.diskStorage({
       destination: (request, file, cb) => {
         cb(null, '/images');
@@ -158,7 +158,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
   
  
   
-  const UploadZip = async (request: Request, response: Response, next: NextFunction) => {
+  const uploadZip = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.memoryStorage();//N.B prima usavamo disk, invece ora salvo temporanemante
     const uploads = multer({ storage }).any();
   
@@ -235,9 +235,9 @@ const controller = {
     create,
     updateById,
     deleteById,
-    Upload,
-    Uploads,
-    UploadZip
+    uploadImage,
+    uploadImages,
+    uploadZip
 }
 
 export default controller;
