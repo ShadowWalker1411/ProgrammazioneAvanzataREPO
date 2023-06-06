@@ -13,9 +13,11 @@ services:
       - '15672:15672'
 
   worker:
-    build: worker
+    build: 
+    context: worker
     volumes:
       - ./worker:/app
+      - shared_images:/images
     user: nobody
     environment:
       - PYTHONUNBUFFERED=1
@@ -40,6 +42,10 @@ services:
     - PGHOST=postgres
     - CREDITS=5000
     - SECRET_KEY=califragilisticospiralitoso
+    - RABBITMQ_PORT=5672
+    - UPLOAD_PATH=/images
+    volumes:
+      - shared_images:/images
     #build: server
     #volumes:
     #  - ./server:/app
@@ -63,8 +69,21 @@ services:
     volumes:
       - nps_data:/var/lib/postgresql/data
 
+  producer:
+    container_name: producer
+    ports:
+      - "3002:5000"
+    depends_on:
+    - rabbitmq
+    build:
+      context: producer
+  
+
+
+
 volumes:
   nps_data: {}
+  shared_images: {}
 
 
 

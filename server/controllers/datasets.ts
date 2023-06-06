@@ -1,7 +1,10 @@
 import Dataset from './../models/datasets';
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
-
+import multer, { Multer } from 'multer';
+import AdmZip, { IZipEntry} from 'adm-zip';
+ import fs from 'fs';
+ 
 const getOneById = async (id: number) => {
     const DATASET = await Dataset.findByPk(id)
     return DATASET
@@ -93,7 +96,127 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
-const createDatasetSchema = Joi.object({
+  
+  //const upload = multer({ storage });
+  
+  const Upload = async (request: Request, response: Response, next: NextFunction) => {
+    const storage = multer.diskStorage({
+        destination: (request, file, cb) => {
+          cb(null, '/images');
+        },
+        filename: (request, file, cb) => {
+          const uid = (request as any).UID;
+          const uniqueSuffix = Date.now() + '-'  + Math.round(Math.random() * 1E9) + '.' +  file.mimetype.split('/')[1] ;          
+          const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
+          cb(null, filename);
+        },
+      });
+
+    const upload = multer({ storage });
+    upload.single('file')(request, response, (err: any) => {
+      if (err instanceof multer.MulterError) {
+        return response.status(400).json({ error: err.message });
+      } else if (err) {
+        return response.status(500).json({ error1: err.message });//qualcosa è andato male
+
+      }
+  
+      return response.status(200).json({ message: 'Upload successful' });
+    });
+  };
+
+
+
+  const Uploads = async (request: Request, response: Response, next: NextFunction) => {
+    const storage = multer.diskStorage({
+      destination: (request, file, cb) => {
+        cb(null, '/images');
+      },
+      filename: (request, file, cb) => {
+        const uid = (request as any).UID;
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
+        const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
+        cb(null, filename);
+      },
+    });
+  
+    const uploads = multer({ storage });
+    uploads.array('files')(request, response, (err: any) => {
+      if (err instanceof multer.MulterError) {
+        return response.status(400).json({ error: err.message });
+      } else if (err) {
+        return response.status(500).json({ error: err.message });
+      }
+  
+      return response.status(200).json({ message: 'Upload successful' });
+    });
+  };
+  
+
+
+  
+  
+ 
+  
+  const UploadZip = async (request: Request, response: Response, next: NextFunction) => {
+    const storage = multer.memoryStorage();//N.B prima usavamo disk, invece ora salvo temporanemante
+    const uploads = multer({ storage }).any();
+  
+    uploads(request, response, async (err: any) => {
+      if (err instanceof multer.MulterError) {
+        return response.status(400).json({ error: err.message });
+      } else if (err) {
+        return response.status(500).json({ error: err.message });
+      }
+  
+      //Controllo ci sia qualcosa da uploadare
+      if (!request.files || request.files.length === 0) {
+        return response.status(400).json({ error: 'No files uploaded' });
+      }
+  
+      const uploadedFiles = [];
+  
+      // leggo 1 a 1 i file
+      for (const file of request.files as Express.Multer.File[]) {
+        if (file.mimetype !== 'application/zip') {
+          return response.status(400).json({ error: 'Invalid file format. Only zip files are allowed' });
+        }
+  
+        const zip = new AdmZip(file.buffer);
+        const zipEntries = zip.getEntries();
+  
+        // Leggo i singoli file nella zip
+        for (const zipEntry of zipEntries) {
+          // Extract the file name and extension
+          const fileName = zipEntry.entryName.split('/').pop();
+          if (!fileName) {
+            continue; 
+          }
+          const fileExtension = fileName.split('.').pop();
+  
+          // rinomino i singoli file
+          const uid = (request as any).UID;
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+          const newFileName = `file-${uid}-${uniqueSuffix}.${fileExtension}`;
+  
+          // salvo col nuovo nome
+          const filePath = `/images/${newFileName}`;
+          fs.writeFileSync(filePath, zipEntry.getData());
+          
+          uploadedFiles.push(filePath);
+        }
+      }
+  
+      return response.status(200).json({ message: 'Upload successful', files: uploadedFiles });
+    });
+  };
+  
+
+
+
+
+
+  const createDatasetSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).required(),
     tags: Joi.number().min(0).max(1023).required(),
     numClasses: Joi.number().min(0).max(255).required()
@@ -112,6 +235,9 @@ const controller = {
     create,
     updateById,
     deleteById,
+    Upload,
+    Uploads,
+    UploadZip
 }
 
 export default controller;
