@@ -49,4 +49,15 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
-export { checkAdmin, checkAuth, checkOwner }
+const checkToken = async (request: Request, response: Response, next: NextFunction) => {
+    console.log("Checking token")
+    const creds = await controller.getCreds((request as any).UID)
+    if (creds > 0){
+        next()
+    } else {
+        response.status(401).send({ message: 'Not enough tokens' })
+    }
+    
+}
+
+export { checkAdmin, checkAuth, checkOwner, checkToken }

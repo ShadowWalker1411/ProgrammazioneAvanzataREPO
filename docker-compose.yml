@@ -61,7 +61,7 @@ services:
     container_name: postgres
     image: "postgres:12"
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       - POSTGRES_USER=pguser
       - POSTGRES_PASSWORD=pguser
@@ -71,12 +71,12 @@ services:
 
   producer:
     container_name: producer
-    ports:
-      - "3002:5000"
-    depends_on:
-    - rabbitmq
     build:
       context: producer
+    ports:
+      - '3002:5000'
+    depends_on:
+    - rabbitmq
   
 
 

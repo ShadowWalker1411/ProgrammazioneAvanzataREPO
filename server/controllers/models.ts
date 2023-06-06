@@ -2,7 +2,8 @@ import Model from './../models/models';
 import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
-import amqp from 'amqplib/callback_api'
+//import amqp from 'amqplib/callback_api'
+import fetch from "node-fetch";
 
 
 const getOneById = async (id: number) => {
@@ -14,7 +15,6 @@ const getAllByUserUID = async (userUID: number) => {
     const MODEL = await Model.findAll({ where: { userUID: userUID } })
     return MODEL
 }
-
 
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -107,9 +107,9 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 
 const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        //const MODEL = await getOneById(parseInt(request.params.id))
-        //const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
-        /*amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
+        /*const MODEL = await getOneById(parseInt(request.params.id))
+        const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
+        amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
             if (error) {
                 return response.status(500).json(error)
             }
@@ -124,15 +124,25 @@ const inference = async (request: Request, response: Response, next: NextFunctio
                 response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
-        fetch('http://localhost:3002/')
+        console.log("Fetch")
+        fetch('http://producer:3002/')
             .then(response => response.json())
             .then(data => {
                 console.log(data);
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error1:', error);
+            });
+        fetch('http://127.0.0.1:3002/')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error2:', error);
             });
     } catch (error) {
+        console.log("Error:", error);
         return response.status(500).json(error)
     }
 }

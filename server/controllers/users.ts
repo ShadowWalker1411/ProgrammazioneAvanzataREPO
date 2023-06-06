@@ -9,6 +9,11 @@ const getOneById = async (id: number) => {
     return USER
 }
 
+const getCreds = async (id: number) => {
+    const USER = await User.findByPk(id)
+    return parseInt((USER as any).credits)
+}
+
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const ALL = await User.findAll()
@@ -104,8 +109,8 @@ const login = async (request: Request, response: Response, next: NextFunction) =
 
 const getCredits = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const USER = await getOneById(parseInt((request as any).UID))
-        return response.status(200).json({"credits": (USER as any).credits})
+        const credits = await getCreds(parseInt((request as any).UID))
+        return response.status(200).json({"credits": credits})
     } catch (error) {
         return response.status(500).json(error)
     }
@@ -173,7 +178,7 @@ const controller = {
     create,
     updateById,
     deleteById,
-    login, getCredits, addCredits
+    login, getCredits, addCredits, getCreds
 }
 
 export default controller;
