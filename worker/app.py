@@ -12,3 +12,26 @@ def longtime_add(x, y):
     time.sleep(4)
     logger.info('Work Finished ')
     return x + y
+    
+
+"""import pika
+
+def main():
+    #params = pika.URLParameters('amqp://admin:admin@rabbitmq:5672') #TODO: replace with env variable
+    #connection = pika.BlockingConnection(params)
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='amqp://admin:admin@rabbitmq:5672'))
+    channel = connection.channel()
+    channel = connection.channel()
+    channel.queue_declare(queue='queue')
+
+    def callback(ch, method, properties, body):
+        print(" [x] Received %r" % body)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+
+    channel.basic_consume(callback, queue='queue', no_ack=True)
+
+    channel.start_consuming()
+
+if __name__ == '__main__':
+    main()
+"""

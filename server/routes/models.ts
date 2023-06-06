@@ -13,6 +13,6 @@ router
     .put('/:id', checkAuth, checkOwner, controller.updateById)
     .delete('/:id', checkAuth, checkOwner, controller.deleteById)
 
-router.post('/inference/:id', checkAuth, controller.inference)
+router.get('/inference/:id', checkAuth, controller.inference)
 
 export default router;

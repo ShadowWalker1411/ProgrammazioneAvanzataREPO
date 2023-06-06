@@ -118,9 +118,31 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const inference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const MODEL = yield getOneById(parseInt(request.params.id));
-        const DATASET = yield datasets_1.default.findByPk(MODEL.datasetUID);
-        console.log({ "MODEL": MODEL, "DATASET": DATASET }); // Row added because inference is always forced to our model with our dataset
+        //const MODEL = await getOneById(parseInt(request.params.id))
+        //const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
+        /*amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
+            if (error) {
+                return response.status(500).json(error)
+            }
+            connection.createChannel(function(error, channel) {
+                if (error) {
+                    return response.status(500).json(error)
+                }
+                var queue = "queue"
+                var msg = "Hello World!"
+                channel.assertQueue(queue, { durable: false })
+                channel.sendToQueue(queue, Buffer.from(msg))
+                response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
+            })
+        })*/
+        fetch('http://localhost:3002/')
+            .then(response => response.json())
+            .then(data => {
+            console.log(data);
+        })
+            .catch(error => {
+            console.error('Error:', error);
+        });
     }
     catch (error) {
         return response.status(500).json(error);
