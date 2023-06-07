@@ -15,7 +15,7 @@ router
     .post('/', models_2.checkAuth, models_1.default.create)
     .put('/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.updateById)
     .delete('/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.deleteById)
-    .post('/image/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.uploadFile);
+    .post('/image/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.create); //change to uploadFile
 router
     .get('/inference/:id', models_2.checkAuth, users_1.checkTokenInference, models_1.default.inference)
     .get('/status/:job_id', models_2.checkAuth, models_1.default.status)

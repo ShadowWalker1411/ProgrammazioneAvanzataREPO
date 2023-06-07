@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = __importDefault(require("./../models/models"));
+const users_1 = __importDefault(require("./users"));
 const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
-const multer_1 = __importDefault(require("multer"));
 const axios_1 = __importDefault(require("axios"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
@@ -24,6 +24,12 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findAll({ where: { userUID: userUID } });
     return MODEL;
+});
+const removeCredits = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.default.getOneById(userUID);
+    const credits = parseFloat((user.getDataValue('credits') - 5).toFixed(1));
+    user.setDataValue('credits', credits);
+    yield user.save();
 });
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -118,35 +124,69 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
-const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const storage = multer_1.default.diskStorage({
+/*const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
+    const storage = multer.diskStorage({
         destination: (request, file, cb) => {
-            cb(null, '/models');
+            cb(null, '/models')
         },
         filename: (request, file, cb) => {
-            const mid = request.params.id;
-            const uid = request.UID;
-            const ext = file.originalname.split('.').pop();
-            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext;
-            const filePath = '/models/' + filename;
-            const fs = require('fs');
+            const mid = request.params.id
+            const uid = (request as any).UID
+            const ext = file.originalname.split('.').pop()
+            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
+
+            const filePath = '/models/' + filename
+            const fs = require('fs')
             if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath); // Elimina il file esistente
+                fs.unlinkSync(filePath) // Elimina il file esistente
             }
-            cb(null, filename);
+
+            cb(null, filename)
         }
-    });
-    const upload = (0, multer_1.default)({ storage });
+    })
+
+    const upload = multer({ storage })
+    upload.single('file')(request, response, (err: any) => {
+        if (err instanceof multer.MulterError) {
+            return response.status(400).json({ error: err.message })
+        } else if (err) {
+            return response.status(500).json({ error1: err.message })
+        }
+        return response.status(200).json({ message: 'Upload successful' })
+    })
+}
+
+const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
+    const storage = multer.diskStorage({
+        destination: (request, file, cb) => {
+            cb(null, '/models')
+        },
+        filename: (request, file, cb) => {
+            const mid = request.params.id
+            const uid = (request as any).UID
+            const ext = file.originalname.split('.').pop()
+            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
+
+            const filePath = '/models/' + filename
+            const fs = require('fs')
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath) // Elimina il file esistente
+            }
+
+            cb(null, filename)
+        }
+    })
+
+    const upload = multer({ storage });
     upload.single('file')(request, response, (err) => {
-        if (err instanceof multer_1.default.MulterError) {
+        if (err instanceof multer.MulterError) {
             return response.status(400).json({ error: err.message });
-        }
-        else if (err) {
-            return response.status(500).json({ error1: err.message });
+        } else if (err) {
+            return response.status(500).json({ error: err.message });
         }
         return response.status(200).json({ message: 'Upload successful' });
     });
-});
+};*/
 const inference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getOneById(parseInt(request.params.id));
@@ -167,6 +207,7 @@ const inference = (request, response, next) => __awaiter(void 0, void 0, void 0,
             })
         })*/
         const resp = yield axios_1.default.get("http://producer:5000/start-job/4", { params: {} });
+        yield removeCredits(request.UID);
         return response.status(200).json({ "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": "Inference request sent successfully", "JOB_ID": resp.data.id });
     }
     catch (error) {
@@ -209,7 +250,7 @@ const modelsController = {
     deleteById,
     getAllByUserUID,
     getAllMine,
-    uploadFile,
+    /*uploadFile,*/
     inference, status, result
 };
 exports.default = modelsController;

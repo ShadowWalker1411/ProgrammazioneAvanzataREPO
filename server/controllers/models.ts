@@ -1,4 +1,5 @@
 import Model from './../models/models';
+import usersController from './users';
 import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
@@ -13,6 +14,13 @@ const getOneById = async (id: number) => {
 const getAllByUserUID = async (userUID: number) => {
     const MODEL = await Model.findAll({ where: { userUID: userUID } })
     return MODEL
+}
+
+const removeCredits = async (userUID: number) => {
+    const user = await usersController.getOneById(userUID) as any
+    const credits = parseFloat((user.getDataValue('credits') - 5).toFixed(1))
+    user.setDataValue('credits', credits);
+    await user.save();
 }
 
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
@@ -106,7 +114,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 
 
 
-const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
+/*const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.diskStorage({
         destination: (request, file, cb) => {
             cb(null, '/models')
@@ -168,7 +176,7 @@ const uploadFile = async (request: Request, response: Response, next: NextFuncti
         }
         return response.status(200).json({ message: 'Upload successful' });
     });
-};
+};*/
 
 const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -190,6 +198,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
             })
         })*/
         const resp = await axios.get("http://producer:5000/start-job/4", { params: {} })
+        await removeCredits((request as any).UID)
         return response.status(200).json({ "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": "Inference request sent successfully", "JOB_ID": resp.data.id })
     } catch (error) {
         return response.status(500).json(error)
@@ -235,7 +244,7 @@ const modelsController = {
     deleteById,
     getAllByUserUID,
     getAllMine,
-    uploadFile,
+    /*uploadFile,*/
     inference, status, result
 }
 
