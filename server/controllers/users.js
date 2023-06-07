@@ -179,7 +179,7 @@ const updateUserSchema = joi_1.default.object({
 const addCreditsSchema = joi_1.default.object({
     credits: joi_1.default.number().integer().min(0).max(1000).optional(),
 });
-const controller = {
+const usersController = {
     getAll,
     getById, getOneById,
     create,
@@ -187,4 +187,4 @@ const controller = {
     deleteById,
     login, getCredits, addCredits, getCreds
 };
-exports.default = controller;
+exports.default = usersController;

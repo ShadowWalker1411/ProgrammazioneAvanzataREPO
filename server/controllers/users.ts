@@ -172,7 +172,7 @@ const addCreditsSchema = Joi.object({
     credits: Joi.number().integer().min(0).max(1000).optional(),
 })
 
-const controller = {
+const usersController = {
     getAll,
     getById, getOneById,
     create,
@@ -181,4 +181,4 @@ const controller = {
     login, getCredits, addCredits, getCreds
 }
 
-export default controller;
+export default usersController;

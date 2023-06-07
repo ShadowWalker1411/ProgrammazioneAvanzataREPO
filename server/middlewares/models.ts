@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
-import controller from '../controllers/models'
+import modelsController from '../controllers/models'
 import jwt from 'jsonwebtoken';
 
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking owner")
-    const modelUID = (request.method === 'POST') ? request.body.id : request.params.id;
-    const model = await controller.getOneById(modelUID)
+    const modelUID = request.params.id;
+    const model = await modelsController.getOneById(parseInt(modelUID))
     if (!model) {
         return response.status(404).json({ message: 'modello non trovato' })
     }

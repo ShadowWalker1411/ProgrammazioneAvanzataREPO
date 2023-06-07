@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
-import controller from '../controllers/datasets'
+import datasetsController from '../controllers/datasets'
 import jwt from 'jsonwebtoken';
 
 
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking owner");
     const datasetUID = request.params.id; 
-    const dataset = await controller.getOneById(parseInt(datasetUID));
+    const dataset = await datasetsController.getOneById(parseInt(datasetUID));
     console.log(datasetUID);
     if (!dataset) {
         return response.status(404).json({ message: 'Dataset not found' });

@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
-import controller from '../controllers/users'
+import usersController from '../controllers/users'
 import jwt from 'jsonwebtoken';
 
 const checkAdmin = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking admin")
-    const USER = await controller.getOneById(parseInt((request as any).UID))
+    const USER = await usersController.getOneById(parseInt((request as any).UID))
     if (USER?.get("admin") === true) {
         next()
     } else {
@@ -34,7 +34,7 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     if (token) {
         try {
             const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
-            const UID = (request.method === 'POST') ? request.body.id : request.params.id
+            const UID = request.params.id
             if (UID == decoded.id) {
                 (request as any).UID = decoded.id
                 next()
@@ -49,54 +49,14 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
-const checkToken = async (request: Request, response: Response, next: NextFunction) => {
+const checkTokenInference = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking token")
-    const creds = await controller.getCreds((request as any).UID)
-    if (creds > 0.1){
+    const creds = await usersController.getCreds((request as any).UID)
+    if (creds >= 5){
         next()
     } else {
         response.status(401).send({ message: 'Not enough tokens' })
     } 
 }
 
-const checkTokenInf = async (request: Request, response: Response, next: NextFunction) => {
-    console.log("Checking token")
-    const creds = await controller.getCreds((request as any).UID)
-    if (creds > 5){
-        next()
-    } else {
-        response.status(401).send({ message: 'Not enough tokens' })
-    } 
-}
-
-const creditDeduction = async (request: Request, response: Response, next: NextFunction) => {
-    const user = await controller.getOneById(parseInt((request as any).UID))
-    if (user) {
-        console.log(user.getDataValue('credits'));
-        const currentCredits = user.getDataValue('credits');
-        const newCredits = currentCredits - 0.1;
-        user.setDataValue('credits', newCredits);
-        await user.save();
-        console.log(user.getDataValue('credits'));
-        next(); 
-    } else {
-      return response.status(404).json({ message: 'User not found' });
-    }
-  
-};
-
-const creditDeductionInf = async (request: Request, response: Response, next: NextFunction) => {
-    const user = await controller.getOneById(parseInt((request as any).UID))
-    if (user) {
-        console.log(user.getDataValue('credits'));
-        const currentCredits = user.getDataValue('credits');
-        const newCredits = currentCredits - 5.0;
-        user.setDataValue('credits', newCredits);
-        await user.save();
-        console.log(user.getDataValue('credits'));
-        next(); 
-    } else {
-      return response.status(404).json({ message: 'User not found' });
-    }
-};
-export { checkAdmin, checkAuth, checkOwner, checkToken, creditDeduction, creditDeductionInf }
+export { checkAdmin, checkAuth, checkOwner, checkTokenInference }

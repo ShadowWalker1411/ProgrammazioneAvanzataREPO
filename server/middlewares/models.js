@@ -17,8 +17,8 @@ const models_1 = __importDefault(require("../controllers/models"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
-    const modelUID = (request.method === 'POST') ? request.body.id : request.params.id;
-    const model = yield models_1.default.getOneById(modelUID);
+    const modelUID = request.params.id;
+    const model = yield models_1.default.getOneById(parseInt(modelUID));
     if (!model) {
         return response.status(404).json({ message: 'modello non trovato' });
     }

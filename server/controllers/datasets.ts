@@ -1,5 +1,6 @@
 import Dataset from './../models/datasets';
-import User from '../models/users';
+
+import usersController from './users';
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import multer from 'multer';
@@ -14,6 +15,23 @@ const getOneById = async (id: number) => {
 const getAllByUserUID = async (userUID: number) => {
     const DATASETS = await Dataset.findAll({ where: { userUID: userUID } })
     return DATASETS
+}
+
+const checkCredits = async (userUID: number, numberOfFiles: number) => {
+    const user = await usersController.getOneById(userUID) as any
+    const currentCredits = user.getDataValue('credits')
+    if (currentCredits >= 0.1 * numberOfFiles) {
+        return true
+    } else {
+      return false
+    }
+}
+
+const removeCredits = async (userUID: number, numberOfFiles: number) => {
+    const user = await usersController.getOneById(userUID) as any
+    const credits = user.getDataValue('credits') - 0.1 * numberOfFiles
+    user.setDataValue('credits', credits);
+    await user.save();
 }
 
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
@@ -98,52 +116,61 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 }
   
 const uploadImage = async (request: Request, response: Response, next: NextFunction) => {
-    const storage = multer.diskStorage({
-        destination: (request, file, cb) => {
-            cb(null, '/images');
-        },
-        filename: (request, file, cb) => {
-            const uid = (request as any).UID;
-            const uniqueSuffix = Date.now() + '-'  + Math.round(Math.random() * 1E9) + '.' +  file.mimetype.split('/')[1] ;          
-            const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
-            cb(null, filename);
-        },
-    });
+    if (await checkCredits((request as any).UID, 1)) {
+        const storage = multer.diskStorage({
+            destination: (request, file, cb) => {
+                cb(null, '/images');
+            },
+            filename: (request, file, cb) => {
+                const uid = (request as any).UID;
+                const uniqueSuffix = Date.now() + '-'  + Math.round(Math.random() * 1E9) + '.' +  file.mimetype.split('/')[1] ;          
+                const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
+                cb(null, filename);
+            },
+        });
 
-    const upload = multer({ storage });
-    upload.any()(request, response, (err: any) => {
-        if (err instanceof multer.MulterError) {
-          return response.status(400).json({ error: err.message });
-        } else if (err) {
-          return response.status(500).json({ error1: err.message });//qualcosa è andato male
-
-        }
-        return response.status(200).json({ message: 'Upload successful' });
-    });
+        const upload = multer({ storage });
+        upload.any()(request, response, async (err: any) => {
+            if (err instanceof multer.MulterError) {
+                return response.status(400).json({ error: err.message });
+            } else if (err) {
+                return response.status(500).json({ error1: err.message });//qualcosa è andato male
+            }
+            await removeCredits((request as any).UID, 1)
+            return response.status(200).json({ message: 'Upload successful' });
+        });
+    } else {
+        return response.status(400).json({ error: 'Not enough credits' });
+    }
 };
 
 const uploadImages = async (request: Request, response: Response, next: NextFunction) => {
-    const storage = multer.diskStorage({
-        destination: (request, file, cb) => {
-            cb(null, '/images');
-        },
-        filename: (request, file, cb) => {
-            const uid = (request as any).UID;
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
-            const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
-            cb(null, filename);
-        },
-    });
+    if (await checkCredits((request as any).UID, request.body.files.length)) {
+        const storage = multer.diskStorage({
+            destination: (request, file, cb) => {
+                cb(null, '/images');
+            },
+            filename: (request, file, cb) => {
+                const uid = (request as any).UID;
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
+                const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
+                cb(null, filename);
+            },
+        });
 
-    const uploads = multer({ storage });
-    uploads.array('files')(request, response, (err: any) => {
-        if (err instanceof multer.MulterError) {
-            return response.status(400).json({ error: err.message });
-        } else if (err) {
-            return response.status(500).json({ error: err.message });
-        }
-        return response.status(200).json({ message: 'Upload successful' });
-    });
+        const uploads = multer({ storage });
+        uploads.array('files')(request, response, async (err: any) => {
+            if (err instanceof multer.MulterError) {
+                return response.status(400).json({ error: err.message });
+            } else if (err) {
+                return response.status(500).json({ error: err.message });
+            }
+            await removeCredits((request as any).UID, request.body.files.length)
+            return response.status(200).json({ message: 'Upload successful' });
+        });
+    } else {
+        return response.status(400).json({ error: 'Not enough credits' });
+    }
 };
 
 const uploadZip = async (request: Request, response: Response, next: NextFunction) => {
@@ -172,27 +199,32 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
             const zip = new AdmZip(file.buffer);
             const zipEntries = zip.getEntries();
 
-            // Leggo i singoli file nella zip
-            for (const zipEntry of zipEntries) {
-                // Extract the file name and extension
-                const fileName = zipEntry.entryName.split('/').pop();
-                if (!fileName) {
-                  continue; 
+            if (await checkCredits((request as any).UID, zipEntries.length)) {
+                // Leggo i singoli file nella zip
+                for (const zipEntry of zipEntries) {
+                    // Extract the file name and extension
+                    const fileName = zipEntry.entryName.split('/').pop();
+                    if (!fileName) {
+                    continue; 
+                    }
+                    const fileExtension = fileName.split('.').pop();
+
+                    // rinomino i singoli file
+                    const uid = (request as any).UID;
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                    const newFileName = `file-${uid}-${uniqueSuffix}.${fileExtension}`;
+
+                    // salvo col nuovo nome
+                    const filePath = `/images/${newFileName}`;
+                    fs.writeFileSync(filePath, zipEntry.getData());
+                    
+                    uploadedFiles.push(filePath);
                 }
-                const fileExtension = fileName.split('.').pop();
-
-                // rinomino i singoli file
-                const uid = (request as any).UID;
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                const newFileName = `file-${uid}-${uniqueSuffix}.${fileExtension}`;
-
-                // salvo col nuovo nome
-                const filePath = `/images/${newFileName}`;
-                fs.writeFileSync(filePath, zipEntry.getData());
-                
-                uploadedFiles.push(filePath);
+            } else {
+                return response.status(400).json({ error: 'Not enough credits' });
             }
         }
+        await removeCredits((request as any).UID, uploadedFiles.length);
         return response.status(200).json({ message: 'Upload successful', files: uploadedFiles });
     });
 };
@@ -211,7 +243,7 @@ const updateDatasetSchema = Joi.object({
     numClasses: Joi.number().min(0).max(255).optional()
 });
 
-const controller = {
+const datasetsController = {
     getAll, getAllMine,
     getById, getOneById, getAllByUserUID,
     create,
@@ -222,4 +254,4 @@ const controller = {
     uploadZip
 }
 
-export default controller;
+export default datasetsController;
