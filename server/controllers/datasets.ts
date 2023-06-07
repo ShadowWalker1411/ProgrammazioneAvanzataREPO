@@ -18,7 +18,7 @@ const getAllByUserUID = async (userUID: number) => {
 
 const checkCredits = async (userUID: number, numberOfFiles: number) => {
     const user = await usersController.getOneById(userUID) as any
-    const currentCredits = user.getDataValue('credits')
+    const currentCredits = parseFloat(user.getDataValue('credits').toFixed(1))
     if (currentCredits >= 0.1 * numberOfFiles) {
         return true
     } else {
@@ -28,7 +28,7 @@ const checkCredits = async (userUID: number, numberOfFiles: number) => {
 
 const removeCredits = async (userUID: number, numberOfFiles: number) => {
     const user = await usersController.getOneById(userUID) as any
-    const credits = user.getDataValue('credits') - 0.1 * numberOfFiles
+    const credits = parseFloat((user.getDataValue('credits') - 0.1 * numberOfFiles).toFixed(1))
     user.setDataValue('credits', credits);
     await user.save();
 }
