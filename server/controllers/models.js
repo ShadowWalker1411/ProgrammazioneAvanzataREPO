@@ -16,7 +16,11 @@ const models_1 = __importDefault(require("./../models/models"));
 const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
 //import amqp from 'amqplib/callback_api'
+<<<<<<< Updated upstream
 //import fetch from "node-fetch";
+=======
+const axios_1 = __importDefault(require("axios"));
+>>>>>>> Stashed changes
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
     return MODEL;
@@ -120,9 +124,15 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 /*const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
+<<<<<<< Updated upstream
         const MODEL = await getOneById(parseInt(request.params.id))
         const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
         amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
+=======
+        const MODEL = yield getOneById(parseInt(request.params.id));
+        const DATASET = yield datasets_1.default.findByPk(MODEL.datasetUID);
+        /*amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
+>>>>>>> Stashed changes
             if (error) {
                 return response.status(500).json(error)
             }
@@ -137,6 +147,7 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
                 response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
+<<<<<<< Updated upstream
 /*console.log("Fetch")
 fetch('http://producer:3002/')
     .then(response => response.json())
@@ -159,6 +170,35 @@ console.log("Error:", error);
 return response.status(500).json(error)
 }
 }*/
+=======
+        const resp = yield axios_1.default.get("http://producer:5000/start-job/4", { params: {} });
+        return response.status(200).json({ "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": "Inference request sent successfully", "JOB_ID": resp.data.id });
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
+const status = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const job_id = request.params.job_id;
+        const resp = yield axios_1.default.get("http://producer:5000/status/" + job_id.toString(), { params: {} });
+        return response.status(200).json({ "STATUS": resp.data.status, "JOB_ID": job_id });
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
+const result = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const job_id = request.params.job_id;
+        const resp = yield axios_1.default.get("http://producer:5000/result/" + job_id.toString(), { params: {} });
+        return response.status(200).json({ "RESULT": resp.data.result, "JOB_ID": job_id });
+    }
+    catch (error) {
+        return response.status(500).json(error);
+    }
+});
+>>>>>>> Stashed changes
 const createModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).required(),
     datasetUID: joi_1.default.number().required(),
@@ -175,6 +215,10 @@ const controller = {
     deleteById,
     getAllByUserUID,
     getAllMine,
+<<<<<<< Updated upstream
     //inference
+=======
+    inference, status, result
+>>>>>>> Stashed changes
 };
 exports.default = controller;

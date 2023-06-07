@@ -1,1 +1,3 @@
 celery[redis]
+face-alignment
+opencv-python

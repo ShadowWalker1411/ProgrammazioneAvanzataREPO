@@ -20,6 +20,10 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const USER = yield users_1.default.findByPk(id);
     return USER;
 });
+const getCreds = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const USER = yield users_1.default.findByPk(id);
+    return parseInt(USER.credits);
+});
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield users_1.default.findAll();
@@ -112,8 +116,8 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
 });
 const getCredits = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const USER = yield getOneById(parseInt(request.UID));
-        return response.status(200).json({ "credits": USER.credits });
+        const credits = yield getCreds(parseInt(request.UID));
+        return response.status(200).json({ "credits": credits });
     }
     catch (error) {
         return response.status(500).json(error);
@@ -181,6 +185,6 @@ const controller = {
     create,
     updateById,
     deleteById,
-    login, getCredits, addCredits
+    login, getCredits, addCredits, getCreds
 };
 exports.default = controller;

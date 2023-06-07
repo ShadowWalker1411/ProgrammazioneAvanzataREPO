@@ -13,6 +13,9 @@ router
     .put('/:id', checkAuth, checkOwner, controller.updateById)
     .delete('/:id', checkAuth, checkOwner, controller.deleteById)
 
-router.get('/inference/:id', checkAuth, controller.inference)
+router
+    .get('/inference/:id', checkAuth, controller.inference)
+    .get('/status/:job_id', checkAuth, controller.status)
+    .get('/result/:job_id', checkAuth, controller.result)
 
 export default router;

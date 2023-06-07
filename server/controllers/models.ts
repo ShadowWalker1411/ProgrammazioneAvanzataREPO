@@ -3,7 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
 //import amqp from 'amqplib/callback_api'
+<<<<<<< Updated upstream
 //import fetch from "node-fetch";
+=======
+import axios from "axios";
+>>>>>>> Stashed changes
 
 
 const getOneById = async (id: number) => {
@@ -109,7 +113,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
     try {
         const MODEL = await getOneById(parseInt(request.params.id))
         const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
-        amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
+        /*amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
             if (error) {
                 return response.status(500).json(error)
             }
@@ -124,6 +128,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
                 response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
+<<<<<<< Updated upstream
         /*console.log("Fetch")
         fetch('http://producer:3002/')
             .then(response => response.json())
@@ -141,8 +146,31 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
             .catch(error => {
                 console.error('Error2:', error);
             });
+=======
+        const resp = await axios.get("http://producer:5000/start-job/4", { params: {} });
+        return response.status(200).json({ "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": "Inference request sent successfully", "JOB_ID": resp.data.id })
     } catch (error) {
-        console.log("Error:", error);
+        return response.status(500).json(error)
+    }
+}
+
+const status = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const job_id = request.params.job_id;
+        const resp = await axios.get("http://producer:5000/status/" + job_id.toString(), { params: {} });
+        return response.status(200).json({ "STATUS": resp.data.status, "JOB_ID": job_id })
+    } catch (error) {
+        return response.status(500).json(error)
+    }
+}
+
+const result = async (request: Request, response: Response, next: NextFunction) => {
+    try {
+        const job_id = request.params.job_id;
+        const resp = await axios.get("http://producer:5000/result/" + job_id.toString(), { params: {} });
+        return response.status(200).json({ "RESULT": resp.data.result, "JOB_ID": job_id })
+>>>>>>> Stashed changes
+    } catch (error) {
         return response.status(500).json(error)
     }
 }*/
@@ -166,7 +194,11 @@ const controller = {
     deleteById,
     getAllByUserUID,
     getAllMine,
+<<<<<<< Updated upstream
     //inference
+=======
+    inference, status, result
+>>>>>>> Stashed changes
 }
 
 export default controller;
