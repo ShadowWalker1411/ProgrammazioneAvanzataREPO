@@ -16,6 +16,7 @@ const models_1 = __importDefault(require("./../models/models"));
 const users_1 = __importDefault(require("./users"));
 const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
+const multer_1 = __importDefault(require("multer"));
 const axios_1 = __importDefault(require("axios"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
@@ -124,69 +125,42 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
-/*const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
-    const storage = multer.diskStorage({
+const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const storage = multer_1.default.diskStorage({
         destination: (request, file, cb) => {
-            cb(null, '/models')
+            cb(null, '/models');
         },
         filename: (request, file, cb) => {
-            const mid = request.params.id
-            const uid = (request as any).UID
-            const ext = file.originalname.split('.').pop()
-            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
-
-            const filePath = '/models/' + filename
-            const fs = require('fs')
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath) // Elimina il file esistente
+            const mid = request.params.id;
+            const uid = request.UID;
+            const ext = file.originalname.split('.').pop();
+            if (file) {
+                let ext = file.originalname.split('.').pop();
+                if (ext !== 'py') {
+                    const error = new Error('Invalid file extension. Only .py files are allowed.');
+                    return cb(error, '');
+                }
             }
-
-            cb(null, filename)
-        }
-    })
-
-    const upload = multer({ storage })
-    upload.single('file')(request, response, (err: any) => {
-        if (err instanceof multer.MulterError) {
-            return response.status(400).json({ error: err.message })
-        } else if (err) {
-            return response.status(500).json({ error1: err.message })
-        }
-        return response.status(200).json({ message: 'Upload successful' })
-    })
-}
-
-const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
-    const storage = multer.diskStorage({
-        destination: (request, file, cb) => {
-            cb(null, '/models')
-        },
-        filename: (request, file, cb) => {
-            const mid = request.params.id
-            const uid = (request as any).UID
-            const ext = file.originalname.split('.').pop()
-            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
-
-            const filePath = '/models/' + filename
-            const fs = require('fs')
+            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext;
+            const filePath = '/models/' + filename;
+            const fs = require('fs');
             if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath) // Elimina il file esistente
+                fs.unlinkSync(filePath); // Elimina il file esistente
             }
-
-            cb(null, filename)
+            cb(null, filename);
         }
-    })
-
-    const upload = multer({ storage });
+    });
+    const upload = (0, multer_1.default)({ storage });
     upload.single('file')(request, response, (err) => {
-        if (err instanceof multer.MulterError) {
+        if (err instanceof multer_1.default.MulterError) {
             return response.status(400).json({ error: err.message });
-        } else if (err) {
-            return response.status(500).json({ error: err.message });
+        }
+        else if (err) {
+            return response.status(500).json({ error1: err.message });
         }
         return response.status(200).json({ message: 'Upload successful' });
     });
-};*/
+});
 const inference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getOneById(parseInt(request.params.id));
@@ -250,7 +224,7 @@ const modelsController = {
     deleteById,
     getAllByUserUID,
     getAllMine,
-    /*uploadFile,*/
+    uploadFile,
     inference, status, result
 };
 exports.default = modelsController;

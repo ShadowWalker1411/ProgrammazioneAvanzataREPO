@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Joi from 'joi';
+import { FLOAT } from 'sequelize';
 
 const getOneById = async (id: number) => {
     const USER = await User.findByPk(id)
@@ -11,7 +12,7 @@ const getOneById = async (id: number) => {
 
 const getCreds = async (id: number) => {
     const USER = await User.findByPk(id)
-    return parseInt((USER as any).credits)
+    return parseFloat((USER as any).credits)
 }
 
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
@@ -120,13 +121,19 @@ const addCredits = async (request: Request, response: Response, next: NextFuncti
     try {
         const { error, value } = addCreditsSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ message: error.details[0].message });
+            return response.status(400).json({ message: error.details[0].message })
         }
         const USER = await User.findOne({where: {email: request.params.email}})
         if (USER) {
-            const USER_MODEL: any = {
-                credits: value.credits + (USER as any).credits
+            const currentCredits = parseFloat((USER as any).credits)
+            const addedCredits = parseFloat(value.credits)
+            const totalCredits = currentCredits + addedCredits
+            if (totalCredits > 5000) {
+                return response.status(400).json({ message: "Total credits cannot exceed 5000" })
             }
+            const USER_MODEL: any = {
+                credits: totalCredits
+            };
             try {
                 const NROWS = await User.update(USER_MODEL, { where: { email: request.params.email } })
                 return response.status(200).json(NROWS)
@@ -169,7 +176,8 @@ const updateUserSchema = Joi.object({
 });
 
 const addCreditsSchema = Joi.object({
-    credits: Joi.number().integer().min(0).max(1000).optional(),
+    credits: Joi.number().min(0).max(1000).optional(),
+   // credits: Joi.number().integer().min(0).max(1000).optional(),
 })
 
 const usersController = {

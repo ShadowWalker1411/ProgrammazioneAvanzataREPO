@@ -22,7 +22,7 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const getCreds = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const USER = yield users_1.default.findByPk(id);
-    return parseInt(USER.credits);
+    return parseFloat(USER.credits);
 });
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -131,8 +131,14 @@ const addCredits = (request, response, next) => __awaiter(void 0, void 0, void 0
         }
         const USER = yield users_1.default.findOne({ where: { email: request.params.email } });
         if (USER) {
+            const currentCredits = parseFloat(USER.credits);
+            const addedCredits = parseFloat(value.credits);
+            const totalCredits = currentCredits + addedCredits;
+            if (totalCredits > 5000) {
+                return response.status(400).json({ message: "Total credits cannot exceed 5000" });
+            }
             const USER_MODEL = {
-                credits: value.credits + USER.credits
+                credits: totalCredits
             };
             try {
                 const NROWS = yield users_1.default.update(USER_MODEL, { where: { email: request.params.email } });
@@ -177,7 +183,8 @@ const updateUserSchema = joi_1.default.object({
     admin: joi_1.default.boolean().optional()
 });
 const addCreditsSchema = joi_1.default.object({
-    credits: joi_1.default.number().integer().min(0).max(1000).optional(),
+    credits: joi_1.default.number().min(0).max(1000).optional(),
+    // credits: Joi.number().integer().min(0).max(1000).optional(),
 });
 const usersController = {
     getAll,

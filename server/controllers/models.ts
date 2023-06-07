@@ -114,8 +114,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 }
 
 
-
-/*const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
+const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.diskStorage({
         destination: (request, file, cb) => {
             cb(null, '/models')
@@ -124,14 +123,19 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
             const mid = request.params.id
             const uid = (request as any).UID
             const ext = file.originalname.split('.').pop()
+            if (file) {
+                let ext = file.originalname.split('.').pop();                
+                if (ext !== 'py') {
+                    const error = new Error('Invalid file extension. Only .py files are allowed.');
+                    return cb(error, '');                
+                }
+            }
             const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
-
             const filePath = '/models/' + filename
             const fs = require('fs')
             if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath) // Elimina il file esistente
+                fs.unlinkSync(filePath); // Elimina il file esistente
             }
-
             cb(null, filename)
         }
     })
@@ -146,38 +150,6 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
         return response.status(200).json({ message: 'Upload successful' })
     })
 }
-
-const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
-    const storage = multer.diskStorage({
-        destination: (request, file, cb) => {
-            cb(null, '/models')
-        },
-        filename: (request, file, cb) => {
-            const mid = request.params.id
-            const uid = (request as any).UID
-            const ext = file.originalname.split('.').pop()
-            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
-
-            const filePath = '/models/' + filename
-            const fs = require('fs')
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath) // Elimina il file esistente
-            }
-
-            cb(null, filename)
-        }
-    })
-
-    const upload = multer({ storage });
-    upload.single('file')(request, response, (err) => {
-        if (err instanceof multer.MulterError) {
-            return response.status(400).json({ error: err.message });
-        } else if (err) {
-            return response.status(500).json({ error: err.message });
-        }
-        return response.status(200).json({ message: 'Upload successful' });
-    });
-};*/
 
 const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -245,7 +217,7 @@ const modelsController = {
     deleteById,
     getAllByUserUID,
     getAllMine,
-    /*uploadFile,*/
+    uploadFile,
     inference, status, result
 }
 
