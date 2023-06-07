@@ -3,11 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
 //import amqp from 'amqplib/callback_api'
-<<<<<<< Updated upstream
-//import fetch from "node-fetch";
-=======
 import axios from "axios";
->>>>>>> Stashed changes
 
 
 const getOneById = async (id: number) => {
@@ -109,7 +105,7 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
-/*const inference = async (request: Request, response: Response, next: NextFunction) => {
+const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const MODEL = await getOneById(parseInt(request.params.id))
         const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
@@ -128,25 +124,6 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
                 response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
-<<<<<<< Updated upstream
-        /*console.log("Fetch")
-        fetch('http://producer:3002/')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error1:', error);
-            });
-        fetch('http://127.0.0.1:3002/')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Error2:', error);
-            });
-=======
         const resp = await axios.get("http://producer:5000/start-job/4", { params: {} });
         return response.status(200).json({ "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": "Inference request sent successfully", "JOB_ID": resp.data.id })
     } catch (error) {
@@ -169,11 +146,10 @@ const result = async (request: Request, response: Response, next: NextFunction) 
         const job_id = request.params.job_id;
         const resp = await axios.get("http://producer:5000/result/" + job_id.toString(), { params: {} });
         return response.status(200).json({ "RESULT": resp.data.result, "JOB_ID": job_id })
->>>>>>> Stashed changes
     } catch (error) {
         return response.status(500).json(error)
     }
-}*/
+}
 
 const createModelSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).required(),
@@ -194,11 +170,7 @@ const controller = {
     deleteById,
     getAllByUserUID,
     getAllMine,
-<<<<<<< Updated upstream
-    //inference
-=======
     inference, status, result
->>>>>>> Stashed changes
 }
 
 export default controller;
