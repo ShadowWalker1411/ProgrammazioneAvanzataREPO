@@ -67,7 +67,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
     } catch (error) {
         return response.status(500).json(error)
     }
-};
+}
 
 const updateById = async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -93,7 +93,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
     } catch (error) {
         return response.status(500).json(error)
     }
-};
+}
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -109,36 +109,66 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.diskStorage({
         destination: (request, file, cb) => {
-            cb(null, '/models');
+            cb(null, '/models')
         },
         filename: (request, file, cb) => {
-            const mid = request.params.id;
-            const uid = (request as any).UID;
-            const uniqueSuffix = file.mimetype.split('/')[1];
-            const filename = file.fieldname + '-' + mid + '-' + uid + '-' + uniqueSuffix;
+            const mid = request.params.id
+            const uid = (request as any).UID
+            const ext = file.originalname.split('.').pop()
+            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
 
-            const filePath = '/models/' + filename;
-            const fs = require('fs');
+            const filePath = '/models/' + filename
+            const fs = require('fs')
             if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath); // Elimina il file esistente
+                fs.unlinkSync(filePath) // Elimina il file esistente
             }
 
-            cb(null, filename);
+            cb(null, filename)
+        }
+    })
+
+    const upload = multer({ storage })
+    upload.single('file')(request, response, (err: any) => {
+        if (err instanceof multer.MulterError) {
+            return response.status(400).json({ error: err.message })
+        } else if (err) {
+            return response.status(500).json({ error1: err.message })
+        }
+        return response.status(200).json({ message: 'Upload successful' })
+    })
+}
+
+const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
+    const storage = multer.diskStorage({
+        destination: (request, file, cb) => {
+            cb(null, '/models')
         },
-    });
+        filename: (request, file, cb) => {
+            const mid = request.params.id
+            const uid = (request as any).UID
+            const ext = file.originalname.split('.').pop()
+            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
+
+            const filePath = '/models/' + filename
+            const fs = require('fs')
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath) // Elimina il file esistente
+            }
+
+            cb(null, filename)
+        }
+    })
 
     const upload = multer({ storage });
-    upload.any()(request, response, (err: any) => {
+    upload.single('file')(request, response, (err) => {
         if (err instanceof multer.MulterError) {
             return response.status(400).json({ error: err.message });
         } else if (err) {
-            return response.status(500).json({ error1: err.message });
+            return response.status(500).json({ error: err.message });
         }
         return response.status(200).json({ message: 'Upload successful' });
     });
 };
-
-
 
 const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -159,7 +189,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
                 response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
-        const resp = await axios.get("http://producer:5000/start-job/4", { params: {} });
+        const resp = await axios.get("http://producer:5000/start-job/4", { params: {} })
         return response.status(200).json({ "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": "Inference request sent successfully", "JOB_ID": resp.data.id })
     } catch (error) {
         return response.status(500).json(error)
@@ -168,7 +198,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
 
 const status = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const job_id = request.params.job_id;
+        const job_id = request.params.job_id
         const resp = await axios.get("http://producer:5000/status/" + job_id.toString(), { params: {} });
         return response.status(200).json({ "STATUS": resp.data.status, "JOB_ID": job_id })
     } catch (error) {
@@ -178,8 +208,8 @@ const status = async (request: Request, response: Response, next: NextFunction) 
 
 const result = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const job_id = request.params.job_id;
-        const resp = await axios.get("http://producer:5000/result/" + job_id.toString(), { params: {} });
+        const job_id = request.params.job_id
+        const resp = await axios.get("http://producer:5000/result/" + job_id.toString(), { params: {} })
         return response.status(200).json({ "RESULT": resp.data.result, "JOB_ID": job_id })
     } catch (error) {
         return response.status(500).json(error)

@@ -126,18 +126,18 @@ const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0
         filename: (request, file, cb) => {
             const mid = request.params.id;
             const uid = request.UID;
-            const uniqueSuffix = file.mimetype.split('/')[1];
-            const filename = file.fieldname + '-' + mid + '-' + uid + '-' + uniqueSuffix;
+            const ext = file.originalname.split('.').pop();
+            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext;
             const filePath = '/models/' + filename;
             const fs = require('fs');
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath); // Elimina il file esistente
             }
             cb(null, filename);
-        },
+        }
     });
     const upload = (0, multer_1.default)({ storage });
-    upload.any()(request, response, (err) => {
+    upload.single('file')(request, response, (err) => {
         if (err instanceof multer_1.default.MulterError) {
             return response.status(400).json({ error: err.message });
         }
