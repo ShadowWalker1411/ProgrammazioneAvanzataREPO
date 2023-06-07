@@ -28,7 +28,7 @@ const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function*
 });
 const checkCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_1.default.getOneById(userUID);
-    const currentCredits = user.getDataValue('credits');
+    const currentCredits = parseFloat(user.getDataValue('credits').toFixed(1));
     if (currentCredits >= 0.1 * numberOfFiles) {
         return true;
     }
@@ -38,7 +38,7 @@ const checkCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 
 });
 const removeCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_1.default.getOneById(userUID);
-    const credits = user.getDataValue('credits') - 0.1 * numberOfFiles;
+    const credits = parseFloat((user.getDataValue('credits') - 0.1 * numberOfFiles).toFixed(1));
     user.setDataValue('credits', credits);
     yield user.save();
 });
