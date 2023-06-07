@@ -17,5 +17,5 @@ router
     .delete('/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.deleteById)
     .post('/image/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.uploadImage)
     .post('/images/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.uploadImages)
-    .post('/zip/:id', datasets_2.checkAuth, datasets_2.checkOwner, users_1.CreditDeduction, datasets_1.default.uploadZip);
+    .post('/zip/:id', datasets_2.checkAuth, datasets_2.checkOwner, users_1.creditDeduction, datasets_1.default.uploadZip);
 exports.default = router;

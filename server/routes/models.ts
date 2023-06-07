@@ -12,6 +12,7 @@ router
     .post('/', checkAuth, controller.create)
     .put('/:id', checkAuth, checkOwner, controller.updateById)
     .delete('/:id', checkAuth, checkOwner, controller.deleteById)
+    .post('/image/:id', checkAuth, checkOwner, controller.uploadFile)
 
 router
     .get('/inference/:id', checkAuth, controller.inference)

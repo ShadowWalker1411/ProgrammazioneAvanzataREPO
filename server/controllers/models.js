@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const models_1 = __importDefault(require("./../models/models"));
 const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
+const multer_1 = __importDefault(require("multer"));
 //import amqp from 'amqplib/callback_api'
 const axios_1 = __importDefault(require("axios"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -118,6 +119,35 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
+const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const storage = multer_1.default.diskStorage({
+        destination: (request, file, cb) => {
+            cb(null, '/models');
+        },
+        filename: (request, file, cb) => {
+            const mid = request.params.id;
+            const uid = request.UID;
+            const uniqueSuffix = file.mimetype.split('/')[1];
+            const filename = file.fieldname + '-' + mid + '-' + uid + '-' + uniqueSuffix;
+            const filePath = '/models/' + filename;
+            const fs = require('fs');
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath); // Elimina il file esistente
+            }
+            cb(null, filename);
+        },
+    });
+    const upload = (0, multer_1.default)({ storage });
+    upload.any()(request, response, (err) => {
+        if (err instanceof multer_1.default.MulterError) {
+            return response.status(400).json({ error: err.message });
+        }
+        else if (err) {
+            return response.status(500).json({ error1: err.message });
+        }
+        return response.status(200).json({ message: 'Upload successful' });
+    });
+});
 const inference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getOneById(parseInt(request.params.id));
@@ -180,6 +210,7 @@ const controller = {
     deleteById,
     getAllByUserUID,
     getAllMine,
+    uploadFile,
     inference, status, result
 };
 exports.default = controller;

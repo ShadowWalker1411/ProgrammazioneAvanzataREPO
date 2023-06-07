@@ -2,6 +2,7 @@ import Model from './../models/models';
 import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
+import multer from 'multer';
 //import amqp from 'amqplib/callback_api'
 import axios from "axios";
 
@@ -105,6 +106,42 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
+
+
+const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
+    const storage = multer.diskStorage({
+        destination: (request, file, cb) => {
+            cb(null, '/models');
+        },
+        filename: (request, file, cb) => {
+            const mid = request.params.id;
+            const uid = (request as any).UID;
+            const uniqueSuffix = file.mimetype.split('/')[1];
+            const filename = file.fieldname + '-' + mid + '-' + uid + '-' + uniqueSuffix;
+
+            const filePath = '/models/' + filename;
+            const fs = require('fs');
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath); // Elimina il file esistente
+            }
+
+            cb(null, filename);
+        },
+    });
+
+    const upload = multer({ storage });
+    upload.any()(request, response, (err: any) => {
+        if (err instanceof multer.MulterError) {
+            return response.status(400).json({ error: err.message });
+        } else if (err) {
+            return response.status(500).json({ error1: err.message });
+        }
+        return response.status(200).json({ message: 'Upload successful' });
+    });
+};
+
+
+
 const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const MODEL = await getOneById(parseInt(request.params.id))
@@ -170,6 +207,7 @@ const controller = {
     deleteById,
     getAllByUserUID,
     getAllMine,
+    uploadFile,
     inference, status, result
 }
 
