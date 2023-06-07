@@ -3,9 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
 import multer from 'multer';
-//import amqp from 'amqplib/callback_api'
 import axios from "axios";
-
 
 const getOneById = async (id: number) => {
     const MODEL = await Model.findByPk(id)
@@ -199,7 +197,7 @@ const updateModelSchema = Joi.object({
     datasetUID: Joi.number().optional(),
 })
 
-const controller = {
+const modelsController = {
     getAll,
     getById, getOneById,
     create,
@@ -211,4 +209,4 @@ const controller = {
     inference, status, result
 }
 
-export default controller;
+export default modelsController;

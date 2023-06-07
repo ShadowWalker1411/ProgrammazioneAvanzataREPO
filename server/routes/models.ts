@@ -1,7 +1,7 @@
 import express from 'express'
 import controller from '../controllers/models'
 import { checkAuth, checkOwner } from '../middlewares/models';
-import { checkAdmin } from '../middlewares/users';
+import { checkAdmin, checkTokenInference } from '../middlewares/users';
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router
     .post('/image/:id', checkAuth, checkOwner, controller.uploadFile)
 
 router
-    .get('/inference/:id', checkAuth, controller.inference)
+    .get('/inference/:id', checkAuth, checkTokenInference, controller.inference)
     .get('/status/:job_id', checkAuth, controller.status)
     .get('/result/:job_id', checkAuth, controller.result)
 

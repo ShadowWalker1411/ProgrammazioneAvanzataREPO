@@ -16,7 +16,6 @@ const models_1 = __importDefault(require("./../models/models"));
 const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
 const multer_1 = __importDefault(require("multer"));
-//import amqp from 'amqplib/callback_api'
 const axios_1 = __importDefault(require("axios"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
@@ -202,7 +201,7 @@ const updateModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).optional(),
     datasetUID: joi_1.default.number().optional(),
 });
-const controller = {
+const modelsController = {
     getAll,
     getById, getOneById,
     create,
@@ -213,4 +212,4 @@ const controller = {
     uploadFile,
     inference, status, result
 };
-exports.default = controller;
+exports.default = modelsController;

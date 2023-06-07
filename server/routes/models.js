@@ -17,7 +17,7 @@ router
     .delete('/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.deleteById)
     .post('/image/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.uploadFile);
 router
-    .get('/inference/:id', models_2.checkAuth, models_1.default.inference)
+    .get('/inference/:id', models_2.checkAuth, users_1.checkTokenInference, models_1.default.inference)
     .get('/status/:job_id', models_2.checkAuth, models_1.default.status)
     .get('/result/:job_id', models_2.checkAuth, models_1.default.result);
 exports.default = router;
