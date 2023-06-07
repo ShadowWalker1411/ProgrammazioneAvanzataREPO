@@ -11,6 +11,7 @@ const getOneById = async (id: number) => {
     return MODEL
 }
 
+
 const getAllByUserUID = async (userUID: number) => {
     const MODEL = await Model.findAll({ where: { userUID: userUID } })
     return MODEL
