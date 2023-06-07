@@ -52,15 +52,24 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
 const checkToken = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking token")
     const creds = await controller.getCreds((request as any).UID)
-    if (creds > 0){
+    if (creds > 0.1){
         next()
     } else {
         response.status(401).send({ message: 'Not enough tokens' })
-    }
-    
+    } 
 }
 
-const CreditDeduction = async (request: Request, response: Response, next: NextFunction) => {
+const checkTokenInf = async (request: Request, response: Response, next: NextFunction) => {
+    console.log("Checking token")
+    const creds = await controller.getCreds((request as any).UID)
+    if (creds > 5){
+        next()
+    } else {
+        response.status(401).send({ message: 'Not enough tokens' })
+    } 
+}
+
+const creditDeduction = async (request: Request, response: Response, next: NextFunction) => {
     const user = await controller.getOneById(parseInt((request as any).UID))
     if (user) {
         console.log(user.getDataValue('credits'));
@@ -74,5 +83,20 @@ const CreditDeduction = async (request: Request, response: Response, next: NextF
       return response.status(404).json({ message: 'User not found' });
     }
   
-  };
-export { checkAdmin, checkAuth, checkOwner, checkToken, CreditDeduction }
+};
+
+const creditDeductionInf = async (request: Request, response: Response, next: NextFunction) => {
+    const user = await controller.getOneById(parseInt((request as any).UID))
+    if (user) {
+        console.log(user.getDataValue('credits'));
+        const currentCredits = user.getDataValue('credits');
+        const newCredits = currentCredits - 5.0;
+        user.setDataValue('credits', newCredits);
+        await user.save();
+        console.log(user.getDataValue('credits'));
+        next(); 
+    } else {
+      return response.status(404).json({ message: 'User not found' });
+    }
+};
+export { checkAdmin, checkAuth, checkOwner, checkToken, creditDeduction, creditDeductionInf }

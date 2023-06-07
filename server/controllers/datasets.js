@@ -121,7 +121,7 @@ const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 
         },
     });
     const upload = (0, multer_1.default)({ storage });
-    upload.single('file')(request, response, (err) => {
+    upload.any()(request, response, (err) => {
         if (err instanceof multer_1.default.MulterError) {
             return response.status(400).json({ error: err.message });
         }

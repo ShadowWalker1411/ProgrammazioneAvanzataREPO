@@ -2,8 +2,8 @@ import Dataset from './../models/datasets';
 import User from '../models/users';
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
-import multer, { Multer } from 'multer';
-import AdmZip, { IZipEntry} from 'adm-zip';
+import multer from 'multer';
+import AdmZip from 'adm-zip';
  import fs from 'fs';
  
 const getOneById = async (id: number) => {
@@ -111,7 +111,7 @@ const uploadImage = async (request: Request, response: Response, next: NextFunct
     });
 
     const upload = multer({ storage });
-    upload.single('file')(request, response, (err: any) => {
+    upload.any()(request, response, (err: any) => {
         if (err instanceof multer.MulterError) {
           return response.status(400).json({ error: err.message });
         } else if (err) {

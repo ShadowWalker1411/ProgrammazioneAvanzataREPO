@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreditDeduction = exports.checkToken = exports.checkOwner = exports.checkAuth = exports.checkAdmin = void 0;
+exports.CreditDeductionInf = exports.CreditDeduction = exports.checkToken = exports.checkOwner = exports.checkAuth = exports.checkAdmin = void 0;
 const users_1 = __importDefault(require("../controllers/users"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -97,3 +97,19 @@ const CreditDeduction = (request, response, next) => __awaiter(void 0, void 0, v
     }
 });
 exports.CreditDeduction = CreditDeduction;
+const CreditDeductionInf = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.default.getOneById(parseInt(request.UID));
+    if (user) {
+        console.log(user.getDataValue('credits'));
+        const currentCredits = user.getDataValue('credits');
+        const newCredits = currentCredits - 5.0;
+        user.setDataValue('credits', newCredits);
+        yield user.save();
+        console.log(user.getDataValue('credits'));
+        next();
+    }
+    else {
+        return response.status(404).json({ message: 'User not found' });
+    }
+});
+exports.CreditDeductionInf = CreditDeductionInf;

@@ -1,7 +1,7 @@
 from celery import Celery
 from celery.utils.log import get_task_logger
-import face_alignment
-import cv2
+#import face_alignment
+#import cv2
 
 logger = get_task_logger(__name__)
 
@@ -10,12 +10,13 @@ celery_app = Celery('app', broker='amqp://admin:admin@rabbitmq:5672', backend='r
 @celery_app.task()
 def longtime_add(image_path):
     logger.info('Got Request - Starting work ')
-    image = cv2.imread(image_path)
+    ''' image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, device='cpu', face_detector='sfd')
     det = fa.get_landmarks_from_image(image)
     return det
-    
+'''
+    return 0
 
 """import pika
 

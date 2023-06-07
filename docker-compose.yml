@@ -17,7 +17,8 @@ services:
      context: worker
     volumes:
       - ./worker:/app
-      - shared_images:/images
+      - shared_models:/images
+      - shared_files:/models
     user: nobody
     environment:
       - PYTHONUNBUFFERED=1
@@ -45,7 +46,8 @@ services:
     - RABBITMQ_PORT=5672
     - UPLOAD_PATH=/images
     volumes:
-      - shared_images:/images
+      - shared_models:/images
+      - shared_files:/models
     #build: server
     #volumes:
     #  - ./server:/app
@@ -83,7 +85,8 @@ services:
 
 volumes:
   nps_data: {}
-  shared_images: {}
+  shared_models: {}
+  shared_files: {}
 
 
 
