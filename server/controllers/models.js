@@ -16,7 +16,7 @@ const models_1 = __importDefault(require("./../models/models"));
 const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
 //import amqp from 'amqplib/callback_api'
-const node_fetch_1 = __importDefault(require("node-fetch"));
+//import fetch from "node-fetch";
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
     return MODEL;
@@ -118,9 +118,9 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
-const inference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+/*const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        /*const MODEL = await getOneById(parseInt(request.params.id))
+        const MODEL = await getOneById(parseInt(request.params.id))
         const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
         amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
             if (error) {
@@ -137,29 +137,28 @@ const inference = (request, response, next) => __awaiter(void 0, void 0, void 0,
                 response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
-        console.log("Fetch");
-        (0, node_fetch_1.default)('http://producer:3002/')
-            .then(response => response.json())
-            .then(data => {
-            console.log(data);
-        })
-            .catch(error => {
-            console.error('Error1:', error);
-        });
-        (0, node_fetch_1.default)('http://127.0.0.1:3002/')
-            .then(response => response.json())
-            .then(data => {
-            console.log(data);
-        })
-            .catch(error => {
-            console.error('Error2:', error);
-        });
-    }
-    catch (error) {
-        console.log("Error:", error);
-        return response.status(500).json(error);
-    }
-});
+/*console.log("Fetch")
+fetch('http://producer:3002/')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error1:', error);
+    });
+fetch('http://127.0.0.1:3002/')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error2:', error);
+    });
+} catch (error) {
+console.log("Error:", error);
+return response.status(500).json(error)
+}
+}*/
 const createModelSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(15).required(),
     datasetUID: joi_1.default.number().required(),
@@ -176,6 +175,6 @@ const controller = {
     deleteById,
     getAllByUserUID,
     getAllMine,
-    inference
+    //inference
 };
 exports.default = controller;

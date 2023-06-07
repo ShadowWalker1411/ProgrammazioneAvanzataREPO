@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkOwner = exports.checkAuth = exports.checkAdmin = void 0;
+exports.CreditDeduction = exports.checkToken = exports.checkOwner = exports.checkAuth = exports.checkAdmin = void 0;
 const users_1 = __importDefault(require("../controllers/users"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -70,3 +70,30 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.checkOwner = checkOwner;
+const checkToken = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Checking token");
+    const creds = yield users_1.default.getCreds(request.UID);
+    if (creds > 0) {
+        next();
+    }
+    else {
+        response.status(401).send({ message: 'Not enough tokens' });
+    }
+});
+exports.checkToken = checkToken;
+const CreditDeduction = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.default.getOneById(parseInt(request.UID));
+    if (user) {
+        console.log(user.getDataValue('credits'));
+        const currentCredits = user.getDataValue('credits');
+        const newCredits = currentCredits - 0.1;
+        user.setDataValue('credits', newCredits);
+        yield user.save();
+        console.log(user.getDataValue('credits'));
+        next();
+    }
+    else {
+        return response.status(404).json({ message: 'User not found' });
+    }
+});
+exports.CreditDeduction = CreditDeduction;

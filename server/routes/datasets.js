@@ -15,7 +15,7 @@ router
     .post('/', datasets_2.checkAuth, datasets_1.default.create)
     .put('/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.updateById)
     .delete('/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.deleteById)
-    .post('/upload/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.Upload)
-    .post('/uploads/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.Uploads)
-    .post('/uploadZip/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.UploadZip);
+    .post('/image/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.uploadImage)
+    .post('/images/:id', datasets_2.checkAuth, datasets_2.checkOwner, datasets_1.default.uploadImages)
+    .post('/zip/:id', datasets_2.checkAuth, datasets_2.checkOwner, users_1.CreditDeduction, datasets_1.default.uploadZip);
 exports.default = router;

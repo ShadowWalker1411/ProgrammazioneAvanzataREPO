@@ -27,7 +27,7 @@ const User = database_1.default.define("user", {
         allowNull: false,
     },
     credits: {
-        type: sequelize_1.default.INTEGER,
+        type: sequelize_1.default.FLOAT,
         allowNull: false,
         defaultValue: process.env.CREDITS || 5000
     },

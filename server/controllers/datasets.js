@@ -108,8 +108,7 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
-//const upload = multer({ storage });
-const Upload = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     const storage = multer_1.default.diskStorage({
         destination: (request, file, cb) => {
             cb(null, '/images');
@@ -132,7 +131,7 @@ const Upload = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(200).json({ message: 'Upload successful' });
     });
 });
-const Uploads = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     const storage = multer_1.default.diskStorage({
         destination: (request, file, cb) => {
             cb(null, '/images');
@@ -155,7 +154,7 @@ const Uploads = (request, response, next) => __awaiter(void 0, void 0, void 0, f
         return response.status(200).json({ message: 'Upload successful' });
     });
 });
-const UploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     const storage = multer_1.default.memoryStorage(); //N.B prima usavamo disk, invece ora salvo temporanemante
     const uploads = (0, multer_1.default)({ storage }).any();
     uploads(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
@@ -214,8 +213,8 @@ const controller = {
     create,
     updateById,
     deleteById,
-    Upload,
-    Uploads,
-    UploadZip
+    uploadImage,
+    uploadImages,
+    uploadZip
 };
 exports.default = controller;

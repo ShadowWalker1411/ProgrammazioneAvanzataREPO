@@ -60,4 +60,19 @@ const checkToken = async (request: Request, response: Response, next: NextFuncti
     
 }
 
-export { checkAdmin, checkAuth, checkOwner, checkToken }
+const CreditDeduction = async (request: Request, response: Response, next: NextFunction) => {
+    const user = await controller.getOneById(parseInt((request as any).UID))
+    if (user) {
+        console.log(user.getDataValue('credits'));
+        const currentCredits = user.getDataValue('credits');
+        const newCredits = currentCredits - 0.1;
+        user.setDataValue('credits', newCredits);
+        await user.save();
+        console.log(user.getDataValue('credits'));
+        next(); 
+    } else {
+      return response.status(404).json({ message: 'User not found' });
+    }
+  
+  };
+export { checkAdmin, checkAuth, checkOwner, checkToken, CreditDeduction }

@@ -1,4 +1,5 @@
 import Dataset from './../models/datasets';
+import User from '../models/users';
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import multer, { Multer } from 'multer';
@@ -195,10 +196,6 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
         return response.status(200).json({ message: 'Upload successful', files: uploadedFiles });
     });
 };
-
-
-
-
 
 
 const createDatasetSchema = Joi.object({

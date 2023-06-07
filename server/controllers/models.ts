@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
 //import amqp from 'amqplib/callback_api'
-import fetch from "node-fetch";
+//import fetch from "node-fetch";
 
 
 const getOneById = async (id: number) => {
@@ -105,9 +105,9 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
-const inference = async (request: Request, response: Response, next: NextFunction) => {
+/*const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        /*const MODEL = await getOneById(parseInt(request.params.id))
+        const MODEL = await getOneById(parseInt(request.params.id))
         const DATASET = await Dataset.findByPk((MODEL as any).datasetUID)
         amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
             if (error) {
@@ -124,7 +124,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
                 response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
-        console.log("Fetch")
+        /*console.log("Fetch")
         fetch('http://producer:3002/')
             .then(response => response.json())
             .then(data => {
@@ -145,7 +145,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
         console.log("Error:", error);
         return response.status(500).json(error)
     }
-}
+}*/
 
 const createModelSchema = Joi.object({
     name: Joi.string().alphanum().min(3).max(15).required(),
@@ -166,7 +166,7 @@ const controller = {
     deleteById,
     getAllByUserUID,
     getAllMine,
-    inference
+    //inference
 }
 
 export default controller;
