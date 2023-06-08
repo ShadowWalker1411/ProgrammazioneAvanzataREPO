@@ -90,7 +90,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         
         try {
             // Aggiornamento dell'utente nel database
-            const NROWS = await User.update(USER_MODEL, { where: { UID: request.params.id } })
+            const NROWS = await User.update(USER_MODEL, { where: { uid: request.params.id } })
             return response.status(200).json(NROWS)
         } catch (error) {
             return response.status(500).json(error)
@@ -121,7 +121,7 @@ const login = async (request: Request, response: Response, next: NextFunction) =
         // Confronta la password fornita nella richiesta con la password hashata dell'utente nel database
         if (bcrypt.compareSync(request.body.password, USER?.getDataValue('password'))) {
             // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
-            const token = jwt.sign({ id: USER?.get("UID") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
+            const token = jwt.sign({ id: USER?.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
             // Restituisci il token come risposta JSON con lo stato 200
             return response.status(200).json({ token });
         } else {

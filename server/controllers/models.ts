@@ -39,7 +39,7 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
 // Funzione per ottenere tutti i modelli associati all'UID dell'utente corrente
 const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const MODEL = await getAllByUserUID((request as any).UID)
+        const MODEL = await getAllByUserUID((request as any).uid)
         return response.status(200).json(MODEL)
     } catch (error) {
         return response.status(500).json(error)
@@ -66,7 +66,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
         const MODEL_MODEL = {
             name: value.name,
             datasetUID: value.datasetUID,
-            userUID: (request as any).UID,
+            userUID: (request as any).uid,
         }
         const dataset=await Dataset.findByPk(value.datasetUID)
         if(dataset){
@@ -98,7 +98,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         const dataset=await Dataset.findByPk(value.datasetUID)
         if(dataset){
             try {
-                const NROWS = await Model.update(MODEL_MODEL, { where: { UID: request.params.id } })
+                const NROWS = await Model.update(MODEL_MODEL, { where: { uid: request.params.id } })
                 return response.status(200).json(NROWS)
             } catch (error) {
                 return response.status(500).json(error)
@@ -114,7 +114,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 // Funzione per eliminare un modello dal database utilizzando l'ID fornito
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await Model.destroy({where: {UID: request.params.id}})
+        const NROWS = await Model.destroy({where: {uid: request.params.id}})
         return response.status(200).json(NROWS)
     } catch (error) {
         return response.status(500).json(error)
@@ -129,7 +129,7 @@ const uploadFile = async (request: Request, response: Response, next: NextFuncti
         },
         filename: (request, file, cb) => {
             const mid = request.params.id
-            const uid = (request as any).UID
+            const uid = (request as any).uid
             const ext = file.originalname.split('.').pop()
 
             if (ext !== 'py') {
@@ -182,7 +182,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
             })
         })*/
         const resp = await axios.get("http://producer:5000/start-job/4", { params: {} })
-        await removeCredits((request as any).UID)
+        await removeCredits((request as any).uid)
         return response.status(200).json({ "Model": MODEL, "Dataset": DATASET, "Message": "Inference request sent successfully", "Job_Id": resp.data.id })
     } catch (error) {
         return response.status(500).json(error)

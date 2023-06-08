@@ -23,7 +23,7 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
     if (!model) {
         return response.status(404).json({ message: 'Model not found' });
     }
-    const userUID = request.UID;
+    const userUID = request.uid;
     if (model.userUID == userUID) {
         next();
     }
@@ -42,7 +42,7 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
     if (token) {
         try {
             const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "");
-            request.UID = decoded.id;
+            request.uid = decoded.id;
             next();
         }
         catch (error) {

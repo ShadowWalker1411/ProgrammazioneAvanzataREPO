@@ -28,7 +28,7 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     if (token) {
         try {
             const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
-            (request as any).UID = decoded.id
+            (request as any).uid = decoded.id
             next()
         } catch (error) {
             response.status(401).send({ message: 'Token not valid' })

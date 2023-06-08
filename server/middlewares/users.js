@@ -18,7 +18,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // Middleware per verificare se l'utente è un amministratore
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking admin");
-    const USER = yield users_1.default.getOneById(parseInt(request.UID));
+    const USER = yield users_1.default.getOneById(parseInt(request.uid));
     if ((USER === null || USER === void 0 ? void 0 : USER.get("admin")) === true) {
         next();
     }
@@ -57,7 +57,7 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
             const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "");
             const UID = request.params.id;
             if (UID == decoded.id) {
-                request.UID = decoded.id;
+                request.uid = decoded.id;
                 next();
             }
             else {
@@ -76,7 +76,7 @@ exports.checkOwner = checkOwner;
 // Middleware per verificare i token prima di un'inferenza
 const checkTokenInference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking token");
-    const creds = yield users_1.default.getCreds(request.UID);
+    const creds = yield users_1.default.getCreds(request.uid);
     if (creds >= 5) {
         next();
     }

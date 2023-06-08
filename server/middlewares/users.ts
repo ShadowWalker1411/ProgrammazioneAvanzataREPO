@@ -39,7 +39,7 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
             const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
             const UID = request.params.id
             if (UID == decoded.id) {
-                (request as any).UID = decoded.id
+                (request as any).uid = decoded.id
                 next()
             } else {
                 response.status(401).send("Unauthorized")

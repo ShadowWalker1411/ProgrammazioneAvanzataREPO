@@ -151,18 +151,28 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     // Verifica se l'utente ha abbastanza crediti
     if (yield checkCredits(request.uid, 1)) {
-        const storage = multer_1.default.diskStorage({
-            destination: (request, file, cb) => {
-                cb(null, '/images');
-            },
-            filename: (request, file, cb) => {
-                const uid = request.uid;
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
-                const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
-                cb(null, filename);
-            },
+        const upload = (0, multer_1.default)({
+            storage: multer_1.default.diskStorage({
+                destination: (request, file, cb) => {
+                    cb(null, '/images');
+                },
+                filename: (request, file, cb) => {
+                    const uid = request.uid;
+                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
+                    const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
+                    cb(null, filename);
+                },
+            }),
+            fileFilter: (request, file, cb) => {
+                // Verifica se è stato fornito un file
+                if (file) {
+                    cb(null, true);
+                }
+                else {
+                    cb(new Error('Nessun file è stato fornito.'));
+                }
+            }
         });
-        const upload = (0, multer_1.default)({ storage });
         upload.single('file')(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
             if (err instanceof multer_1.MulterError) {
                 return response.status(400).json({ error: err.message });

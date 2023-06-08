@@ -48,7 +48,7 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
 // Funzione per ottenere tutti i modelli associati all'UID dell'utente corrente
 const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const MODEL = yield getAllByUserUID(request.UID);
+        const MODEL = yield getAllByUserUID(request.uid);
         return response.status(200).json(MODEL);
     }
     catch (error) {
@@ -75,7 +75,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         const MODEL_MODEL = {
             name: value.name,
             datasetUID: value.datasetUID,
-            userUID: request.UID,
+            userUID: request.uid,
         };
         const dataset = yield datasets_1.default.findByPk(value.datasetUID);
         if (dataset) {
@@ -109,7 +109,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         const dataset = yield datasets_1.default.findByPk(value.datasetUID);
         if (dataset) {
             try {
-                const NROWS = yield models_1.default.update(MODEL_MODEL, { where: { UID: request.params.id } });
+                const NROWS = yield models_1.default.update(MODEL_MODEL, { where: { uid: request.params.id } });
                 return response.status(200).json(NROWS);
             }
             catch (error) {
@@ -127,7 +127,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 // Funzione per eliminare un modello dal database utilizzando l'ID fornito
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield models_1.default.destroy({ where: { UID: request.params.id } });
+        const NROWS = yield models_1.default.destroy({ where: { uid: request.params.id } });
         return response.status(200).json(NROWS);
     }
     catch (error) {
@@ -142,7 +142,7 @@ const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0
         },
         filename: (request, file, cb) => {
             const mid = request.params.id;
-            const uid = request.UID;
+            const uid = request.uid;
             const ext = file.originalname.split('.').pop();
             if (ext !== 'py') {
                 const error = new Error('Estensione file non valida. Sono consentiti solo file .py');
@@ -188,7 +188,7 @@ const inference = (request, response, next) => __awaiter(void 0, void 0, void 0,
             })
         })*/
         const resp = yield axios_1.default.get("http://producer:5000/start-job/4", { params: {} });
-        yield removeCredits(request.UID);
+        yield removeCredits(request.uid);
         return response.status(200).json({ "Model": MODEL, "Dataset": DATASET, "Message": "Inference request sent successfully", "Job_Id": resp.data.id });
     }
     catch (error) {

@@ -117,35 +117,44 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 const uploadImage = async (request: Request, response: Response, next: NextFunction) => {
     // Verifica se l'utente ha abbastanza crediti
     if (await checkCredits((request as any).uid, 1)) {
-        const storage = multer.diskStorage({
-            destination: (request, file, cb) => {
-                cb(null, '/images')
-            },
-            filename: (request, file, cb) => {
-                const uid = (request as any).uid
-                const uniqueSuffix = Date.now() + '-'  + Math.round(Math.random() * 1E9) + '.' +  file.mimetype.split('/')[1]         
-                const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix
-                cb(null, filename)
-            },
-        })
+        const upload = multer({
+            storage: multer.diskStorage({
+                destination: (request, file, cb) => {
+                    cb(null, '/images')
+                },
+                filename: (request, file, cb) => {
+                    const uid = (request as any).uid
+                    const uniqueSuffix = Date.now() + '-'  + Math.round(Math.random() * 1E9) + '.' +  file.mimetype.split('/')[1]         
+                    const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix
+                    cb(null, filename)
+                },
+            }),
+            fileFilter: (request, file, cb) => {
+                // Verifica se è stato fornito un file
+                if (file) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('Nessun file è stato fornito.'));
+                }
+            }
+        });
 
-        const upload = multer({ storage })
         upload.single('file')(request, response, async (err: any) => {
             if (err instanceof MulterError) {
-                return response.status(400).json({ error: err.message })
+                return response.status(400).json({ error: err.message });
             } else if (err) {
-                return response.status(500).json({ error1: err.message })
+                return response.status(500).json({ error1: err.message });
             }
 
-            
             // Rimuovi i crediti dall'utente dopo il caricamento
-            await removeCredits((request as any).uid, 1)
-            return response.status(200).json({ message: 'Caricamento effettuato con successo' })
-        })
+            await removeCredits((request as any).uid, 1);
+            return response.status(200).json({ message: 'Caricamento effettuato con successo' });
+        });
     } else {
-        return response.status(400).json({ error: 'Crediti insufficienti' })
+        return response.status(400).json({ error: 'Crediti insufficienti' });
     }
-}
+};
+
 
 
 const uploadImages = async (request: Request, response: Response, next: NextFunction) => {
