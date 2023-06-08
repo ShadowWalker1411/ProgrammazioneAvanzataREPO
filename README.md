@@ -35,7 +35,9 @@ Per eseguire il progetto, è possibile utilizzare Docker Compose per configurare
 3. Apri un terminale e naviga fino alla directory del progetto.
 4. Esegui il seguente comando per avviare i servizi:
 
+```bash
 docker-compose up --build
+```
 
 Questo avvierà il server RabbitMQ e l'applicazione Flask.
 
