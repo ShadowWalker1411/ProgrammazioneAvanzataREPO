@@ -38,4 +38,5 @@ Per eseguire il progetto, è possibile utilizzare Docker Compose per configurare
 docker-compose up --build
 
 Questo avvierà il server RabbitMQ e l'applicazione Flask.
+
 5. L'applicazione sarà accessibile all'indirizzo `http://localhost:3001`.
