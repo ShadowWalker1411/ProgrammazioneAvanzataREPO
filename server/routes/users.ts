@@ -1,9 +1,9 @@
 import express from 'express'
 import controller from '../controllers/users'
-import { checkAdmin, checkAuth, checkOwner } from '../middlewares/users';
+import { checkAdmin, checkAuth, checkOwner } from '../middlewares/users'
 
 // Creazione di un router per le rotte degli utenti
-const router = express.Router();
+const router = express.Router()
 
 router
     .get('/', controller.getAll) // Rotta per ottenere tutti gli utenti
@@ -17,4 +17,4 @@ router
     .get('/credits/mine', checkAuth, controller.getCredits) // Rotta per ottenere i crediti dell'utente corrente
     .post('/credits/:email', checkAuth, checkAdmin, controller.addCredits) // Rotta per aggiungere crediti a un utente tramite email
 
-export default router; // Esportazione del router per l'uso in altri moduli
+export default router // Esportazione del router per l'uso in altri moduli

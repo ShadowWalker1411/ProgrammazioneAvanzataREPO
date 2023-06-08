@@ -1,20 +1,21 @@
 import { Request, Response, NextFunction } from 'express'
 import modelsController from '../controllers/models'
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'
+import { StatusCodes } from 'http-status-codes';
 
 // Middleware per verificare se l'utente è il proprietario del modello
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking owner")
-    const modelUID = request.params.id;
+    const modelUID = request.params.id
     const model = await modelsController.getOneById(parseInt(modelUID))
     if (!model) {
-        return response.status(404).json({ message: 'Model not found' })
+        return response.status(StatusCodes.NOT_FOUND).json({ message: 'Model not found' })
     }
     const userUID = (request as any).uid
     if ((model as any).userUID == userUID) {
         next()
     } else {
-        response.status(403).json({
+        response.status(StatusCodes.FORBIDDEN).json({
             message: 'You are not the owner of this Model'
         })
     }
@@ -30,10 +31,10 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
             (request as any).uid = decoded.id
             next()
         } catch (error) {
-            response.status(401).send({ message: 'Token not valid' })
+            response.status(StatusCodes.UNAUTHORIZED).send({ message: 'Token not valid' })
         }
     } else {
-        response.status(401).send({ message: 'Token not provided' })
+        response.status(StatusCodes.UNAUTHORIZED).send({ message: 'Token not provided' })
     }
 }
 

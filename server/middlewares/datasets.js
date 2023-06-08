@@ -15,21 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkOwner = exports.checkAuth = void 0;
 const datasets_1 = __importDefault(require("../controllers/datasets"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const http_status_codes_1 = require("http-status-codes");
 // Middleware per verificare se l'utente è il proprietario del dataset
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
     const datasetUID = request.params.id;
     const dataset = yield datasets_1.default.getOneById(parseInt(datasetUID));
-    console.log(datasetUID);
     if (!dataset) {
-        return response.status(404).json({ message: 'Dataset not found' });
+        return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Dataset not found' });
     }
     const userUID = request.uid;
     if (dataset.userUID == userUID) {
         next();
     }
     else {
-        response.status(403).json({
+        response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
             message: 'You are not the owner of this dataset'
         });
     }
@@ -47,11 +47,11 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
             next();
         }
         catch (error) {
-            response.status(401).send({ message: 'Token not valid' });
+            response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not valid' });
         }
     }
     else {
-        response.status(401).send({ message: 'Token not provided' });
+        response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not provided' });
     }
 });
 exports.checkAuth = checkAuth;

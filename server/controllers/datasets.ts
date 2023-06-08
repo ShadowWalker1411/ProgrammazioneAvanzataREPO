@@ -4,7 +4,10 @@ import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import multer, { MulterError } from 'multer';
 import AdmZip from 'adm-zip';
- import fs from 'fs';
+import fs from 'fs';
+import { StatusCodes } from 'http-status-codes';
+import { HttpStatusCode } from 'axios';
+
  
 const getOneById = async (id: number) => {
     const DATASET = await Dataset.findByPk(id)
@@ -36,27 +39,27 @@ const removeCredits = async (userUID: number, numberOfFiles: number) => {
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const ALL = await Dataset.findAll()
-        return response.status(200).json(ALL)
+        return response.status(StatusCodes.OK).json(ALL)
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
 const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const DATASETS = await getAllByUseruid(parseInt((request as any).uid))
-        return response.status(200).json(DATASETS)
+        return response.status(StatusCodes.OK).json(DATASETS)
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const DATASET = await getOneById(parseInt(request.params.id))
-        return response.status(200).json(DATASET)
+        return response.status(StatusCodes.OK).json(DATASET)
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
@@ -64,7 +67,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
     try {
         const { error, value } = createDatasetSchema.validate(request.body)
         if (error) {
-            return response.status(400).json({ error: error.details })
+            return response.status(StatusCodes.BAD_REQUEST).json({ error: error.details })
         }
         const DATSET_MODEL = {
             name: value.name,
@@ -74,12 +77,12 @@ const create = async (request: Request, response: Response, next: NextFunction) 
         }
         try {
             const DATASET = await Dataset.create(DATSET_MODEL)
-            return response.status(201).json(DATASET)
+            return response.status(StatusCodes.CREATED).json(DATASET)
         } catch (error) {
-            return response.status(500).json(error)
+            return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
         }
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
@@ -87,7 +90,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
     try {
         const { error, value } = updateDatasetSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ message: error.details[0].message })
+            return response.status(StatusCodes.BAD_REQUEST).json({ message: error.details[0].message })
         }
         const DATSET_MODEL = {
             name: value.name,
@@ -96,21 +99,21 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         }
         try {
             const NROWS = await Dataset.update(DATSET_MODEL, { where: { uid: request.params.id } })
-            return response.status(200).json(NROWS)
+            return response.status(StatusCodes.OK).json(NROWS)
         } catch (error) {
-            return response.status(500).json(error)
+            return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
         }
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const NROWS = await Dataset.destroy({where: {uid: request.params.id}})
-        return response.status(200).json(NROWS)
+        return response.status(StatusCodes.OK).json(NROWS)
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
   
@@ -141,17 +144,17 @@ const uploadImage = async (request: Request, response: Response, next: NextFunct
 
         upload.single('file')(request, response, async (err: any) => {
             if (err instanceof MulterError) {
-                return response.status(400).json({ error: err.message });
+                return response.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
             } else if (err) {
-                return response.status(500).json({ error1: err.message });
+                return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error1: err.message });
             }
 
             // Rimuovi i crediti dall'utente dopo il caricamento
             await removeCredits((request as any).uid, 1);
-            return response.status(200).json({ message: 'Caricamento effettuato con successo' });
+            return response.status(StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' });
         });
     } else {
-        return response.status(400).json({ error: 'Crediti insufficienti' });
+        return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Crediti insufficienti' });
     }
 };
 
@@ -162,7 +165,7 @@ const uploadImages = async (request: Request, response: Response, next: NextFunc
     if (await checkCredits((request as any).uid, request.body.files.length)) {
         // Controlla se ci sono file da caricare
         if (!request.files || request.files.length === 0) {
-            return response.status(400).json({ error: 'Nessun file da caricare' })
+            return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Nessun file da caricare' })
         }
 
         const storage = multer.diskStorage({
@@ -180,17 +183,17 @@ const uploadImages = async (request: Request, response: Response, next: NextFunc
         const uploads = multer({ storage })
         uploads.array('files')(request, response, async (err: any) => {
             if (err instanceof MulterError) {
-                return response.status(400).json({ error: err.message })
+                return response.status(StatusCodes.BAD_REQUEST).json({ error: err.message })
             } else if (err) {
-                return response.status(500).json({ error: err.message })
+                return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
             }
 
             // Rimuovi i crediti dall'utente dopo il caricamento
             await removeCredits((request as any).uid, request.body.files.length)
-            return response.status(200).json({ message: 'Caricamento effettuato con successo' })
+            return response.status(StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' })
         })
     } else {
-        return response.status(400).json({ error: 'Crediti insufficienti' })
+        return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Crediti insufficienti' })
     }
 };
 
@@ -203,13 +206,13 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
 
     uploads(request, response, async (err: any) => {
         if (err instanceof multer.MulterError) {
-            return response.status(400).json({ error: err.message })
+            return response.status(StatusCodes.BAD_REQUEST).json({ error: err.message })
         } else if (err) {
-          return response.status(500).json({ error: err.message })
+          return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message })
         }
         //Controllo ci sia qualcosa da uploadare
         if (!request.files || request.files.length === 0) {
-            return response.status(400).json({ error: 'No files uploaded' })
+            return response.status(StatusCodes.BAD_REQUEST).json({ error: 'No files uploaded' })
         }
 
         const uploadedFiles = []
@@ -217,7 +220,7 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
         // leggo 1 a 1 i file
         for (const file of request.files as Express.Multer.File[]) {
             if (file.mimetype !== 'application/zip') {
-              return response.status(400).json({ error: 'Invalid file format. Only zip files are allowed' });
+              return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid file format. Only zip files are allowed' });
             }
 
             const zip = new AdmZip(file.buffer)
@@ -245,11 +248,11 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
                     uploadedFiles.push(filePath)
                 }
             } else {
-                return response.status(400).json({ error: 'Not enough credits' })
+                return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Not enough credits' })
             }
         }
         await removeCredits((request as any).uid, uploadedFiles.length)
-        return response.status(200).json({ message: 'Upload successful', files: uploadedFiles })
+        return response.status(StatusCodes.OK).json({ message: 'Upload successful', files: uploadedFiles })
     })
 }
 

@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:14-bullseye
 
 EXPOSE 3001
 

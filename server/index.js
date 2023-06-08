@@ -32,7 +32,7 @@ app.use((request, response, next) => {
 });
 // Gestione della route per il percorso radice
 app.get("/", (request, response) => {
-    response.send("Ciao mondo!");
+    response.send("Hello World!");
 });
 // Montaggio delle routes
 app.use('/users', users_1.default);

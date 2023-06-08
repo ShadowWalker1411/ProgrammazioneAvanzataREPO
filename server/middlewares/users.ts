@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import usersController from '../controllers/users'
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'
+import { StatusCodes } from 'http-status-codes';
 
 // Middleware per verificare se l'utente è un amministratore
 const checkAdmin = async (request: Request, response: Response, next: NextFunction) => {
@@ -9,7 +10,7 @@ const checkAdmin = async (request: Request, response: Response, next: NextFuncti
     if (USER?.get("admin") === true) {
         next()
     } else {
-        response.status(401).send("Unauthorized")
+        response.status(StatusCodes.UNAUTHORIZED).send("Unauthorized")
     }
 }
 
@@ -23,10 +24,10 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
             (request as any).uid = decoded.id
             next()
         } catch (error) {
-            response.status(401).send({ message: 'Token not valid' })
+            response.status(StatusCodes.UNAUTHORIZED).send({ message: 'Token not valid' })
         }
     } else {
-        response.status(401).send({ message: 'Token not provided' })
+        response.status(StatusCodes.UNAUTHORIZED).send({ message: 'Token not provided' })
     }
 }
 
@@ -36,19 +37,19 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     const token = request.headers.authorization?.split(" ")[1]
     if (token) {
         try {
-            const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
+            const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "")
             const UID = request.params.id
             if (UID == decoded.id) {
                 (request as any).uid = decoded.id
                 next()
             } else {
-                response.status(401).send("Unauthorized")
+                response.status(StatusCodes.UNAUTHORIZED).send("Unauthorized")
             }
         } catch (error) {
-            response.status(401).send({ message: 'Token not valid' })
+            response.status(StatusCodes.UNAUTHORIZED).send({ message: 'Token not valid' })
         }
     } else {
-        response.status(401).send({ message: 'Token not provided' })
+        response.status(StatusCodes.UNAUTHORIZED).send({ message: 'Token not provided' })
     }
 }
 
@@ -59,7 +60,7 @@ const checkTokenInference = async (request: Request, response: Response, next: N
     if (creds >= 5){
         next()
     } else {
-        response.status(401).send({ message: 'Not enough tokens' })
+        response.status(StatusCodes.UNAUTHORIZED).send({ message: 'Not enough tokens' })
     } 
 }
 

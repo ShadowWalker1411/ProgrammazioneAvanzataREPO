@@ -24,12 +24,12 @@ app.use((request: Request, response: Response, next: NextFunction) => {
 
 // Gestione della route per il percorso radice
 app.get("/", (request: Request, response: Response) => {
-    response.send("Ciao mondo!")
+    response.send("Hello World!")
 })
 
 // Montaggio delle routes
-app.use('/users', users);
-app.use('/datasets', datasets);
+app.use('/users', users)
+app.use('/datasets', datasets)
 app.use('/models', models);
 
 // Funzione per avviare il server
@@ -46,6 +46,6 @@ app.use('/models', models);
             console.log("Il server è in esecuzione sulla porta 3001")
         })
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
 })()

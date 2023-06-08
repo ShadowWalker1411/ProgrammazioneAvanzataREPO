@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkTokenInference = exports.checkOwner = exports.checkAuth = exports.checkAdmin = void 0;
 const users_1 = __importDefault(require("../controllers/users"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const http_status_codes_1 = require("http-status-codes");
 // Middleware per verificare se l'utente è un amministratore
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking admin");
@@ -23,7 +24,7 @@ const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0
         next();
     }
     else {
-        response.status(401).send("Unauthorized");
+        response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send("Unauthorized");
     }
 });
 exports.checkAdmin = checkAdmin;
@@ -39,11 +40,11 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
             next();
         }
         catch (error) {
-            response.status(401).send({ message: 'Token not valid' });
+            response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not valid' });
         }
     }
     else {
-        response.status(401).send({ message: 'Token not provided' });
+        response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not provided' });
     }
 });
 exports.checkAuth = checkAuth;
@@ -61,15 +62,15 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
                 next();
             }
             else {
-                response.status(401).send("Unauthorized");
+                response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send("Unauthorized");
             }
         }
         catch (error) {
-            response.status(401).send({ message: 'Token not valid' });
+            response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not valid' });
         }
     }
     else {
-        response.status(401).send({ message: 'Token not provided' });
+        response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not provided' });
     }
 });
 exports.checkOwner = checkOwner;
@@ -81,7 +82,7 @@ const checkTokenInference = (request, response, next) => __awaiter(void 0, void 
         next();
     }
     else {
-        response.status(401).send({ message: 'Not enough tokens' });
+        response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Not enough tokens' });
     }
 });
 exports.checkTokenInference = checkTokenInference;

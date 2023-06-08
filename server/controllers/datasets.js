@@ -41,6 +41,7 @@ const joi_1 = __importDefault(require("joi"));
 const multer_1 = __importStar(require("multer"));
 const adm_zip_1 = __importDefault(require("adm-zip"));
 const fs_1 = __importDefault(require("fs"));
+const http_status_codes_1 = require("http-status-codes");
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const DATASET = yield datasets_1.default.findByPk(id);
     return DATASET;
@@ -68,35 +69,35 @@ const removeCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield datasets_1.default.findAll();
-        return response.status(200).json(ALL);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(ALL);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const DATASETS = yield getAllByUseruid(parseInt(request.uid));
-        return response.status(200).json(DATASETS);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(DATASETS);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const DATASET = yield getOneById(parseInt(request.params.id));
-        return response.status(200).json(DATASET);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(DATASET);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const create = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { error, value } = createDatasetSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ error: error.details });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: error.details });
         }
         const DATSET_MODEL = {
             name: value.name,
@@ -106,21 +107,21 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         };
         try {
             const DATASET = yield datasets_1.default.create(DATSET_MODEL);
-            return response.status(201).json(DATASET);
+            return response.status(http_status_codes_1.StatusCodes.CREATED).json(DATASET);
         }
         catch (error) {
-            return response.status(500).json(error);
+            return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
         }
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { error, value } = updateDatasetSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ message: error.details[0].message });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error.details[0].message });
         }
         const DATSET_MODEL = {
             name: value.name,
@@ -129,23 +130,23 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         };
         try {
             const NROWS = yield datasets_1.default.update(DATSET_MODEL, { where: { uid: request.params.id } });
-            return response.status(200).json(NROWS);
+            return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
         }
         catch (error) {
-            return response.status(500).json(error);
+            return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
         }
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const NROWS = yield datasets_1.default.destroy({ where: { uid: request.params.id } });
-        return response.status(200).json(NROWS);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -175,18 +176,18 @@ const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 
         });
         upload.single('file')(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
             if (err instanceof multer_1.MulterError) {
-                return response.status(400).json({ error: err.message });
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: err.message });
             }
             else if (err) {
-                return response.status(500).json({ error1: err.message });
+                return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error1: err.message });
             }
             // Rimuovi i crediti dall'utente dopo il caricamento
             yield removeCredits(request.uid, 1);
-            return response.status(200).json({ message: 'Caricamento effettuato con successo' });
+            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' });
         }));
     }
     else {
-        return response.status(400).json({ error: 'Crediti insufficienti' });
+        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Crediti insufficienti' });
     }
 });
 const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -194,7 +195,7 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
     if (yield checkCredits(request.uid, request.body.files.length)) {
         // Controlla se ci sono file da caricare
         if (!request.files || request.files.length === 0) {
-            return response.status(400).json({ error: 'Nessun file da caricare' });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Nessun file da caricare' });
         }
         const storage = multer_1.default.diskStorage({
             destination: (request, file, cb) => {
@@ -210,18 +211,18 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
         const uploads = (0, multer_1.default)({ storage });
         uploads.array('files')(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
             if (err instanceof multer_1.MulterError) {
-                return response.status(400).json({ error: err.message });
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: err.message });
             }
             else if (err) {
-                return response.status(500).json({ error: err.message });
+                return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
             }
             // Rimuovi i crediti dall'utente dopo il caricamento
             yield removeCredits(request.uid, request.body.files.length);
-            return response.status(200).json({ message: 'Caricamento effettuato con successo' });
+            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' });
         }));
     }
     else {
-        return response.status(400).json({ error: 'Crediti insufficienti' });
+        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Crediti insufficienti' });
     }
 });
 const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -229,20 +230,20 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
     const uploads = (0, multer_1.default)({ storage }).any();
     uploads(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
         if (err instanceof multer_1.default.MulterError) {
-            return response.status(400).json({ error: err.message });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: err.message });
         }
         else if (err) {
-            return response.status(500).json({ error: err.message });
+            return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
         }
         //Controllo ci sia qualcosa da uploadare
         if (!request.files || request.files.length === 0) {
-            return response.status(400).json({ error: 'No files uploaded' });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'No files uploaded' });
         }
         const uploadedFiles = [];
         // leggo 1 a 1 i file
         for (const file of request.files) {
             if (file.mimetype !== 'application/zip') {
-                return response.status(400).json({ error: 'Invalid file format. Only zip files are allowed' });
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Invalid file format. Only zip files are allowed' });
             }
             const zip = new adm_zip_1.default(file.buffer);
             const zipEntries = zip.getEntries();
@@ -266,11 +267,11 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
                 }
             }
             else {
-                return response.status(400).json({ error: 'Not enough credits' });
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Not enough credits' });
             }
         }
         yield removeCredits(request.uid, uploadedFiles.length);
-        return response.status(200).json({ message: 'Upload successful', files: uploadedFiles });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload successful', files: uploadedFiles });
     }));
 });
 const createDatasetSchema = joi_1.default.object({

@@ -7,14 +7,12 @@ celery_app = Celery('app', broker='amqp://admin:admin@rabbitmq:5672', backend='r
 
 @flask_app.route('/')
 def index():
-    return jsonify({"MESSAGE": 'Start a job: /start-job/<x>'})
+    return jsonify({"message": 'Start a job: /start-job/'})
 
 
 @flask_app.route('/start-job/<x>')
 def start(x):
-    flask_app.logger.info("Invoking Method")
-    result = celery_app.send_task('app.longtime_add', kwargs={'image_path': ""})#.delay()
-    flask_app.logger.info(result.backend)
+    result = celery_app.send_task('app.longtime_add', kwargs={})
     return jsonify({"id": result.id})
     """connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
     channel = connection.channel()
@@ -33,13 +31,12 @@ def start(x):
 @flask_app.route('/status/<job_id>')
 def status(job_id):
     result = celery_app.AsyncResult(job_id, app=celery_app)
-    print("Invoking Method ")
     return jsonify({"status": str(result.state)})
 
 @flask_app.route('/result/<job_id>')
 def task_result(job_id):
     result = celery_app.AsyncResult(job_id).result
-    return jsonify({"result": str(result)})
+    return jsonify({"result": result})
 
 
 if __name__ == '__main__':

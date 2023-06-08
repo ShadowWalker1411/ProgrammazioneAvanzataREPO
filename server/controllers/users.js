@@ -16,6 +16,7 @@ const users_1 = __importDefault(require("./../models/users"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const joi_1 = __importDefault(require("joi"));
+const http_status_codes_1 = require("http-status-codes");
 // Funzione per ottenere un singolo utente per ID
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const USER = yield users_1.default.findByPk(id);
@@ -30,20 +31,20 @@ const getCreds = (id) => __awaiter(void 0, void 0, void 0, function* () {
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield users_1.default.findAll();
-        return response.status(200).json(ALL);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(ALL);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per ottenere un utente per ID
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const USER = yield getOneById(parseInt(request.params.id));
-        return response.status(200).json(USER);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(USER);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per creare un nuovo utente
@@ -52,7 +53,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         // Validazione dei dati della richiesta
         const { error, value } = createUserSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ error: error.details });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: error.details });
         }
         // Hash della password
         const hashedPassword = bcrypt_1.default.hashSync(value.password, 8);
@@ -66,14 +67,14 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         try {
             // Creazione dell'utente nel database
             const USER = yield users_1.default.create(USER_MODEL);
-            return response.status(201).json(USER);
+            return response.status(http_status_codes_1.StatusCodes.CREATED).json(USER);
         }
         catch (error) {
-            return response.status(500).json(error);
+            return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
         }
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per aggiornare un utente per ID
@@ -82,7 +83,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         // Validazione dei dati della richiesta
         const { error, value } = updateUserSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ message: error.details[0].message });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error.details[0].message });
         }
         // Creazione dell'oggetto USER_MODEL per l'aggiornamento dell'utente
         const USER_MODEL = {
@@ -93,14 +94,14 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         try {
             // Aggiornamento dell'utente nel database
             const NROWS = yield users_1.default.update(USER_MODEL, { where: { uid: request.params.id } });
-            return response.status(200).json(NROWS);
+            return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
         }
         catch (error) {
-            return response.status(500).json(error);
+            return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
         }
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per eliminare un utente per ID
@@ -108,10 +109,10 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
     try {
         // Eliminazione dell'utente dal database
         const NROWS = yield users_1.default.destroy({ where: { uid: request.params.id } });
-        return response.status(200).json(NROWS);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per il login dell'utente
@@ -123,17 +124,17 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
         if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
             // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
             const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
-            // Restituisci il token come risposta JSON con lo stato 200
-            return response.status(200).json({ token });
+            // Restituisci il token come risposta JSON con lo stato StatusCodes.OK
+            return response.status(http_status_codes_1.StatusCodes.OK).json({ token });
         }
         else {
-            // La password non corrisponde, restituisci un messaggio di errore con lo stato 401
-            return response.status(401).json({ message: "Invalid Credentials" });
+            // La password non corrisponde, restituisci un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
+            return response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({ message: "Invalid Credentials" });
         }
     }
     catch (error) {
-        // Si è verificato un errore, restituisci una risposta di errore con lo stato 500
-        return response.status(500).json(error);
+        // Si è verificato un errore, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per ottenere i crediti di un utente
@@ -141,12 +142,12 @@ const getCredits = (request, response, next) => __awaiter(void 0, void 0, void 0
     try {
         // Ottieni i crediti dell'utente utilizzando l'ID fornito nella richiesta
         const credits = yield getCreds(parseInt(request.uid));
-        // Restituisci i crediti come risposta JSON con lo stato 200
-        return response.status(200).json({ "credits": credits });
+        // Restituisci i crediti come risposta JSON con lo stato StatusCodes.OK
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ "credits": credits });
     }
     catch (error) {
-        // Si è verificato un errore, restituisci una risposta di errore con lo stato 500
-        return response.status(500).json(error);
+        // Si è verificato un errore, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per aggiungere crediti a un utente
@@ -155,7 +156,7 @@ const addCredits = (request, response, next) => __awaiter(void 0, void 0, void 0
         // Validazione dei dati della richiesta
         const { error, value } = addCreditsSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ message: error.details[0].message });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error.details[0].message });
         }
         // Trova l'utente nel database utilizzando l'email fornita nella richiesta
         const USER = yield users_1.default.findOne({ where: { email: request.params.email } });
@@ -164,8 +165,8 @@ const addCredits = (request, response, next) => __awaiter(void 0, void 0, void 0
             const addedCredits = parseFloat(value.credits);
             const totalCredits = currentCredits + addedCredits;
             if (totalCredits > 5000) {
-                // Il totale dei crediti non può superare 5000, restituisci un messaggio di errore con lo stato 400
-                return response.status(400).json({ message: "Total credits cannot exceed 5000" });
+                // Il totale dei crediti non può superare 5000, restituisci un messaggio di errore con lo stato StatusCodes.BAD_REQUEST
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: "Total credits cannot exceed 5000" });
             }
             const USER_MODEL = {
                 credits: totalCredits
@@ -173,22 +174,22 @@ const addCredits = (request, response, next) => __awaiter(void 0, void 0, void 0
             try {
                 // Aggiorna i crediti dell'utente nel database
                 const NROWS = yield users_1.default.update(USER_MODEL, { where: { email: request.params.email } });
-                // Restituisci il numero di righe aggiornate come risposta JSON con lo stato 200
-                return response.status(200).json(NROWS);
+                // Restituisci il numero di righe aggiornate come risposta JSON con lo stato StatusCodes.OK
+                return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
             }
             catch (error) {
-                // Si è verificato un errore nell'aggiornamento dei crediti, restituisci una risposta di errore con lo stato 500
-                return response.status(500).json(error);
+                // Si è verificato un errore nell'aggiornamento dei crediti, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+                return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
             }
         }
         else {
-            // L'utente non è stato trovato, restituisci un messaggio di errore con lo stato 404
-            return response.status(404).json({ message: "User not found" });
+            // L'utente non è stato trovato, restituisci un messaggio di errore con lo stato StatusCodes.NOT_FOUND
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: "User not found" });
         }
     }
     catch (error) {
-        // Si è verificato un errore, restituisci una risposta di errore con lo stato 500
-        return response.status(500).json(error);
+        // Si è verificato un errore, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const createUserSchema = joi_1.default.object({

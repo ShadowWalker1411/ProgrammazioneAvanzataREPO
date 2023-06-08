@@ -1,29 +1,29 @@
-import User from './../models/users';
-import { Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import Joi from 'joi';
-import { FLOAT } from 'sequelize';
+import User from './../models/users'
+import { Request, Response, NextFunction } from 'express'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import Joi from 'joi'
+import { StatusCodes } from 'http-status-codes';
 
 // Funzione per ottenere un singolo utente per ID
 const getOneById = async (id: number) => {
-    const USER = await User.findByPk(id);
-    return USER;
+    const USER = await User.findByPk(id)
+    return USER
 }
 
 // Funzione per ottenere i crediti di un utente per ID
 const getCreds = async (id: number) => {
-    const USER = await User.findByPk(id);
-    return parseFloat((USER as any).credits);
+    const USER = await User.findByPk(id)
+    return parseFloat((USER as any).credits)
 }
 
 // Funzione per ottenere tutti gli utenti
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const ALL = await User.findAll();
-        return response.status(200).json(ALL);
+        const ALL = await User.findAll()
+        return response.status(StatusCodes.OK).json(ALL)
     } catch (error) {
-        return response.status(500).json(error);
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
@@ -31,10 +31,10 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
 // Funzione per ottenere un utente per ID
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const USER = await getOneById(parseInt(request.params.id));
-        return response.status(200).json(USER);
+        const USER = await getOneById(parseInt(request.params.id))
+        return response.status(StatusCodes.OK).json(USER)
     } catch (error) {
-        return response.status(500).json(error);
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
@@ -42,14 +42,14 @@ const getById = async (request: Request, response: Response, next: NextFunction)
 const create = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Validazione dei dati della richiesta
-        const { error, value } = createUserSchema.validate(request.body);
+        const { error, value } = createUserSchema.validate(request.body)
 
         if (error) {
-            return response.status(400).json({ error: error.details });
+            return response.status(StatusCodes.BAD_REQUEST).json({ error: error.details })
         }
 
         // Hash della password
-        const hashedPassword = bcrypt.hashSync(value.password, 8);
+        const hashedPassword = bcrypt.hashSync(value.password, 8)
 
         // Creazione dell'oggetto USER_MODEL per l'utente
         const USER_MODEL = {
@@ -57,28 +57,28 @@ const create = async (request: Request, response: Response, next: NextFunction) 
             email: value.email,
             password: hashedPassword,
             admin: value.admin || false
-        };
+        }
 
         try {
             // Creazione dell'utente nel database
-            const USER = await User.create(USER_MODEL);
-            return response.status(201).json(USER);
+            const USER = await User.create(USER_MODEL)
+            return response.status(StatusCodes.CREATED).json(USER)
         } catch (error) {
-            return response.status(500).json(error);
+            return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
         }
     } catch (error) {
-        return response.status(500).json(error);
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
-};
+}
 
 
 // Funzione per aggiornare un utente per ID
 const updateById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Validazione dei dati della richiesta
-        const { error, value } = updateUserSchema.validate(request.body);
+        const { error, value } = updateUserSchema.validate(request.body)
         if (error) {
-            return response.status(400).json({ message: error.details[0].message });
+            return response.status(StatusCodes.BAD_REQUEST).json({ message: error.details[0].message })
         }
         
         // Creazione dell'oggetto USER_MODEL per l'aggiornamento dell'utente
@@ -91,23 +91,23 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         try {
             // Aggiornamento dell'utente nel database
             const NROWS = await User.update(USER_MODEL, { where: { uid: request.params.id } })
-            return response.status(200).json(NROWS)
+            return response.status(StatusCodes.OK).json(NROWS)
         } catch (error) {
-            return response.status(500).json(error)
+            return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
         }
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
-};
+}
 
 // Funzione per eliminare un utente per ID
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Eliminazione dell'utente dal database
         const NROWS = await User.destroy({ where: { uid: request.params.id } })
-        return response.status(200).json(NROWS)
+        return response.status(StatusCodes.OK).json(NROWS)
     } catch (error) {
-        return response.status(500).json(error)
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
@@ -116,44 +116,44 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 const login = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Trova l'utente nel database utilizzando il nome utente fornito nella richiesta
-        const USER = await User.findOne({ where: { username: request.body.username } });
+        const USER = await User.findOne({ where: { username: request.body.username } })
         
         // Confronta la password fornita nella richiesta con la password hashata dell'utente nel database
         if (bcrypt.compareSync(request.body.password, USER?.getDataValue('password'))) {
             // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
-            const token = jwt.sign({ id: USER?.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
-            // Restituisci il token come risposta JSON con lo stato 200
-            return response.status(200).json({ token });
+            const token = jwt.sign({ id: USER?.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" })
+            // Restituisci il token come risposta JSON con lo stato StatusCodes.OK
+            return response.status(StatusCodes.OK).json({ token })
         } else {
-            // La password non corrisponde, restituisci un messaggio di errore con lo stato 401
-            return response.status(401).json({ message: "Invalid Credentials" });
+            // La password non corrisponde, restituisci un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
+            return response.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid Credentials" })
         }
     } catch (error) {
-        // Si è verificato un errore, restituisci una risposta di errore con lo stato 500
-        return response.status(500).json(error);
+        // Si è verificato un errore, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
-};
+}
 
 // Funzione per ottenere i crediti di un utente
 const getCredits = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Ottieni i crediti dell'utente utilizzando l'ID fornito nella richiesta
-        const credits = await getCreds(parseInt((request as any).uid));
-        // Restituisci i crediti come risposta JSON con lo stato 200
-        return response.status(200).json({ "credits": credits });
+        const credits = await getCreds(parseInt((request as any).uid))
+        // Restituisci i crediti come risposta JSON con lo stato StatusCodes.OK
+        return response.status(StatusCodes.OK).json({ "credits": credits })
     } catch (error) {
-        // Si è verificato un errore, restituisci una risposta di errore con lo stato 500
-        return response.status(500).json(error);
+        // Si è verificato un errore, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
-};
+}
 
 // Funzione per aggiungere crediti a un utente
 const addCredits = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Validazione dei dati della richiesta
-        const { error, value } = addCreditsSchema.validate(request.body);
+        const { error, value } = addCreditsSchema.validate(request.body)
         if (error) {
-            return response.status(400).json({ message: error.details[0].message })
+            return response.status(StatusCodes.BAD_REQUEST).json({ message: error.details[0].message })
         }
         
         // Trova l'utente nel database utilizzando l'email fornita nella richiesta
@@ -161,36 +161,36 @@ const addCredits = async (request: Request, response: Response, next: NextFuncti
         
         if (USER) {
             const currentCredits = parseFloat((USER as any).credits)
-            const addedCredits = parseFloat(value.credits);
-            const totalCredits = currentCredits + addedCredits;
+            const addedCredits = parseFloat(value.credits)
+            const totalCredits = currentCredits + addedCredits
             
             if (totalCredits > 5000) {
-                // Il totale dei crediti non può superare 5000, restituisci un messaggio di errore con lo stato 400
-                return response.status(400).json({ message: "Total credits cannot exceed 5000" })
+                // Il totale dei crediti non può superare 5000, restituisci un messaggio di errore con lo stato StatusCodes.BAD_REQUEST
+                return response.status(StatusCodes.BAD_REQUEST).json({ message: "Total credits cannot exceed 5000" })
             }
             
             const USER_MODEL: any = {
                 credits: totalCredits
-            };
+            }
             
             try {
                 // Aggiorna i crediti dell'utente nel database
-                const NROWS = await User.update(USER_MODEL, { where: { email: request.params.email } });
-                // Restituisci il numero di righe aggiornate come risposta JSON con lo stato 200
-                return response.status(200).json(NROWS);
+                const NROWS = await User.update(USER_MODEL, { where: { email: request.params.email } })
+                // Restituisci il numero di righe aggiornate come risposta JSON con lo stato StatusCodes.OK
+                return response.status(StatusCodes.OK).json(NROWS)
             } catch (error) {
-                // Si è verificato un errore nell'aggiornamento dei crediti, restituisci una risposta di errore con lo stato 500
-                return response.status(500).json(error);
+                // Si è verificato un errore nell'aggiornamento dei crediti, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+                return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
             }
         } else {
-            // L'utente non è stato trovato, restituisci un messaggio di errore con lo stato 404
-            return response.status(404).json({ message: "User not found" });
+            // L'utente non è stato trovato, restituisci un messaggio di errore con lo stato StatusCodes.NOT_FOUND
+            return response.status(StatusCodes.NOT_FOUND).json({ message: "User not found" })
         }
     } catch (error) {
-        // Si è verificato un errore, restituisci una risposta di errore con lo stato 500
-        return response.status(500).json(error);
+        // Si è verificato un errore, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
-};
+}
 
 
 const createUserSchema = Joi.object({
@@ -218,7 +218,7 @@ const updateUserSchema = Joi.object({
     email: Joi.string().email().optional(),
     password: Joi.string().min(6).optional(),
     admin: Joi.boolean().optional()
-});
+})
 
 const addCreditsSchema = Joi.object({
     credits: Joi.number().min(0).max(1000).optional(),
@@ -234,4 +234,4 @@ const usersController = {
     login, getCredits, addCredits, getCreds
 }
 
-export default usersController;
+export default usersController

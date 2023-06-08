@@ -15,20 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkOwner = exports.checkAuth = void 0;
 const models_1 = __importDefault(require("../controllers/models"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const http_status_codes_1 = require("http-status-codes");
 // Middleware per verificare se l'utente è il proprietario del modello
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
     const modelUID = request.params.id;
     const model = yield models_1.default.getOneById(parseInt(modelUID));
     if (!model) {
-        return response.status(404).json({ message: 'Model not found' });
+        return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
     }
     const userUID = request.uid;
     if (model.userUID == userUID) {
         next();
     }
     else {
-        response.status(403).json({
+        response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
             message: 'You are not the owner of this Model'
         });
     }
@@ -46,11 +47,11 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
             next();
         }
         catch (error) {
-            response.status(401).send({ message: 'Token not valid' });
+            response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not valid' });
         }
     }
     else {
-        response.status(401).send({ message: 'Token not provided' });
+        response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send({ message: 'Token not provided' });
     }
 });
 exports.checkAuth = checkAuth;

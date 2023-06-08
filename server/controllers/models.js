@@ -18,6 +18,7 @@ const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
 const multer_1 = __importDefault(require("multer"));
 const axios_1 = __importDefault(require("axios"));
+const http_status_codes_1 = require("http-status-codes");
 // Funzione per ottenere un modello dal database utilizzando l'ID
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
@@ -39,30 +40,30 @@ const removeCredits = (userUID) => __awaiter(void 0, void 0, void 0, function* (
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield models_1.default.findAll();
-        return response.status(200).json(ALL);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(ALL);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per ottenere tutti i modelli associati all'UID dell'utente corrente
 const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getAllByUserUID(request.uid);
-        return response.status(200).json(MODEL);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(MODEL);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per ottenere un modello dal database utilizzando l'ID fornito
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getOneById(parseInt(request.params.id));
-        return response.status(200).json(MODEL);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(MODEL);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per creare un nuovo modello nel database
@@ -70,7 +71,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const { error, value } = createModelSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ error: error.details });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: error.details });
         }
         const MODEL_MODEL = {
             name: value.name,
@@ -81,18 +82,18 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         if (dataset) {
             try {
                 const MODEL = yield models_1.default.create(MODEL_MODEL);
-                return response.status(201).json(MODEL);
+                return response.status(http_status_codes_1.StatusCodes.CREATED).json(MODEL);
             }
             catch (error) {
-                return response.status(500).json(error);
+                return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
             }
         }
         else {
-            return response.status(404).json({ error: 'Dataset not found' });
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ error: 'Dataset not found' });
         }
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per aggiornare un modello nel database utilizzando l'ID fornito
@@ -100,7 +101,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
     try {
         const { error, value } = updateModelSchema.validate(request.body);
         if (error) {
-            return response.status(400).json({ message: error.details[0].message });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error.details[0].message });
         }
         const MODEL_MODEL = {
             name: value.name,
@@ -110,28 +111,28 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         if (dataset) {
             try {
                 const NROWS = yield models_1.default.update(MODEL_MODEL, { where: { uid: request.params.id } });
-                return response.status(200).json(NROWS);
+                return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
             }
             catch (error) {
-                return response.status(500).json(error);
+                return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
             }
         }
         else {
-            return response.status(404).json({ error: 'Dataset not found' });
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ error: 'Dataset not found' });
         }
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per eliminare un modello dal database utilizzando l'ID fornito
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const NROWS = yield models_1.default.destroy({ where: { uid: request.params.id } });
-        return response.status(200).json(NROWS);
+        return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per caricare un file del modello
@@ -155,16 +156,16 @@ const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0
     const upload = (0, multer_1.default)({ storage }).single('file');
     upload(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
         if (err instanceof multer_1.default.MulterError) {
-            return response.status(400).json({ error: err.message });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: err.message });
         }
         else if (err) {
-            return response.status(500).json({ error: err.message });
+            return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
         }
         // Verifica se c'è un file da caricare
         if (!request.file) {
-            return response.status(400).json({ error: 'Nessun file da caricare' });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Nessun file da caricare' });
         }
-        return response.status(200).json({ message: 'Caricamento effettuato con successo' });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' });
     }));
 });
 // Funzione per avviare l'inferenza di un modello
@@ -174,25 +175,25 @@ const inference = (request, response, next) => __awaiter(void 0, void 0, void 0,
         const DATASET = yield datasets_1.default.findByPk(MODEL.datasetUID);
         /*amqp.connect('amqp://admin:admin@rabbitmq:' + process.env.RABBITMQ_PORT, function(error, connection) {
             if (error) {
-                return response.status(500).json(error)
+                return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
             }
             connection.createChannel(function(error, channel) {
                 if (error) {
-                    return response.status(500).json(error)
+                    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
                 }
                 var queue = "queue"
                 var msg = "Hello World!"
                 channel.assertQueue(queue, { durable: false })
                 channel.sendToQueue(queue, Buffer.from(msg))
-                response.status(200).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
+                response.status(StatusCodes.OK).json( { "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": msg} )
             })
         })*/
-        const resp = yield axios_1.default.get("http://producer:5000/start-job/4", { params: {} });
+        const resp = yield axios_1.default.get("http://producer:5000/start-job/0", { params: {} });
         yield removeCredits(request.uid);
-        return response.status(200).json({ "Model": MODEL, "Dataset": DATASET, "Message": "Inference request sent successfully", "Job_Id": resp.data.id });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ "model": MODEL, "dataset": DATASET, "message": "Inference request sent successfully", "job_id": resp.data.id });
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per ottenere lo stato di un job di inferenza
@@ -200,10 +201,10 @@ const status = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const job_id = request.params.job_id;
         const resp = yield axios_1.default.get("http://producer:5000/status/" + job_id.toString(), { params: {} });
-        return response.status(200).json({ "Status": resp.data.status, "Job_Id": job_id });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ "status": resp.data.status, "job_id": job_id });
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 // Funzione per ottenere il risultato di un job di inferenza
@@ -211,10 +212,10 @@ const result = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const job_id = request.params.job_id;
         const resp = yield axios_1.default.get("http://producer:5000/result/" + job_id.toString(), { params: {} });
-        return response.status(200).json({ "Result": resp.data.result, "Job_Id": job_id });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ "result": resp.data.result, "job_id": job_id });
     }
     catch (error) {
-        return response.status(500).json(error);
+        return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
 const createModelSchema = joi_1.default.object({
