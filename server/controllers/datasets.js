@@ -165,38 +165,40 @@ const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 
                 },
             }),
             fileFilter: (request, file, cb) => {
-                // Verifica se è stato fornito un file
-                if (file) {
+                // Verifica se è un file di immagine
+                if (file.mimetype.startsWith('image/')) {
                     cb(null, true);
                 }
                 else {
-                    cb(new Error('Nessun file è stato fornito.'));
+                    cb(new Error('The uploaded file is not an image.'));
                 }
-            }
+            },
         });
         upload.single('file')(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
             if (err instanceof multer_1.MulterError) {
                 return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: err.message });
             }
             else if (err) {
-                return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error1: err.message });
+                return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
+            }
+            // Verifica se è stato fornito un file
+            if (!(request.file instanceof Array) && !request.file) {
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'No file was provided.' });
             }
             // Rimuovi i crediti dall'utente dopo il caricamento
             yield removeCredits(request.uid, 1);
-            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' });
+            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload completed successfully' });
         }));
     }
     else {
-        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Crediti insufficienti' });
+        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Insufficient credits' });
     }
 });
 const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     // Verifica se l'utente ha abbastanza crediti
-    if (yield checkCredits(request.uid, request.body.files.length)) {
+    if (yield checkCredits(request.uid, ((_a = request.body.files) === null || _a === void 0 ? void 0 : _a.length) || 0)) {
         // Controlla se ci sono file da caricare
-        if (!request.files || request.files.length === 0) {
-            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Nessun file da caricare' });
-        }
         const storage = multer_1.default.diskStorage({
             destination: (request, file, cb) => {
                 cb(null, '/images');
@@ -210,15 +212,19 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
         });
         const uploads = (0, multer_1.default)({ storage });
         uploads.array('files')(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
+            var _b;
             if (err instanceof multer_1.MulterError) {
                 return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: err.message });
             }
             else if (err) {
                 return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
             }
+            if (!(request.file instanceof Array) && !request.file) {
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'No file was provided.' });
+            }
             // Rimuovi i crediti dall'utente dopo il caricamento
-            yield removeCredits(request.uid, request.body.files.length);
-            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' });
+            yield removeCredits(request.uid, ((_b = request.body.files) === null || _b === void 0 ? void 0 : _b.length) || 0);
+            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload completato con successo' });
         }));
     }
     else {
@@ -259,9 +265,9 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
                     // rinomino i singoli file
                     const uid = request.uid;
                     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                    const newFileName = `file-${uid}-${uniqueSuffix}.${fileExtension}`;
+                    const newFileName = 'file-' + uid + '-' + uniqueSuffix + '.' + fileExtension;
                     // salvo col nuovo nome
-                    const filePath = `/images/${newFileName}`;
+                    const filePath = '/images/' + newFileName;
                     fs_1.default.writeFileSync(filePath, zipEntry.getData());
                     uploadedFiles.push(filePath);
                 }
