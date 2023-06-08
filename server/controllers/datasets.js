@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,7 +38,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const datasets_1 = __importDefault(require("./../models/datasets"));
 const users_1 = __importDefault(require("./users"));
 const joi_1 = __importDefault(require("joi"));
-const multer_1 = __importDefault(require("multer"));
+const multer_1 = __importStar(require("multer"));
 const adm_zip_1 = __importDefault(require("adm-zip"));
 const fs_1 = __importDefault(require("fs"));
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -126,6 +149,7 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
     }
 });
 const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // Verifica se l'utente ha abbastanza crediti
     if (yield checkCredits(request.UID, 1)) {
         const storage = multer_1.default.diskStorage({
             destination: (request, file, cb) => {
@@ -139,23 +163,29 @@ const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 
             },
         });
         const upload = (0, multer_1.default)({ storage });
-        upload.any()(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
-            if (err instanceof multer_1.default.MulterError) {
+        upload.single('file')(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
+            if (err instanceof multer_1.MulterError) {
                 return response.status(400).json({ error: err.message });
             }
             else if (err) {
-                return response.status(500).json({ error1: err.message }); //qualcosa è andato male
+                return response.status(500).json({ error1: err.message });
             }
+            // Rimuovi i crediti dall'utente dopo il caricamento
             yield removeCredits(request.UID, 1);
-            return response.status(200).json({ message: 'Upload successful' });
+            return response.status(200).json({ message: 'Caricamento effettuato con successo' });
         }));
     }
     else {
-        return response.status(400).json({ error: 'Not enough credits' });
+        return response.status(400).json({ error: 'Crediti insufficienti' });
     }
 });
 const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // Verifica se l'utente ha abbastanza crediti
     if (yield checkCredits(request.UID, request.body.files.length)) {
+        // Controlla se ci sono file da caricare
+        if (!request.files || request.files.length === 0) {
+            return response.status(400).json({ error: 'Nessun file da caricare' });
+        }
         const storage = multer_1.default.diskStorage({
             destination: (request, file, cb) => {
                 cb(null, '/images');
@@ -169,18 +199,19 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
         });
         const uploads = (0, multer_1.default)({ storage });
         uploads.array('files')(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
-            if (err instanceof multer_1.default.MulterError) {
+            if (err instanceof multer_1.MulterError) {
                 return response.status(400).json({ error: err.message });
             }
             else if (err) {
                 return response.status(500).json({ error: err.message });
             }
+            // Rimuovi i crediti dall'utente dopo il caricamento
             yield removeCredits(request.UID, request.body.files.length);
-            return response.status(200).json({ message: 'Upload successful' });
+            return response.status(200).json({ message: 'Caricamento effettuato con successo' });
         }));
     }
     else {
-        return response.status(400).json({ error: 'Not enough credits' });
+        return response.status(400).json({ error: 'Crediti insufficienti' });
     }
 });
 const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {

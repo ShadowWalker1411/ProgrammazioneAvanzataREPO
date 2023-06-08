@@ -18,20 +18,24 @@ const joi_1 = __importDefault(require("joi"));
 const datasets_1 = __importDefault(require("../models/datasets"));
 const multer_1 = __importDefault(require("multer"));
 const axios_1 = __importDefault(require("axios"));
+// Funzione per ottenere un modello dal database utilizzando l'ID
 const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findByPk(id);
     return MODEL;
 });
+// Funzione per ottenere tutti i modelli associati a un determinato userUID
 const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
     const MODEL = yield models_1.default.findAll({ where: { userUID: userUID } });
     return MODEL;
 });
+// Funzione per rimuovere 5 crediti da un utente specifico
 const removeCredits = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield users_1.default.getOneById(userUID);
     const credits = parseFloat((user.getDataValue('credits') - 5).toFixed(1));
     user.setDataValue('credits', credits);
     yield user.save();
 });
+// Funzione per ottenere tutti i modelli dal database
 const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ALL = yield models_1.default.findAll();
@@ -41,6 +45,7 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(500).json(error);
     }
 });
+// Funzione per ottenere tutti i modelli associati all'UID dell'utente corrente
 const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getAllByUserUID(request.UID);
@@ -50,6 +55,7 @@ const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
+// Funzione per ottenere un modello dal database utilizzando l'ID fornito
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getOneById(parseInt(request.params.id));
@@ -59,6 +65,7 @@ const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, f
         return response.status(500).json(error);
     }
 });
+// Funzione per creare un nuovo modello nel database
 const create = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { error, value } = createModelSchema.validate(request.body);
@@ -88,6 +95,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(500).json(error);
     }
 });
+// Funzione per aggiornare un modello nel database utilizzando l'ID fornito
 const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { error, value } = updateModelSchema.validate(request.body);
@@ -116,6 +124,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
+// Funzione per eliminare un modello dal database utilizzando l'ID fornito
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const NROWS = yield models_1.default.destroy({ where: { UID: request.params.id } });
@@ -125,6 +134,7 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(500).json(error);
     }
 });
+// Funzione per caricare un file del modello
 const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     const storage = multer_1.default.diskStorage({
         destination: (request, file, cb) => {
@@ -134,33 +144,30 @@ const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0
             const mid = request.params.id;
             const uid = request.UID;
             const ext = file.originalname.split('.').pop();
-            if (file) {
-                let ext = file.originalname.split('.').pop();
-                if (ext !== 'py') {
-                    const error = new Error('Invalid file extension. Only .py files are allowed.');
-                    return cb(error, '');
-                }
+            if (ext !== 'py') {
+                const error = new Error('Estensione file non valida. Sono consentiti solo file .py');
+                return cb(error, '');
             }
-            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext;
-            const filePath = '/models/' + filename;
-            const fs = require('fs');
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath); // Elimina il file esistente
-            }
+            const filename = 'file-' + mid + '-' + uid + '.' + ext;
             cb(null, filename);
-        }
+        },
     });
-    const upload = (0, multer_1.default)({ storage });
-    upload.single('file')(request, response, (err) => {
+    const upload = (0, multer_1.default)({ storage }).single('file');
+    upload(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
         if (err instanceof multer_1.default.MulterError) {
             return response.status(400).json({ error: err.message });
         }
         else if (err) {
-            return response.status(500).json({ error1: err.message });
+            return response.status(500).json({ error: err.message });
         }
-        return response.status(200).json({ message: 'Upload successful' });
-    });
+        // Verifica se c'è un file da caricare
+        if (!request.file) {
+            return response.status(400).json({ error: 'Nessun file da caricare' });
+        }
+        return response.status(200).json({ message: 'Caricamento effettuato con successo' });
+    }));
 });
+// Funzione per avviare l'inferenza di un modello
 const inference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MODEL = yield getOneById(parseInt(request.params.id));
@@ -188,6 +195,7 @@ const inference = (request, response, next) => __awaiter(void 0, void 0, void 0,
         return response.status(500).json(error);
     }
 });
+// Funzione per ottenere lo stato di un job di inferenza
 const status = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const job_id = request.params.job_id;
@@ -198,6 +206,7 @@ const status = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
         return response.status(500).json(error);
     }
 });
+// Funzione per ottenere il risultato di un job di inferenza
 const result = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const job_id = request.params.job_id;

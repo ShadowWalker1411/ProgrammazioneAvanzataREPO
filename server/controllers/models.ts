@@ -3,20 +3,22 @@ import usersController from './users';
 import { Request, Response, NextFunction } from 'express';
 import Joi, { Err } from 'joi';
 import Dataset from '../models/datasets';
-import multer from 'multer';
+import multer, { MulterError } from 'multer';
 import axios from "axios";
 
+// Funzione per ottenere un modello dal database utilizzando l'ID
 const getOneById = async (id: number) => {
     const MODEL = await Model.findByPk(id)
     return MODEL
 }
 
-
+// Funzione per ottenere tutti i modelli associati a un determinato userUID
 const getAllByUserUID = async (userUID: number) => {
     const MODEL = await Model.findAll({ where: { userUID: userUID } })
     return MODEL
 }
 
+// Funzione per rimuovere 5 crediti da un utente specifico
 const removeCredits = async (userUID: number) => {
     const user = await usersController.getOneById(userUID) as any
     const credits = parseFloat((user.getDataValue('credits') - 5).toFixed(1))
@@ -24,6 +26,7 @@ const removeCredits = async (userUID: number) => {
     await user.save();
 }
 
+// Funzione per ottenere tutti i modelli dal database
 const getAll = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const ALL = await Model.findAll()
@@ -33,6 +36,7 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
     }
 }
 
+// Funzione per ottenere tutti i modelli associati all'UID dell'utente corrente
 const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const MODEL = await getAllByUserUID((request as any).UID)
@@ -42,6 +46,7 @@ const getAllMine = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
+// Funzione per ottenere un modello dal database utilizzando l'ID fornito
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const MODEL = await getOneById(parseInt(request.params.id))
@@ -51,6 +56,7 @@ const getById = async (request: Request, response: Response, next: NextFunction)
     }
 }
 
+// Funzione per creare un nuovo modello nel database
 const create = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const { error, value } = createModelSchema.validate(request.body)
@@ -78,6 +84,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
     }
 }
 
+// Funzione per aggiornare un modello nel database utilizzando l'ID fornito
 const updateById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const { error, value } = updateModelSchema.validate(request.body)
@@ -104,6 +111,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
+// Funzione per eliminare un modello dal database utilizzando l'ID fornito
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const NROWS = await Model.destroy({where: {UID: request.params.id}})
@@ -113,44 +121,47 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
-
+// Funzione per caricare un file del modello
 const uploadFile = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.diskStorage({
         destination: (request, file, cb) => {
-            cb(null, '/models')
+            cb(null, '/models');
         },
         filename: (request, file, cb) => {
             const mid = request.params.id
             const uid = (request as any).UID
             const ext = file.originalname.split('.').pop()
-            if (file) {
-                let ext = file.originalname.split('.').pop();                
-                if (ext !== 'py') {
-                    const error = new Error('Invalid file extension. Only .py files are allowed.');
-                    return cb(error, '');                
-                }
+
+            if (ext !== 'py') {
+                const error = new Error('Estensione file non valida. Sono consentiti solo file .py')
+                return cb(error, '')
             }
-            const filename = file.fieldname + '-' + mid + '-' + uid + '.' + ext
-            const filePath = '/models/' + filename
-            const fs = require('fs')
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath); // Elimina il file esistente
-            }
+
+            const filename = 'file-' + mid + '-' + uid + '.' + ext;
             cb(null, filename)
-        }
-    })
+        },
+    });
 
-    const upload = multer({ storage })
-    upload.single('file')(request, response, (err: any) => {
+    const upload = multer({ storage }).single('file');
+
+    upload(request, response, async (err: any) => {
         if (err instanceof multer.MulterError) {
-            return response.status(400).json({ error: err.message })
+            return response.status(400).json({ error: err.message });
         } else if (err) {
-            return response.status(500).json({ error1: err.message })
+            return response.status(500).json({ error: err.message });
         }
-        return response.status(200).json({ message: 'Upload successful' })
-    })
-}
 
+        // Verifica se c'è un file da caricare
+        if (!request.file) {
+            return response.status(400).json({ error: 'Nessun file da caricare' })
+        }
+
+        return response.status(200).json({ message: 'Caricamento effettuato con successo' })
+    });
+};
+
+
+// Funzione per avviare l'inferenza di un modello
 const inference = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const MODEL = await getOneById(parseInt(request.params.id))
@@ -178,6 +189,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
     }
 }
 
+// Funzione per ottenere lo stato di un job di inferenza
 const status = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const job_id = request.params.job_id
@@ -187,7 +199,7 @@ const status = async (request: Request, response: Response, next: NextFunction) 
         return response.status(500).json(error)
     }
 }
-
+// Funzione per ottenere il risultato di un job di inferenza
 const result = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const job_id = request.params.job_id
