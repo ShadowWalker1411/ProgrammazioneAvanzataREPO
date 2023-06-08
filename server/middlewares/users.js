@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkTokenInference = exports.checkOwner = exports.checkAuth = exports.checkAdmin = void 0;
 const users_1 = __importDefault(require("../controllers/users"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// Middleware per verificare se l'utente è un amministratore
 const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking admin");
     const USER = yield users_1.default.getOneById(parseInt(request.UID));
@@ -26,6 +27,7 @@ const checkAdmin = (request, response, next) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.checkAdmin = checkAdmin;
+// Middleware per verificare l'autenticazione dell'utente
 const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     console.log("Checking auth");
@@ -45,6 +47,7 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.checkAuth = checkAuth;
+// Middleware per verificare se l'utente è il proprietario
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     console.log("Checking owner");
@@ -70,6 +73,7 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.checkOwner = checkOwner;
+// Middleware per verificare i token prima di un'inferenza
 const checkTokenInference = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking token");
     const creds = yield users_1.default.getCreds(request.UID);

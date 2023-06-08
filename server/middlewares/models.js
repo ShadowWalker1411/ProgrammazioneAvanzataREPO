@@ -15,12 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkOwner = exports.checkAuth = void 0;
 const models_1 = __importDefault(require("../controllers/models"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// Middleware per verificare se l'utente è il proprietario del modello
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
     const modelUID = request.params.id;
     const model = yield models_1.default.getOneById(parseInt(modelUID));
     if (!model) {
-        return response.status(404).json({ message: 'modello non trovato' });
+        return response.status(404).json({ message: 'Model not found' });
     }
     const userUID = request.UID;
     if (model.userUID == userUID) {
@@ -28,11 +29,12 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
     }
     else {
         response.status(403).json({
-            message: 'Non sei il proprietario di questo modello'
+            message: 'You are not the owner of this Model'
         });
     }
 });
 exports.checkOwner = checkOwner;
+// Middleware per verificare l'autenticazione dell'utente
 const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     console.log("Checking auth");

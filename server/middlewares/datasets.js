@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkOwner = exports.checkAuth = void 0;
 const datasets_1 = __importDefault(require("../controllers/datasets"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+// Middleware per verificare se l'utente è il proprietario del dataset
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
     const datasetUID = request.params.id;
@@ -34,6 +35,7 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.checkOwner = checkOwner;
+// Middleware per verificare l'autenticazione dell'utente
 const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     console.log("Checking auth");

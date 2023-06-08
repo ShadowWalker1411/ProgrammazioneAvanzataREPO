@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import usersController from '../controllers/users'
 import jwt from 'jsonwebtoken';
 
+// Middleware per verificare se l'utente è un amministratore
 const checkAdmin = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking admin")
     const USER = await usersController.getOneById(parseInt((request as any).UID))
@@ -12,6 +13,7 @@ const checkAdmin = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
+// Middleware per verificare l'autenticazione dell'utente
 const checkAuth = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking auth")
     const token = request.headers.authorization?.split(" ")[1]
@@ -28,6 +30,7 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     }
 }
 
+// Middleware per verificare se l'utente è il proprietario
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking owner")
     const token = request.headers.authorization?.split(" ")[1]
@@ -49,6 +52,7 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     }
 }
 
+// Middleware per verificare i token prima di un'inferenza
 const checkTokenInference = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking token")
     const creds = await usersController.getCreds((request as any).UID)

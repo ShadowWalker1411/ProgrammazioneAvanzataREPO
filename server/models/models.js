@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = __importDefault(require("sequelize"));
 const database_1 = __importDefault(require("../utils/database"));
+// Definizione del modello Model
 const Model = database_1.default.define("models", {
     UID: {
         type: sequelize_1.default.INTEGER,
@@ -26,4 +27,5 @@ const Model = database_1.default.define("models", {
         allowNull: false,
     },
 });
+// Esportazione del modello Model per l'uso in altri moduli
 exports.default = Model;

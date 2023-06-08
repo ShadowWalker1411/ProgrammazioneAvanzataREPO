@@ -1,6 +1,7 @@
 import Sequelize from "sequelize"
 import sequelize from "../utils/database"
 
+// Definizione del modello User
 const User = sequelize.define("user", {
     UID: {
         type: Sequelize.INTEGER,
@@ -34,4 +35,5 @@ const User = sequelize.define("user", {
     }
 })
 
+// Esportazione del modello User per l'uso in altri moduli
 export default User

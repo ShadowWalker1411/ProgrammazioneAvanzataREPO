@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import datasetsController from '../controllers/datasets'
 import jwt from 'jsonwebtoken';
 
-
+// Middleware per verificare se l'utente è il proprietario del dataset
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking owner");
     const datasetUID = request.params.id; 
@@ -21,7 +21,7 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     }
 };
 
-
+// Middleware per verificare l'autenticazione dell'utente
 const checkAuth = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking auth")
     const token = request.headers.authorization?.split(" ")[1]
