@@ -138,7 +138,7 @@ const login = async (request: Request, response: Response, next: NextFunction) =
 const getCredits = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Ottieni i crediti dell'utente utilizzando l'ID fornito nella richiesta
-        const credits = await getCreds(parseInt((request as any).UID));
+        const credits = await getCreds(parseInt((request as any).uid));
         // Restituisci i crediti come risposta JSON con lo stato 200
         return response.status(200).json({ "credits": credits });
     } catch (error) {

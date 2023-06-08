@@ -140,7 +140,7 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
 const getCredits = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Ottieni i crediti dell'utente utilizzando l'ID fornito nella richiesta
-        const credits = yield getCreds(parseInt(request.UID));
+        const credits = yield getCreds(parseInt(request.uid));
         // Restituisci i crediti come risposta JSON con lo stato 200
         return response.status(200).json({ "credits": credits });
     }
