@@ -18,7 +18,7 @@ router
     .delete('/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.deleteById) // Rotta per eliminare un modello tramite ID (solo per il proprietario autenticato)
     .post('/image/:id', models_2.checkAuth, models_2.checkOwner, models_1.default.uploadFile); // Rotta per caricare un'immagine di un modello tramite ID (solo per il proprietario autenticato)
 router
-    .get('/inference/:id', models_2.checkAuth, users_1.checkTokenInference, models_1.default.inference) // Rotta per l'inferenza di un modello tramite ID (autenticazione e token di inferenza richiesti)
+    .get('/inference/:id', models_2.checkAuth, models_2.checkOwner, users_1.checkTokenInference, models_1.default.inference) // Rotta per l'inferenza di un modello tramite ID (autenticazione e token di inferenza richiesti)(solo per il proprietario autenticato)
     .get('/status/:job_id', models_2.checkAuth, models_1.default.status) // Rotta per ottenere lo stato di un lavoro di inferenza tramite ID (autenticazione richiesta)
     .get('/result/:job_id', models_2.checkAuth, models_1.default.result); // Rotta per ottenere il risultato di un lavoro di inferenza tramite ID (autenticazione richiesta)
 exports.default = router; // Esportazione del router per l'uso in altri moduli

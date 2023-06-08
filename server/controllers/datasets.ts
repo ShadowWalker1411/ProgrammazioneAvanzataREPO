@@ -11,13 +11,13 @@ const getOneById = async (id: number) => {
     return DATASET
 }
 
-const getAllByUseruid = async (useruid: number) => {
-    const DATASETS = await Dataset.findAll({ where: { useruid: useruid } })
+const getAllByUseruid = async (userUID: number) => {
+    const DATASETS = await Dataset.findAll({ where: { userUID: userUID } })
     return DATASETS
 }
 
-const checkCredits = async (useruid: number, numberOfFiles: number) => {
-    const user = await usersController.getOneById(useruid) as any
+const checkCredits = async (userUID: number, numberOfFiles: number) => {
+    const user = await usersController.getOneById(userUID) as any
     const currentCredits = parseFloat(user.getDataValue('credits').toFixed(1))
     if (currentCredits >= 0.1 * numberOfFiles) {
         return true
@@ -26,8 +26,8 @@ const checkCredits = async (useruid: number, numberOfFiles: number) => {
     }
 }
 
-const removeCredits = async (useruid: number, numberOfFiles: number) => {
-    const user = await usersController.getOneById(useruid) as any
+const removeCredits = async (userUID: number, numberOfFiles: number) => {
+    const user = await usersController.getOneById(userUID) as any
     const credits = parseFloat((user.getDataValue('credits') - 0.1 * numberOfFiles).toFixed(1))
     user.setDataValue('credits', credits)
     await user.save()
@@ -70,7 +70,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            useruid: (request as any).uid
+            userUID: (request as any).uid
         }
         try {
             const DATASET = await Dataset.create(DATSET_MODEL)

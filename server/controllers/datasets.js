@@ -45,12 +45,12 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const DATASET = yield datasets_1.default.findByPk(id);
     return DATASET;
 });
-const getAllByUseruid = (useruid) => __awaiter(void 0, void 0, void 0, function* () {
-    const DATASETS = yield datasets_1.default.findAll({ where: { useruid: useruid } });
+const getAllByUseruid = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
+    const DATASETS = yield datasets_1.default.findAll({ where: { userUID: userUID } });
     return DATASETS;
 });
-const checkCredits = (useruid, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_1.default.getOneById(useruid);
+const checkCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.default.getOneById(userUID);
     const currentCredits = parseFloat(user.getDataValue('credits').toFixed(1));
     if (currentCredits >= 0.1 * numberOfFiles) {
         return true;
@@ -59,8 +59,8 @@ const checkCredits = (useruid, numberOfFiles) => __awaiter(void 0, void 0, void 
         return false;
     }
 });
-const removeCredits = (useruid, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_1.default.getOneById(useruid);
+const removeCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.default.getOneById(userUID);
     const credits = parseFloat((user.getDataValue('credits') - 0.1 * numberOfFiles).toFixed(1));
     user.setDataValue('credits', credits);
     yield user.save();
@@ -102,7 +102,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            useruid: request.uid
+            userUID: request.uid
         };
         try {
             const DATASET = yield datasets_1.default.create(DATSET_MODEL);

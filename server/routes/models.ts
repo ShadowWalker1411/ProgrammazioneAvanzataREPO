@@ -16,7 +16,7 @@ router
     .post('/image/:id', checkAuth, checkOwner, controller.uploadFile) // Rotta per caricare un'immagine di un modello tramite ID (solo per il proprietario autenticato)
 
 router
-    .get('/inference/:id', checkAuth, checkTokenInference, controller.inference) // Rotta per l'inferenza di un modello tramite ID (autenticazione e token di inferenza richiesti)
+    .get('/inference/:id', checkAuth, checkOwner, checkTokenInference, controller.inference) // Rotta per l'inferenza di un modello tramite ID (autenticazione e token di inferenza richiesti)(solo per il proprietario autenticato)
     .get('/status/:job_id', checkAuth, controller.status) // Rotta per ottenere lo stato di un lavoro di inferenza tramite ID (autenticazione richiesta)
     .get('/result/:job_id', checkAuth, controller.result) // Rotta per ottenere il risultato di un lavoro di inferenza tramite ID (autenticazione richiesta)
 
