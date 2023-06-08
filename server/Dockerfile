@@ -23,15 +23,11 @@ FROM node:14
 
 EXPOSE 3001
 
+COPY ../package.json ./
+
 RUN npm install i npm@latest -g
 
 WORKDIR /src
-
-COPY ../package.json ../package*.json ./
-
-# RUN npm install -g express pg sequelize jsonwebtoken bcrypt joi
-
-RUN npm install
 
 RUN mkdir /src/Images
 
