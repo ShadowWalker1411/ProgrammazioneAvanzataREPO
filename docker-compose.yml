@@ -44,7 +44,6 @@ services:
     - CREDITS=5000
     - SECRET_KEY=califragilisticospiralitoso
     - RABBITMQ_PORT=5672
-    - UPLOAD_PATH=/images
     volumes:
       - shared_models:/images
       - shared_files:/models

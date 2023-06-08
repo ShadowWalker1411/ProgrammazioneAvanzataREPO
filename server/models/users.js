@@ -7,7 +7,7 @@ const sequelize_1 = __importDefault(require("sequelize"));
 const database_1 = __importDefault(require("../utils/database"));
 // Definizione del modello User
 const User = database_1.default.define("user", {
-    UID: {
+    uid: {
         type: sequelize_1.default.INTEGER,
         primaryKey: true,
         autoIncrement: true,

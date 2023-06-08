@@ -3,7 +3,7 @@ import sequelize from "../utils/database"
 
 // Definizione del modello User
 const User = sequelize.define("user", {
-    UID: {
+    uid: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,

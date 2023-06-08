@@ -11,7 +11,7 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     if (!dataset) {
         return response.status(404).json({ message: 'Dataset not found' });
     }
-    const userUID = (request as any).UID;
+    const userUID = (request as any).uid;
     if ((dataset as any).userUID == userUID) {
         next();
     } else {

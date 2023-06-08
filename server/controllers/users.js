@@ -92,7 +92,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         };
         try {
             // Aggiornamento dell'utente nel database
-            const NROWS = yield users_1.default.update(USER_MODEL, { where: { UID: request.params.id } });
+            const NROWS = yield users_1.default.update(USER_MODEL, { where: { uid: request.params.id } });
             return response.status(200).json(NROWS);
         }
         catch (error) {
@@ -107,7 +107,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Eliminazione dell'utente dal database
-        const NROWS = yield users_1.default.destroy({ where: { UID: request.params.id } });
+        const NROWS = yield users_1.default.destroy({ where: { uid: request.params.id } });
         return response.status(200).json(NROWS);
     }
     catch (error) {
@@ -122,7 +122,7 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
         // Confronta la password fornita nella richiesta con la password hashata dell'utente nel database
         if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
             // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
-            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("UID") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
+            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
             // Restituisci il token come risposta JSON con lo stato 200
             return response.status(200).json({ token });
         }
@@ -140,7 +140,7 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
 const getCredits = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Ottieni i crediti dell'utente utilizzando l'ID fornito nella richiesta
-        const credits = yield getCreds(parseInt(request.UID));
+        const credits = yield getCreds(parseInt(request.uid));
         // Restituisci i crediti come risposta JSON con lo stato 200
         return response.status(200).json({ "credits": credits });
     }

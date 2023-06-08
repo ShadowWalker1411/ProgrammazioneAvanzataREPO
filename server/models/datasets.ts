@@ -3,7 +3,7 @@ import sequelize from "../utils/database"
 
 // Definizione del modello Dataset
 const Dataset = sequelize.define("dataset", {
-    UID: {
+    uid: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,

@@ -11,13 +11,13 @@ const getOneById = async (id: number) => {
     return DATASET
 }
 
-const getAllByUserUID = async (userUID: number) => {
-    const DATASETS = await Dataset.findAll({ where: { userUID: userUID } })
+const getAllByUseruid = async (useruid: number) => {
+    const DATASETS = await Dataset.findAll({ where: { useruid: useruid } })
     return DATASETS
 }
 
-const checkCredits = async (userUID: number, numberOfFiles: number) => {
-    const user = await usersController.getOneById(userUID) as any
+const checkCredits = async (useruid: number, numberOfFiles: number) => {
+    const user = await usersController.getOneById(useruid) as any
     const currentCredits = parseFloat(user.getDataValue('credits').toFixed(1))
     if (currentCredits >= 0.1 * numberOfFiles) {
         return true
@@ -26,8 +26,8 @@ const checkCredits = async (userUID: number, numberOfFiles: number) => {
     }
 }
 
-const removeCredits = async (userUID: number, numberOfFiles: number) => {
-    const user = await usersController.getOneById(userUID) as any
+const removeCredits = async (useruid: number, numberOfFiles: number) => {
+    const user = await usersController.getOneById(useruid) as any
     const credits = parseFloat((user.getDataValue('credits') - 0.1 * numberOfFiles).toFixed(1))
     user.setDataValue('credits', credits)
     await user.save()
@@ -44,7 +44,7 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
 
 const getAllMine = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const DATASETS = await getAllByUserUID(parseInt((request as any).UID))
+        const DATASETS = await getAllByUseruid(parseInt((request as any).uid))
         return response.status(200).json(DATASETS)
     } catch (error) {
         return response.status(500).json(error)
@@ -70,7 +70,7 @@ const create = async (request: Request, response: Response, next: NextFunction) 
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            userUID: (request as any).UID
+            useruid: (request as any).uid
         }
         try {
             const DATASET = await Dataset.create(DATSET_MODEL)
@@ -95,7 +95,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
             numClasses: value.numClasses,
         }
         try {
-            const NROWS = await Dataset.update(DATSET_MODEL, { where: { UID: request.params.id } })
+            const NROWS = await Dataset.update(DATSET_MODEL, { where: { uid: request.params.id } })
             return response.status(200).json(NROWS)
         } catch (error) {
             return response.status(500).json(error)
@@ -107,7 +107,7 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await Dataset.destroy({where: {UID: request.params.id}})
+        const NROWS = await Dataset.destroy({where: {uid: request.params.id}})
         return response.status(200).json(NROWS)
     } catch (error) {
         return response.status(500).json(error)
@@ -116,13 +116,13 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
   
 const uploadImage = async (request: Request, response: Response, next: NextFunction) => {
     // Verifica se l'utente ha abbastanza crediti
-    if (await checkCredits((request as any).UID, 1)) {
+    if (await checkCredits((request as any).uid, 1)) {
         const storage = multer.diskStorage({
             destination: (request, file, cb) => {
                 cb(null, '/images')
             },
             filename: (request, file, cb) => {
-                const uid = (request as any).UID
+                const uid = (request as any).uid
                 const uniqueSuffix = Date.now() + '-'  + Math.round(Math.random() * 1E9) + '.' +  file.mimetype.split('/')[1]         
                 const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix
                 cb(null, filename)
@@ -139,7 +139,7 @@ const uploadImage = async (request: Request, response: Response, next: NextFunct
 
             
             // Rimuovi i crediti dall'utente dopo il caricamento
-            await removeCredits((request as any).UID, 1)
+            await removeCredits((request as any).uid, 1)
             return response.status(200).json({ message: 'Caricamento effettuato con successo' })
         })
     } else {
@@ -150,7 +150,7 @@ const uploadImage = async (request: Request, response: Response, next: NextFunct
 
 const uploadImages = async (request: Request, response: Response, next: NextFunction) => {
     // Verifica se l'utente ha abbastanza crediti
-    if (await checkCredits((request as any).UID, request.body.files.length)) {
+    if (await checkCredits((request as any).uid, request.body.files.length)) {
         // Controlla se ci sono file da caricare
         if (!request.files || request.files.length === 0) {
             return response.status(400).json({ error: 'Nessun file da caricare' })
@@ -161,7 +161,7 @@ const uploadImages = async (request: Request, response: Response, next: NextFunc
                 cb(null, '/images')
             },
             filename: (request, file, cb) => {
-                const uid = (request as any).UID
+                const uid = (request as any).uid
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1]
                 const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix
                 cb(null, filename)
@@ -177,7 +177,7 @@ const uploadImages = async (request: Request, response: Response, next: NextFunc
             }
 
             // Rimuovi i crediti dall'utente dopo il caricamento
-            await removeCredits((request as any).UID, request.body.files.length)
+            await removeCredits((request as any).uid, request.body.files.length)
             return response.status(200).json({ message: 'Caricamento effettuato con successo' })
         })
     } else {
@@ -214,7 +214,7 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
             const zip = new AdmZip(file.buffer)
             const zipEntries = zip.getEntries()
 
-            if (await checkCredits((request as any).UID, zipEntries.length)) {
+            if (await checkCredits((request as any).uid, zipEntries.length)) {
                 // Leggo i singoli file nella zip
                 for (const zipEntry of zipEntries) {
                     // Extract the file name and extension
@@ -225,7 +225,7 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
                     const fileExtension = fileName.split('.').pop()
 
                     // rinomino i singoli file
-                    const uid = (request as any).UID
+                    const uid = (request as any).uid
                     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
                     const newFileName = `file-${uid}-${uniqueSuffix}.${fileExtension}`
 
@@ -239,7 +239,7 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
                 return response.status(400).json({ error: 'Not enough credits' })
             }
         }
-        await removeCredits((request as any).UID, uploadedFiles.length)
+        await removeCredits((request as any).uid, uploadedFiles.length)
         return response.status(200).json({ message: 'Upload successful', files: uploadedFiles })
     })
 }
@@ -259,7 +259,7 @@ const updateDatasetSchema = Joi.object({
 
 const datasetsController = {
     getAll, getAllMine,
-    getById, getOneById, getAllByUserUID,
+    getById, getOneById, getAllByUseruid,
     create,
     updateById,
     deleteById,

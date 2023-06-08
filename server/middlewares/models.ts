@@ -10,7 +10,7 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
     if (!model) {
         return response.status(404).json({ message: 'Model not found' })
     }
-    const userUID = (request as any).UID
+    const userUID = (request as any).uid
     if ((model as any).userUID == userUID) {
         next()
     } else {

@@ -3,7 +3,7 @@ import sequelize from "../utils/database"
 
 // Definizione del modello Model
 const Model = sequelize.define("models", {
-    UID: {
+    uid: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,

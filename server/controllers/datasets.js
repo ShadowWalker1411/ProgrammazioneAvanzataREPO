@@ -45,12 +45,12 @@ const getOneById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const DATASET = yield datasets_1.default.findByPk(id);
     return DATASET;
 });
-const getAllByUserUID = (userUID) => __awaiter(void 0, void 0, void 0, function* () {
-    const DATASETS = yield datasets_1.default.findAll({ where: { userUID: userUID } });
+const getAllByUseruid = (useruid) => __awaiter(void 0, void 0, void 0, function* () {
+    const DATASETS = yield datasets_1.default.findAll({ where: { useruid: useruid } });
     return DATASETS;
 });
-const checkCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_1.default.getOneById(userUID);
+const checkCredits = (useruid, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.default.getOneById(useruid);
     const currentCredits = parseFloat(user.getDataValue('credits').toFixed(1));
     if (currentCredits >= 0.1 * numberOfFiles) {
         return true;
@@ -59,8 +59,8 @@ const checkCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 
         return false;
     }
 });
-const removeCredits = (userUID, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield users_1.default.getOneById(userUID);
+const removeCredits = (useruid, numberOfFiles) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield users_1.default.getOneById(useruid);
     const credits = parseFloat((user.getDataValue('credits') - 0.1 * numberOfFiles).toFixed(1));
     user.setDataValue('credits', credits);
     yield user.save();
@@ -76,7 +76,7 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
 });
 const getAllMine = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const DATASETS = yield getAllByUserUID(parseInt(request.UID));
+        const DATASETS = yield getAllByUseruid(parseInt(request.uid));
         return response.status(200).json(DATASETS);
     }
     catch (error) {
@@ -102,7 +102,7 @@ const create = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
             name: value.name,
             tags: value.tags,
             numClasses: value.numClasses,
-            userUID: request.UID
+            useruid: request.uid
         };
         try {
             const DATASET = yield datasets_1.default.create(DATSET_MODEL);
@@ -128,7 +128,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
             numClasses: value.numClasses,
         };
         try {
-            const NROWS = yield datasets_1.default.update(DATSET_MODEL, { where: { UID: request.params.id } });
+            const NROWS = yield datasets_1.default.update(DATSET_MODEL, { where: { uid: request.params.id } });
             return response.status(200).json(NROWS);
         }
         catch (error) {
@@ -141,7 +141,7 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield datasets_1.default.destroy({ where: { UID: request.params.id } });
+        const NROWS = yield datasets_1.default.destroy({ where: { uid: request.params.id } });
         return response.status(200).json(NROWS);
     }
     catch (error) {
@@ -150,13 +150,13 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     // Verifica se l'utente ha abbastanza crediti
-    if (yield checkCredits(request.UID, 1)) {
+    if (yield checkCredits(request.uid, 1)) {
         const storage = multer_1.default.diskStorage({
             destination: (request, file, cb) => {
                 cb(null, '/images');
             },
             filename: (request, file, cb) => {
-                const uid = request.UID;
+                const uid = request.uid;
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
                 const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
                 cb(null, filename);
@@ -171,7 +171,7 @@ const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 
                 return response.status(500).json({ error1: err.message });
             }
             // Rimuovi i crediti dall'utente dopo il caricamento
-            yield removeCredits(request.UID, 1);
+            yield removeCredits(request.uid, 1);
             return response.status(200).json({ message: 'Caricamento effettuato con successo' });
         }));
     }
@@ -181,7 +181,7 @@ const uploadImage = (request, response, next) => __awaiter(void 0, void 0, void 
 });
 const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     // Verifica se l'utente ha abbastanza crediti
-    if (yield checkCredits(request.UID, request.body.files.length)) {
+    if (yield checkCredits(request.uid, request.body.files.length)) {
         // Controlla se ci sono file da caricare
         if (!request.files || request.files.length === 0) {
             return response.status(400).json({ error: 'Nessun file da caricare' });
@@ -191,7 +191,7 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
                 cb(null, '/images');
             },
             filename: (request, file, cb) => {
-                const uid = request.UID;
+                const uid = request.uid;
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
                 const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
                 cb(null, filename);
@@ -206,7 +206,7 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
                 return response.status(500).json({ error: err.message });
             }
             // Rimuovi i crediti dall'utente dopo il caricamento
-            yield removeCredits(request.UID, request.body.files.length);
+            yield removeCredits(request.uid, request.body.files.length);
             return response.status(200).json({ message: 'Caricamento effettuato con successo' });
         }));
     }
@@ -236,7 +236,7 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
             }
             const zip = new adm_zip_1.default(file.buffer);
             const zipEntries = zip.getEntries();
-            if (yield checkCredits(request.UID, zipEntries.length)) {
+            if (yield checkCredits(request.uid, zipEntries.length)) {
                 // Leggo i singoli file nella zip
                 for (const zipEntry of zipEntries) {
                     // Extract the file name and extension
@@ -246,7 +246,7 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
                     }
                     const fileExtension = fileName.split('.').pop();
                     // rinomino i singoli file
-                    const uid = request.UID;
+                    const uid = request.uid;
                     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
                     const newFileName = `file-${uid}-${uniqueSuffix}.${fileExtension}`;
                     // salvo col nuovo nome
@@ -259,7 +259,7 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
                 return response.status(400).json({ error: 'Not enough credits' });
             }
         }
-        yield removeCredits(request.UID, uploadedFiles.length);
+        yield removeCredits(request.uid, uploadedFiles.length);
         return response.status(200).json({ message: 'Upload successful', files: uploadedFiles });
     }));
 });
@@ -275,7 +275,7 @@ const updateDatasetSchema = joi_1.default.object({
 });
 const datasetsController = {
     getAll, getAllMine,
-    getById, getOneById, getAllByUserUID,
+    getById, getOneById, getAllByUseruid,
     create,
     updateById,
     deleteById,

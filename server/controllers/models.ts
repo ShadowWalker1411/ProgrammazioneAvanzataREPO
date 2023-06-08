@@ -183,7 +183,7 @@ const inference = async (request: Request, response: Response, next: NextFunctio
         })*/
         const resp = await axios.get("http://producer:5000/start-job/4", { params: {} })
         await removeCredits((request as any).UID)
-        return response.status(200).json({ "MODEL": MODEL, "DATASET": DATASET, "MESSAGE": "Inference request sent successfully", "JOB_ID": resp.data.id })
+        return response.status(200).json({ "Model": MODEL, "Dataset": DATASET, "Message": "Inference request sent successfully", "Job_Id": resp.data.id })
     } catch (error) {
         return response.status(500).json(error)
     }
@@ -194,7 +194,7 @@ const status = async (request: Request, response: Response, next: NextFunction) 
     try {
         const job_id = request.params.job_id
         const resp = await axios.get("http://producer:5000/status/" + job_id.toString(), { params: {} });
-        return response.status(200).json({ "STATUS": resp.data.status, "JOB_ID": job_id })
+        return response.status(200).json({ "Status": resp.data.status, "Job_Id": job_id })
     } catch (error) {
         return response.status(500).json(error)
     }
@@ -204,7 +204,7 @@ const result = async (request: Request, response: Response, next: NextFunction) 
     try {
         const job_id = request.params.job_id
         const resp = await axios.get("http://producer:5000/result/" + job_id.toString(), { params: {} })
-        return response.status(200).json({ "RESULT": resp.data.result, "JOB_ID": job_id })
+        return response.status(200).json({ "Result": resp.data.result, "Job_Id": job_id })
     } catch (error) {
         return response.status(500).json(error)
     }

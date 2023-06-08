@@ -35,7 +35,7 @@ const checkAuth = (request, response, next) => __awaiter(void 0, void 0, void 0,
     if (token) {
         try {
             const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY || "");
-            request.UID = decoded.id;
+            request.uid = decoded.id;
             next();
         }
         catch (error) {

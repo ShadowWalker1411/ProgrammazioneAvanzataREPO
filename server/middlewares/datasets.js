@@ -24,7 +24,7 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
     if (!dataset) {
         return response.status(404).json({ message: 'Dataset not found' });
     }
-    const userUID = request.UID;
+    const userUID = request.uid;
     if (dataset.userUID == userUID) {
         next();
     }

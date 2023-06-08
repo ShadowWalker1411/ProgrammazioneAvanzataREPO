@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 // Middleware per verificare se l'utente è un amministratore
 const checkAdmin = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking admin")
-    const USER = await usersController.getOneById(parseInt((request as any).UID))
+    const USER = await usersController.getOneById(parseInt((request as any).uid))
     if (USER?.get("admin") === true) {
         next()
     } else {
@@ -20,7 +20,7 @@ const checkAuth = async (request: Request, response: Response, next: NextFunctio
     if (token) {
         try {
             const decoded: any = jwt.verify(token, process.env.SECRET_KEY || "");
-            (request as any).UID = decoded.id
+            (request as any).uid = decoded.id
             next()
         } catch (error) {
             response.status(401).send({ message: 'Token not valid' })
@@ -55,7 +55,7 @@ const checkOwner = async (request: Request, response: Response, next: NextFuncti
 // Middleware per verificare i token prima di un'inferenza
 const checkTokenInference = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking token")
-    const creds = await usersController.getCreds((request as any).UID)
+    const creds = await usersController.getCreds((request as any).uid)
     if (creds >= 5){
         next()
     } else {
