@@ -94,7 +94,11 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         try {
             // Aggiornamento dell'utente nel database
             const NROWS = yield users_1.default.update(USER_MODEL, { where: { uid: request.params.id } });
-            return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
+            if (NROWS[0] === 0) {
+                return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+            }
+            const USER = yield users_1.default.findOne({ where: { uid: request.params.id } });
+            return response.status(http_status_codes_1.StatusCodes.OK).json(USER);
         }
         catch (error) {
             return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
@@ -108,8 +112,12 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Eliminazione dell'utente dal database
-        const NROWS = yield users_1.default.destroy({ where: { uid: request.params.id } });
-        return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
+        const USER = yield users_1.default.findOne({ where: { uid: request.params.id } });
+        if (!USER) {
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+        }
+        yield users_1.default.destroy({ where: { uid: request.params.id } });
+        return response.status(http_status_codes_1.StatusCodes.OK).json(USER);
     }
     catch (error) {
         return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);

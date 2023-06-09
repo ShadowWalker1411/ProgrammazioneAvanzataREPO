@@ -1,0 +1,31 @@
+@startuml getCredits
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: GET/users/credits/mine
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else AUTH Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+group step: GetCredits
+    autonumber 3
+    Middlewares -> Controllers --++: getById
+    Controllers -> Postgres ++: findByPk()
+    Postgres -> Controllers: return User
+    Controllers -> Controllers : getCreds
+    Controllers --> User : 200 OK - Credits
+else Get Failed
+    autonumber 7
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

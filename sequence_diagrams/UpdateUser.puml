@@ -1,0 +1,33 @@
+@startuml updateUser
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: PUT/users/:id
+group step: Ownership
+    Middlewares -> Middlewares : CheckOwner
+else Ownership Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized
+end
+group step: UpdateUser
+    autonumber 3
+    Middlewares -> Controllers --++: updateById
+    Controllers -> Postgres ++: update()
+    Postgres -> Controllers: return NROWS
+    Controllers -> Postgres : findByPk()
+    Postgres -> Controllers: return User
+    Controllers --> User : 200 OK - User
+else Update Failed
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

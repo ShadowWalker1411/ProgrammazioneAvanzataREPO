@@ -1,0 +1,39 @@
+@startuml addUser
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: POST/users/credits/:email
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+group step: Authorization
+    autonumber 3
+    Middlewares -> Middlewares : CheckAdmin
+else Authorization Failed
+    Middlewares --[#red]> User : 401 Unauthorized
+end
+
+group step: AddCredits
+    autonumber 4
+    Middlewares -> Controllers --++: getById
+    Controllers -> Postgres ++: findByPk()
+    Postgres -> Controllers: return User
+    Controllers -> Postgres : update()
+    Postgres -> Controllers: return NROWS
+    Controllers --> User : 200 OK - Success
+else Update Failed
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

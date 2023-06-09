@@ -1,0 +1,31 @@
+@startuml getUser
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: GET/users/:id
+group step: Ownership
+    Middlewares -> Middlewares : CheckOwner
+else Ownership Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized
+end
+group step: GetUser
+    autonumber 3
+    Middlewares -> Controllers --++: getById
+    Controllers -> Postgres ++: findByPk()
+    Postgres -> Controllers: return User
+    Controllers --> User : 200 OK - User
+else Get Failed
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

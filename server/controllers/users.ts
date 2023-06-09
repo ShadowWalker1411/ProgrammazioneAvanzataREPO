@@ -91,7 +91,11 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         try {
             // Aggiornamento dell'utente nel database
             const NROWS = await User.update(USER_MODEL, { where: { uid: request.params.id } })
-            return response.status(StatusCodes.OK).json(NROWS)
+            if (NROWS[0] === 0) {
+                return response.status(StatusCodes.NOT_FOUND).json({ message: 'User not found'})
+            }
+            const USER = await User.findOne({ where: { uid: request.params.id }})
+            return response.status(StatusCodes.OK).json(USER)
         } catch (error) {
             return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
         }
@@ -104,8 +108,13 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         // Eliminazione dell'utente dal database
-        const NROWS = await User.destroy({ where: { uid: request.params.id } })
-        return response.status(StatusCodes.OK).json(NROWS)
+
+        const USER = await User.findOne({ where: { uid: request.params.id }})
+        if (!USER) {
+            return response.status(StatusCodes.NOT_FOUND).json({ message: 'User not found'})
+        }
+        await User.destroy({ where: { uid: request.params.id } })
+        return response.status(StatusCodes.OK).json(USER)
     } catch (error) {
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
@@ -114,27 +123,27 @@ const deleteById = async (request: Request, response: Response, next: NextFuncti
 
 const login = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      // Trova l'utente nel database utilizzando il nome utente fornito nella richiesta
-      const USER = await User.findOne({ where: { username: request.body.username } })
-  
-      if (USER) {
-        // Confronta la password fornita nella richiesta con la password hashata dell'utente nel database
-        if (bcrypt.compareSync(request.body.password, USER?.getDataValue('password'))) {
-          // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
-          const token = jwt.sign({ id: USER?.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" })
-          // Restituisci il token come risposta JSON con lo stato StatusCodes.OK
-          return response.status(StatusCodes.OK).json({ token })
+        // Trova l'utente nel database utilizzando il nome utente fornito nella richiesta
+        const USER = await User.findOne({ where: { username: request.body.username } })
+    
+        if (USER) {
+            // Confronta la password fornita nella richiesta con la password hashata dell'utente nel database
+            if (bcrypt.compareSync(request.body.password, USER?.getDataValue('password'))) {
+                // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
+                const token = jwt.sign({ id: USER?.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" })
+                // Restituisci il token come risposta JSON con lo stato StatusCodes.OK
+                return response.status(StatusCodes.OK).json({ token })
+            } else {
+                // La password non corrisponde, restituisce un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
+                return response.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid credentials" })
+            }
         } else {
-          // La password non corrisponde, restituisce un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
-          return response.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid credentials" })
+                // L'utente non esiste, restituiscr un messaggio di errore con lo stato StatusCodes.NOT_FOUND
+                return response.status(StatusCodes.NOT_FOUND).json({ message: "User not found" })
         }
-      } else {
-        // L'utente non esiste, restituiscr un messaggio di errore con lo stato StatusCodes.NOT_FOUND
-        return response.status(StatusCodes.NOT_FOUND).json({ message: "User not found" })
-      }
     } catch (error) {
-      // Si è verificato un errore, restituisce una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
-      return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
+        // Si è verificato un errore, restituisce una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }
   }
   
@@ -180,9 +189,9 @@ const addCredits = async (request: Request, response: Response, next: NextFuncti
             
             try {
                 // Aggiorna i crediti dell'utente nel database
-                const NROWS = await User.update(USER_MODEL, { where: { email: request.params.email } })
+                await User.update(USER_MODEL, { where: { email: request.params.email } })
                 // Restituisci il numero di righe aggiornate come risposta JSON con lo stato StatusCodes.OK
-                return response.status(StatusCodes.OK).json(NROWS)
+                return response.status(StatusCodes.OK).json({"message": "Success"})
             } catch (error) {
                 // Si è verificato un errore nell'aggiornamento dei crediti, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
                 return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)

@@ -1,0 +1,19 @@
+@startuml createUserAdmin
+
+actor User
+participant Controllers
+database Postgres
+
+autonumber
+User -> Controllers ++: POST/users/
+group step: CreateUser
+    Controllers -> Postgres ++: create()
+    Postgres -> Controllers: return User
+    Controllers --> User : 201 Created - User
+else Create Failed
+    autonumber 4
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

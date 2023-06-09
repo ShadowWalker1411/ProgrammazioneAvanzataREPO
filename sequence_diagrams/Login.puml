@@ -1,0 +1,26 @@
+@startuml login
+
+actor User
+participant Controllers
+database Postgres
+
+autonumber
+User -> Controllers ++: GET/users/login
+group step: Login
+    autonumber 3
+    Controllers -> Postgres ++: findOne()
+    Postgres -> Controllers: return User
+    Controllers --> User : 200 OK - User
+else Get Failed
+    autonumber 5
+    Postgres --[#red]> Controllers: 401 Unauthorized
+    Controllers --[#red]> User : 401 Unauthorized
+    autonumber 5
+    Postgres --[#red]> Controllers : 404 Not Found
+    Controllers --[#red]> User : 404 Not Found
+    autonumber 5
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

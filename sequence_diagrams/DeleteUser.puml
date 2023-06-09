@@ -1,0 +1,33 @@
+@startuml deleteUser
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: DELETE/users/:id
+group step: Ownership
+    Middlewares -> Middlewares : CheckOwner
+else Ownership Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized
+end
+group step: UpdateUser
+    autonumber 3
+    Middlewares -> Controllers ++: deleteById
+    Controllers -> Postgres ++: findByPk()
+    Postgres -> Controllers: return User
+    Controllers -> Postgres : destroy()
+    Postgres -> Controllers: return NROWS
+    Controllers --> User : 200 OK - User
+else Update Failed
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml
