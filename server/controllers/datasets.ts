@@ -164,46 +164,49 @@ const uploadImage = async (request: Request, response: Response, next: NextFunct
 
 const uploadImages = async (request: Request, response: Response, next: NextFunction) => {
     // Verifica se l'utente ha abbastanza crediti
-    if (await checkCredits((request as any).uid, request.body.files?.length || 0)) {
-      // Controlla se ci sono file da caricare
-    
-  
-      const storage = multer.diskStorage({
-        destination: (request, file, cb) => {
-          cb(null, '/images');
-        },
-        filename: (request, file, cb) => {
-          const uid = (request as any).uid;
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
-          const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
-          cb(null, filename);
-        },
-      });
-  
-      const uploads = multer({ storage });
-      uploads.array('files')(request, response, async (err: any) => {
-        if (err instanceof MulterError) {
-          return response.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
-        } else if (err) {
-          return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
-        }
+    if (await checkCredits((request as any).uid, (request as any).files?.length || 0)) {
+        // Controlla se ci sono file da caricare
+        const storage = multer.diskStorage({
+            destination: (request, file, cb) => {
+                cb(null, '/images');
+            },
+            filename: (request, file, cb) => {
+                const uid = (request as any).uid;
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + file.mimetype.split('/')[1];
+                const filename = file.fieldname + '-' + uid + '-' + uniqueSuffix;
+                cb(null, filename);
+            },
+        });
+        const uploads = multer({ storage, 
+            fileFilter: (request, file, cb) => {
+                // Verifica se è un file di immagine
+                if (file.mimetype.startsWith('image/')) {
+                    cb(null, true);
+                } else {
+                    cb(new Error('The uploaded file is not an image.'));
+                }
+            }
+        });
 
-        if (!(request.file instanceof Array) && !request.file) {
-            return response.status(StatusCodes.BAD_REQUEST).json({ error: 'No file was provided.' });           
-        }
-        
-        // Rimuovi i crediti dall'utente dopo il caricamento
-        await removeCredits((request as any).uid, request.body.files?.length || 0);
-        return response.status(StatusCodes.OK).json({ message: 'Upload completato con successo' });
-      });
+        uploads.array('files')(request, response, async (err: any) => {
+            if (err instanceof MulterError) {
+                return response.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
+            } else if (err) {
+                return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
+            }
+
+            if (!request.files || !(request.files instanceof Array)) {
+                return response.status(StatusCodes.BAD_REQUEST).json({ error: 'No file was provided.' });           
+            }
+            
+            // Rimuovi i crediti dall'utente dopo il caricamento
+            await removeCredits((request as any).uid, (request as any).files?.length || 0);
+            return response.status(StatusCodes.OK).json({ message: 'Upload completato con successo' });
+        });
     } else {
       return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Crediti insufficienti' });
     }
-  };
-  
-
-
-
+};  
 
 const uploadZip = async (request: Request, response: Response, next: NextFunction) => {
     const storage = multer.memoryStorage() //N.B prima usavamo disk, invece ora salvo temporanemante
