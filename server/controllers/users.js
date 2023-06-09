@@ -128,17 +128,17 @@ const login = (request, response, next) => __awaiter(void 0, void 0, void 0, fun
                 return response.status(http_status_codes_1.StatusCodes.OK).json({ token });
             }
             else {
-                // La password non corrisponde, restituisci un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
-                return response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({ message: "Credenziali non valide" });
+                // La password non corrisponde, restituisce un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
+                return response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({ message: "Invalid credentials" });
             }
         }
         else {
-            // L'utente non esiste, restituisci un messaggio di errore con lo stato StatusCodes.NOT_FOUND
-            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: "Utente non trovato" });
+            // L'utente non esiste, restituiscr un messaggio di errore con lo stato StatusCodes.NOT_FOUND
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: "User not found" });
         }
     }
     catch (error) {
-        // Si è verificato un errore, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
+        // Si è verificato un errore, restituisce una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR
         return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
