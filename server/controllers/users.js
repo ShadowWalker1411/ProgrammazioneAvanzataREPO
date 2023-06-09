@@ -115,21 +115,26 @@ const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0
         return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
     }
 });
-// Funzione per il login dell'utente
 const login = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Trova l'utente nel database utilizzando il nome utente fornito nella richiesta
         const USER = yield users_1.default.findOne({ where: { username: request.body.username } });
-        // Confronta la password fornita nella richiesta con la password hashata dell'utente nel database
-        if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
-            // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
-            const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
-            // Restituisci il token come risposta JSON con lo stato StatusCodes.OK
-            return response.status(http_status_codes_1.StatusCodes.OK).json({ token });
+        if (USER) {
+            // Confronta la password fornita nella richiesta con la password hashata dell'utente nel database
+            if (bcrypt_1.default.compareSync(request.body.password, USER === null || USER === void 0 ? void 0 : USER.getDataValue('password'))) {
+                // Genera un token di accesso utilizzando l'ID dell'utente e la chiave segreta
+                const token = jsonwebtoken_1.default.sign({ id: USER === null || USER === void 0 ? void 0 : USER.get("uid") }, process.env.SECRET_KEY || "", { expiresIn: "1h" });
+                // Restituisci il token come risposta JSON con lo stato StatusCodes.OK
+                return response.status(http_status_codes_1.StatusCodes.OK).json({ token });
+            }
+            else {
+                // La password non corrisponde, restituisci un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
+                return response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({ message: "Credenziali non valide" });
+            }
         }
         else {
-            // La password non corrisponde, restituisci un messaggio di errore con lo stato StatusCodes.UNAUTHORIZED
-            return response.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({ message: "Invalid Credentials" });
+            // L'utente non esiste, restituisci un messaggio di errore con lo stato StatusCodes.NOT_FOUND
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: "Utente non trovato" });
         }
     }
     catch (error) {

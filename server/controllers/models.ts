@@ -100,7 +100,11 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         if(dataset){
             try {
                 const NROWS = await Model.update(MODEL_MODEL, { where: { uid: request.params.id } })
-                return response.status(StatusCodes.OK).json(NROWS)
+                if (NROWS[0] === 0) {
+                    return response.status(StatusCodes.NOT_FOUND).json({ message: 'Model not found'})
+                }
+                const MODEL = await Dataset.findOne({ where: { uid: request.params.id }})
+                return response.status(StatusCodes.OK).json(MODEL)
             } catch (error) {
                 return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
             }
@@ -115,8 +119,12 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 // Funzione per eliminare un modello dal database utilizzando l'ID fornito
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await Model.destroy({where: {uid: request.params.id}})
-        return response.status(StatusCodes.OK).json(NROWS)
+        const MODEL = await Model.findOne({ where: { uid: request.params.id }})
+        if (!MODEL) {
+            return response.status(StatusCodes.NOT_FOUND).json({ message: 'Model not found'})
+        }
+        await Dataset.destroy({where: {uid: request.params.id}})
+        return response.status(StatusCodes.OK).json(MODEL)
     } catch (error) {
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }

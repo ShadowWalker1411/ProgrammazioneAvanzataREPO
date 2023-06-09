@@ -111,7 +111,11 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         if (dataset) {
             try {
                 const NROWS = yield models_1.default.update(MODEL_MODEL, { where: { uid: request.params.id } });
-                return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
+                if (NROWS[0] === 0) {
+                    return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
+                }
+                const MODEL = yield datasets_1.default.findOne({ where: { uid: request.params.id } });
+                return response.status(http_status_codes_1.StatusCodes.OK).json(MODEL);
             }
             catch (error) {
                 return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
@@ -128,8 +132,12 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 // Funzione per eliminare un modello dal database utilizzando l'ID fornito
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield models_1.default.destroy({ where: { uid: request.params.id } });
-        return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
+        const MODEL = yield models_1.default.findOne({ where: { uid: request.params.id } });
+        if (!MODEL) {
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
+        }
+        yield datasets_1.default.destroy({ where: { uid: request.params.id } });
+        return response.status(http_status_codes_1.StatusCodes.OK).json(MODEL);
     }
     catch (error) {
         return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
