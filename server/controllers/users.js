@@ -195,20 +195,20 @@ const addCredits = (request, response, next) => __awaiter(void 0, void 0, void 0
 const createUserSchema = joi_1.default.object({
     username: joi_1.default.string().alphanum().min(3).max(15).required()
         .messages({
-        'string.alphanum': 'Il nome utente può contenere solo caratteri alfanumerici',
-        'string.min': 'Il nome utente deve contenere almeno 3 caratteri',
-        'string.max': 'Il nome utente può contenere al massimo 15 caratteri',
-        'any.required': 'Il nome utente è obbligatorio',
+        'string.alphanum': 'Username can only contain alphanumeric characters',
+        'string.min': 'Username must be at least 3 characters long',
+        'string.max': 'Username can be at most 15 characters long',
+        'any.required': 'Username is required',
     }),
     email: joi_1.default.string().email().required()
         .messages({
-        'string.email': 'Inserisci un indirizzo email valido',
-        'any.required': 'L\'indirizzo email è obbligatorio',
+        'string.email': 'Please enter a valid email address',
+        'any.required': 'Email address is required',
     }),
     password: joi_1.default.string().min(6).required()
         .messages({
-        'string.min': 'La password deve avere almeno 6 caratteri',
-        'any.required': 'La password è obbligatoria',
+        'string.min': 'Password must be at least 6 characters long',
+        'any.required': 'Password is required',
     }),
     admin: joi_1.default.boolean().optional()
 });

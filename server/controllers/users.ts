@@ -194,23 +194,24 @@ const addCredits = async (request: Request, response: Response, next: NextFuncti
 
 
 const createUserSchema = Joi.object({
-    username: Joi.string().alphanum().min(3).max(15).required()
-    .messages({
-          'string.alphanum': 'Il nome utente può contenere solo caratteri alfanumerici',
-          'string.min': 'Il nome utente deve contenere almeno 3 caratteri',
-          'string.max': 'Il nome utente può contenere al massimo 15 caratteri',
-          'any.required': 'Il nome utente è obbligatorio',}),
-      email: Joi.string().email().required()
-      .messages({
-          'string.email': 'Inserisci un indirizzo email valido',
-          'any.required': 'L\'indirizzo email è obbligatorio',
-      }),
-      password: Joi.string().min(6).required()
-      .messages({
-          'string.min': 'La password deve avere almeno 6 caratteri',
-          'any.required': 'La password è obbligatoria',
-      }),
-      admin: Joi.boolean().optional()
+        username: Joi.string().alphanum().min(3).max(15).required()
+          .messages({
+            'string.alphanum': 'Username can only contain alphanumeric characters',
+            'string.min': 'Username must be at least 3 characters long',
+            'string.max': 'Username can be at most 15 characters long',
+            'any.required': 'Username is required',
+          }),
+        email: Joi.string().email().required()
+          .messages({
+            'string.email': 'Please enter a valid email address',
+            'any.required': 'Email address is required',
+          }),
+        password: Joi.string().min(6).required()
+          .messages({
+            'string.min': 'Password must be at least 6 characters long',
+            'any.required': 'Password is required',
+          }),
+    admin: Joi.boolean().optional()
 })
 
 const updateUserSchema = Joi.object({

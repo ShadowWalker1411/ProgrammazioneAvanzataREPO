@@ -146,7 +146,7 @@ const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0
             const uid = request.uid;
             const ext = file.originalname.split('.').pop();
             if (ext !== 'py') {
-                const error = new Error('Estensione file non valida. Sono consentiti solo file .py');
+                const error = new Error('Invalid file extension. Only .py files are allowed');
                 return cb(error, '');
             }
             const filename = 'file-' + mid + '-' + uid + '.' + ext;
@@ -163,9 +163,9 @@ const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0
         }
         // Verifica se c'è un file da caricare
         if (!request.file) {
-            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Nessun file da caricare' });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'No file to upload' });
         }
-        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload successful' });
     }));
 });
 // Funzione per avviare l'inferenza di un modello

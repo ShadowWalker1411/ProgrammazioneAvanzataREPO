@@ -134,7 +134,7 @@ const uploadFile = async (request: Request, response: Response, next: NextFuncti
             const ext = file.originalname.split('.').pop()
 
             if (ext !== 'py') {
-                const error = new Error('Estensione file non valida. Sono consentiti solo file .py')
+                const error = new Error('Invalid file extension. Only .py files are allowed')
                 return cb(error, '')
             }
 
@@ -154,10 +154,10 @@ const uploadFile = async (request: Request, response: Response, next: NextFuncti
 
         // Verifica se c'è un file da caricare
         if (!request.file) {
-            return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Nessun file da caricare' })
+            return response.status(StatusCodes.BAD_REQUEST).json({ error: 'No file to upload' })
         }
 
-        return response.status(StatusCodes.OK).json({ message: 'Caricamento effettuato con successo' })
+        return response.status(StatusCodes.OK).json({ message: 'Upload successful' })
     })
 }
 
