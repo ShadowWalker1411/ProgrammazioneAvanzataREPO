@@ -3,27 +3,34 @@
 actor User
 participant Middleweres
 participant Controllers
-participant Postgers
+database Postgres
 
+autonumber
 User -> Middleweres ++: GET/datasets/all
 group step: Authentication
     Middleweres -> Middleweres : CheckAuth 
 else Auth Failed
-    Middleweres --> User : 401 Unauthorized - Token Not Provided
-    Middleweres --> User : 401 Unauthorized - Token Not Valid
+autonumber 3
+    Middleweres --[#red]> User : 401 Unauthorized - Token Not Provided
+autonumber 3
+    Middleweres --[#red]> User : 401 Unauthorized - Token Not Valid
 end
-
+autonumber 3 
 group step: Authentication Admin
     Middleweres -> Middleweres : CheckAdmin 
-else Auth Failed
-    Middleweres --> User : 404 Unauthorized
+else Auth FailedS
+autonumber 4
+    Middleweres --[#red]> User : 404 Unauthorized
 end
-
+autonumber 4
 group step: GetAllDatasets
     Middleweres -> Controllers ++: getAll()
-    Controllers -> Postgers ++: findAll()
+    Controllers -> Postgres ++: findAll()
+    Postgres -> Controllers: return Datasets
 else Get Failed
-    Postgers --> User : 500 Internal Server Error
+    Postgres --[#red]> Controllers : 500 Internal Server Error
+    Controllers --[#red]> User : 500 Internal Server Error
+
 end
 
 
