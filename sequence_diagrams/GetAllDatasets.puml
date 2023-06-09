@@ -1,0 +1,30 @@
+@startuml
+
+actor User
+participant Middleweres
+participant Controllers
+participant Postgers
+
+User -> Middleweres ++: GET/datasets/all
+group step: Authentication
+    Middleweres -> Middleweres : CheckAuth 
+else Auth Failed
+    Middleweres --> User : 401 Unauthorized - Token Not Provided
+    Middleweres --> User : 401 Unauthorized - Token Not Valid
+end
+
+group step: Authentication Admin
+    Middleweres -> Middleweres : CheckAdmin 
+else Auth Failed
+    Middleweres --> User : 404 Unauthorized
+end
+
+group step: GetAllDatasets
+    Middleweres -> Controllers ++: getAll()
+    Controllers -> Postgers ++: findAll()
+else Get Failed
+    Postgers --> User : 500 Internal Server Error
+end
+
+
+@enduml
