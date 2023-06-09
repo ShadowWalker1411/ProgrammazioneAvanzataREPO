@@ -47,16 +47,6 @@ services:
     volumes:
       - shared_models:/images
       - shared_files:/models
-    #build: server
-    #volumes:
-    #  - ./server:/app
-    #ports:
-    #  - 8000:5000
-    #environment:
-    #  - LC_ALL=C.UTF-8
-    #  - LANG=C.UTF-8
-    #depends_on:
-    #  - rabbitmq
 
   postgres:
     container_name: postgres
@@ -86,7 +76,3 @@ volumes:
   nps_data: {}
   shared_models: {}
   shared_files: {}
-
-
-
-
