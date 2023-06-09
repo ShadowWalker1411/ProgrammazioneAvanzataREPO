@@ -98,7 +98,11 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
         }
         try {
             const NROWS = await Dataset.update(DATSET_MODEL, { where: { uid: request.params.id } })
-            return response.status(StatusCodes.OK).json(NROWS)
+            if (NROWS[0] === 0) {
+                return response.status(StatusCodes.NOT_FOUND).json({ message: 'Dataset not found'})
+            }
+            const DATASET = await Dataset.findOne({ where: { uid: request.params.id }})
+            return response.status(StatusCodes.OK).json(DATASET)
         } catch (error) {
             return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
         }
@@ -109,8 +113,12 @@ const updateById = async (request: Request, response: Response, next: NextFuncti
 
 const deleteById = async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const NROWS = await Dataset.destroy({where: {uid: request.params.id}})
-        return response.status(StatusCodes.OK).json(NROWS)
+        const DATASET = await Dataset.findOne({ where: { uid: request.params.id }})
+        if (!DATASET) {
+            return response.status(StatusCodes.NOT_FOUND).json({ message: 'Dataset not found'})
+        }
+        await Dataset.destroy({where: {uid: request.params.id}})
+        return response.status(StatusCodes.OK).json(DATASET)
     } catch (error) {
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
     }

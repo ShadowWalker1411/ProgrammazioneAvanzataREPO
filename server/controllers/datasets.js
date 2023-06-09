@@ -130,7 +130,11 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
         };
         try {
             const NROWS = yield datasets_1.default.update(DATSET_MODEL, { where: { uid: request.params.id } });
-            return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
+            if (NROWS[0] === 0) {
+                return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Dataset not found' });
+            }
+            const DATASET = yield datasets_1.default.findOne({ where: { uid: request.params.id } });
+            return response.status(http_status_codes_1.StatusCodes.OK).json(DATASET);
         }
         catch (error) {
             return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
@@ -142,8 +146,12 @@ const updateById = (request, response, next) => __awaiter(void 0, void 0, void 0
 });
 const deleteById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const NROWS = yield datasets_1.default.destroy({ where: { uid: request.params.id } });
-        return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
+        const DATASET = yield datasets_1.default.findOne({ where: { uid: request.params.id } });
+        if (!DATASET) {
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Dataset not found' });
+        }
+        yield datasets_1.default.destroy({ where: { uid: request.params.id } });
+        return response.status(http_status_codes_1.StatusCodes.OK).json(DATASET);
     }
     catch (error) {
         return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json(error);
@@ -234,15 +242,15 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
             }
             // Rimuovi i crediti dall'utente dopo il caricamento
             yield removeCredits(request.uid, ((_b = request.files) === null || _b === void 0 ? void 0 : _b.length) || 0);
-            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload completato con successo' });
+            return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload completed successfully' });
         }));
     }
     else {
-        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Crediti insufficienti' });
+        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Insufficient credits' });
     }
 });
 const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const storage = multer_1.default.memoryStorage(); //N.B prima usavamo disk, invece ora salvo temporanemante
+    const storage = multer_1.default.memoryStorage();
     const uploads = (0, multer_1.default)({ storage }).any();
     uploads(request, response, (err) => __awaiter(void 0, void 0, void 0, function* () {
         if (err instanceof multer_1.default.MulterError) {
@@ -251,12 +259,12 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
         else if (err) {
             return response.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({ error: err.message });
         }
-        //Controllo ci sia qualcosa da uploadare
+        // Verifica se ci sono file da caricare
         if (!request.files || request.files.length === 0) {
-            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'No files uploaded' });
+            return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'No file to upload' });
         }
         const uploadedFiles = [];
-        // leggo 1 a 1 i file
+        // Itera su ogni file
         for (const file of request.files) {
             if (file.mimetype !== 'application/zip') {
                 return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Invalid file format. Only zip files are allowed' });
@@ -264,19 +272,24 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
             const zip = new adm_zip_1.default(file.buffer);
             const zipEntries = zip.getEntries();
             if (yield checkCredits(request.uid, zipEntries.length)) {
-                // Leggo i singoli file nella zip
+                // Itera su ogni file all'interno della zip
                 for (const zipEntry of zipEntries) {
-                    // Extract the file name and extension
+                    // Estrai il nome del file e l'estensione
                     const fileName = zipEntry.entryName.split('/').pop();
                     if (!fileName) {
                         continue;
                     }
                     const fileExtension = fileName.split('.').pop();
-                    // rinomino i singoli file
+                    // Verifica se il file è un'immagine diversamente dalle singole immagini dove controllo il mimetype
+                    const imageExtensions = ['jpg', 'jpeg', 'png'];
+                    if (!fileExtension || !imageExtensions.includes(fileExtension.toLowerCase())) {
+                        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Invalid file format. Only images are allowed within the zip' });
+                    }
+                    // Genera un nuovo nome per il file
                     const uid = request.uid;
                     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
                     const newFileName = 'file-' + uid + '-' + uniqueSuffix + '.' + fileExtension;
-                    // salvo col nuovo nome
+                    // Salva il file con il nuovo nome
                     const filePath = '/images/' + newFileName;
                     fs_1.default.writeFileSync(filePath, zipEntry.getData());
                     uploadedFiles.push(filePath);
