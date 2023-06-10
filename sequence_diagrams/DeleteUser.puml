@@ -17,15 +17,20 @@ else Ownership Failed
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized
 end
-group step: UpdateUser
+group step: DeleteUser
     autonumber 3
     Middlewares -> Controllers ++: deleteById
-    Controllers -> Postgres ++: findByPk()
-    Postgres -> Controllers: return User
-    Controllers -> Postgres : destroy()
-    Postgres -> Controllers: return NROWS
-    Controllers --> User : 200 OK - User
-else Update Failed
+    Controllers -> Postgres ++: findByPk
+    Postgres --> Controllers: return User
+    Controllers -> Postgres : destroy
+    Postgres --> Controllers: return NROWS
+    Controllers --[#green]> User : 200 OK - User
+else Not Found
+    autonumber 5
+    Postgres --[#red]> Controllers --: 404 Not Found
+    Controllers --[#red]> User --: 404 Not Found - User Not Found
+else Delete Failed
+    autonumber 7
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
 end

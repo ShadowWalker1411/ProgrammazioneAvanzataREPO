@@ -20,12 +20,13 @@ end
 group step: UpdateUser
     autonumber 3
     Middlewares -> Controllers --++: updateById
-    Controllers -> Postgres ++: update()
-    Postgres -> Controllers: return NROWS
-    Controllers -> Postgres : findByPk()
-    Postgres -> Controllers: return User
-    Controllers --> User : 200 OK - User
+    Controllers -> Postgres ++: update
+    Postgres --> Controllers: return NROWS
+    Controllers -> Postgres : findByPk
+    Postgres --> Controllers: return User
+    Controllers --[#green]> User : 200 OK - User
 else Update Failed
+    autonumber 7
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
 end

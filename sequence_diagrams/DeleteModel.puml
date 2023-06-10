@@ -1,0 +1,48 @@
+@startuml deleteModel
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: DELETE/models/:id
+
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+group step: Ownership
+    autonumber 3
+    Middlewares -> Middlewares : CheckOwner
+else Unauthorized
+    Middlewares --[#red]> User : 401 Unauthorized - You are not the owner of this model
+else Not Found
+    autonumber 4
+    Middlewares --[#red]> User : 404 Not Found - Model not found
+end
+
+group step: Delete Model
+    autonumber 4
+    Middlewares -> Controllers --++: deleteById
+    Controllers -> Postgres ++: findByPk
+    Postgres --> Controllers: return Model
+    Controllers -> Postgres : destroy
+    Postgres --> Controllers : return NROWS
+    Controllers --[#green]> User : 200 OK - Model
+else Not Found
+    autonumber 6
+    Postgres --[#red]> Controllers : 404 Not Found
+    Controllers --[#red]> User : 404 Not Found - Model not found
+else Delete Failed
+    autonumber 8
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

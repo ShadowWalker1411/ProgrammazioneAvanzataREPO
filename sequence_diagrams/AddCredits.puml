@@ -9,7 +9,7 @@ autonumber
 User -> Middlewares ++: POST/users/credits/:email
 group step: Authentication
     Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
@@ -19,19 +19,20 @@ end
 group step: Authorization
     autonumber 3
     Middlewares -> Middlewares : CheckAdmin
-else Authorization Failed
+else Unauthorized
     Middlewares --[#red]> User : 401 Unauthorized
 end
 
 group step: AddCredits
     autonumber 4
     Middlewares -> Controllers --++: getById
-    Controllers -> Postgres ++: findByPk()
-    Postgres -> Controllers: return User
-    Controllers -> Postgres : update()
-    Postgres -> Controllers: return NROWS
-    Controllers --> User : 200 OK - Success
+    Controllers -> Postgres ++: findByPk
+    Postgres --> Controllers: return User
+    Controllers -> Postgres : update
+    Postgres --> Controllers: return NROWS
+    Controllers --[#green]> User : 200 OK - Success
 else Update Failed
+    autonumber 8
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
 end

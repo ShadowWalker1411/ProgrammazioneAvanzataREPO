@@ -8,11 +8,11 @@ autonumber
 User -> Controllers ++: GET/users/
 autonumber 1
 group step: GetUsers
-    Controllers -> Postgres ++: findAll()
-    Postgres -> Controllers: return Users
-    Controllers --> User : 200 OK - Users
+    Controllers -> Postgres ++: findAll
+    Postgres --> Controllers: return Users
+    Controllers --[#green]> User : 200 OK - Users
 else Get Failed
-    autonumber 3
+    autonumber 2
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
 end

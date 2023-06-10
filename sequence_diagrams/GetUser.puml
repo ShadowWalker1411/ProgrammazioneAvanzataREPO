@@ -20,10 +20,15 @@ end
 group step: GetUser
     autonumber 3
     Middlewares -> Controllers --++: getById
-    Controllers -> Postgres ++: findByPk()
-    Postgres -> Controllers: return User
-    Controllers --> User : 200 OK - User
+    Controllers -> Postgres ++: findByPk
+    Postgres --> Controllers: return User
+    Controllers --[#green]> User : 200 OK - User
+else Not Found
+    autonumber 5
+    Postgres --[#red]> Controllers --: 404 Not Found
+    Controllers --[#red]> User --: 404 Not Found - User not found
 else Get Failed
+    autonumber 5
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
 end

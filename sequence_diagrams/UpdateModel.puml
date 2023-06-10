@@ -1,0 +1,53 @@
+@startuml updateModel
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: PUT/models/:id
+
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Unauthorized
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+group step: Ownership
+    autonumber 3
+    Middlewares -> Middlewares : CheckOwner
+else Unauthorized
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - You are not the owner of this model
+else Not Found
+    autonumber 3
+    Middlewares --[#red]> User : 404 Not Found - Model not found
+end
+
+group step: UpdateUser
+    autonumber 4
+    Middlewares -> Controllers --++: updateById
+    Controllers -> Postgres ++: update
+    Postgres --> Controllers: return NROWS
+    Controllers -> Postgres : findByPk
+    Postgres --> Controllers: return Model
+    Controllers --[#green]> User : 200 OK - Model
+else Update Failed
+    autonumber 6
+    Postgres --[#red]> Controllers : 500 Internal Server Error
+    Controllers --[#red]> User : 500 Internal Server Error
+else Bad Request
+    autonumber 8
+    Postgres --[#red]> Controllers : 400 Bad Request
+    Controllers --[#red]> User : 400 Bad Request
+else Not Found
+    autonumber 8
+    Postgres --[#red]> Controllers --: 404 Not Found - Model not found
+    Controllers --[#red]> User --: 404 Not Found - Dataset not found
+end
+
+@enduml

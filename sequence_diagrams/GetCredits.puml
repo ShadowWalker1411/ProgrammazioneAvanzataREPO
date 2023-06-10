@@ -18,12 +18,12 @@ end
 group step: GetCredits
     autonumber 3
     Middlewares -> Controllers --++: getById
-    Controllers -> Postgres ++: findByPk()
-    Postgres -> Controllers: return User
+    Controllers -> Postgres ++: findByPk
+    Postgres --> Controllers: return User
     Controllers -> Controllers : getCreds
-    Controllers --> User : 200 OK - Credits
+    Controllers --[#green]> User : 200 OK - Credits
 else Get Failed
-    autonumber 7
+    autonumber 5
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
 end
