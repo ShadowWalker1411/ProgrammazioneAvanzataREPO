@@ -1,0 +1,46 @@
+@startuml
+
+actor User
+
+participant Middlewares
+participant Controllers
+database Postgres
+
+User -> Middlewares ++: DELETE/datasets/id
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+group step: CheckOwner 
+    autonumber 3
+    group step: Authentication Admin
+    Middlewares -> Middlewares : CheckOwner 
+else CheckOwner Failed
+autonumber 4
+    Middlewares --[#red]> User : 404 Unauthorized
+else CheckOwner 
+    Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
+end
+
+group step: DeleteDataset
+    autonumber 4
+    Middlewares -> Controllers--++: DeleteById
+    Controllers -> Postgres++: findOne
+else Not Found
+    Postgres --[#red]> Controllers : 404 Not Found - Dataset not found
+    Controllers --[#red]> User : 404 Not Found - Dataset not found
+else
+    autonumber 6
+    Controllers -> Postgres : Destroy
+    Postgres --[#green]> Controllers : 200 OK
+    Controllers --[#green]> User : 200 OK
+else Update Failed
+    autonumber 7
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+@enduml

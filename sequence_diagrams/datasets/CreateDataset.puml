@@ -1,0 +1,39 @@
+@startuml
+
+actor User
+
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: POST/datasets/
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+autonumber 3
+group step: CreateDataset
+    Middlewares -> Controllers --++: create
+else Bad Request
+    Controllers --[#red]> User : 400 Bad Request
+else
+    autonumber 4
+    Controllers -> Postgres ++: create
+    Postgres --> Controllers : return Dataset
+    Controllers --[#green]> User : 201 Created - Dataset
+else
+    Postgres --> Controllers : return Dataset
+    Controllers --[#green]> User : 201 Created - Dataset
+else Creation Failed
+    autonumber 5
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

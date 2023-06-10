@@ -1,0 +1,45 @@
+@startuml UpdateDataset
+ 
+actor User
+
+participant Middlewares
+participant Controllers
+database Postgres
+
+User -> Middlewares ++: PUT/datasets/id
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+group step: CheckOwner 
+    autonumber 3
+    Middlewares -> Middlewares : checkOwner 
+else CheckOwner Failed
+autonumber 4
+    Middlewares --[#red]> User : 404 Unauthorized
+else CheckOwner 
+    Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
+end
+
+group step: Update Dataset
+    Middlewares -> Controllers --++: update
+else Bad Request
+    Controllers --[#red]> User : 400 Bad Request
+else
+    autonumber 6
+    Controllers -> Postgres ++: update
+    Postgres --> Controllers : return NROWS
+    Controllers -> Postgres : findOne
+    Postgres --> Controllers : return Dataset
+    Controllers --[#green]> User : 200 OK - Dataset
+else Update Failed
+    autonumber 7
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

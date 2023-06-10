@@ -1,0 +1,32 @@
+@startuml
+
+actor User
+
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber 
+User -> Middlewares ++: GET/datasets/
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+group step: GetMineDatasets   
+    autonumber 3
+    Middlewares -> Controllers --++: getAllMine
+    Controllers -> Postgres ++: getAllByUseruid
+    Postgres --> Controllers : return Datasets
+    Controllers --[#green]> User : 200 OK - Datasets
+else Internal Server Error
+    autonumber 5
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml

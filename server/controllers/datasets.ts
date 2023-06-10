@@ -190,7 +190,7 @@ const uploadImages = async (request: Request, response: Response, next: NextFunc
                 if (file.mimetype.startsWith('image/')) {
                     cb(null, true);
                 } else {
-                    cb(new Error('The uploaded file is not an image.'));
+                    cb(new Error('The uploaded file are not an image.'));
                 }
             }
         });
@@ -269,7 +269,7 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
                     uploadedFiles.push(filePath);
                 }
             } else {
-                return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Not enough credits' });
+                return response.status(StatusCodes.BAD_REQUEST).json({ error: 'Insufficient credits' });
             }
         }
 

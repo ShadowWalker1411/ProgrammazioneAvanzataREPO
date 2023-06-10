@@ -1,0 +1,52 @@
+@startuml
+
+actor User
+
+participant Middlewares
+participant Controllers
+database Postgres
+participant Docker 
+
+User -> Middlewares ++: GET/datasets/id
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+group step: CheckOwner 
+    autonumber 3
+    Middlewares -> Middlewares : checkOwner 
+else CheckOwner Failed
+autonumber 4
+    Middlewares --[#red]> User : 404 Unauthorized
+else CheckOwner 
+    Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this model
+end
+autonumber 4
+group Upload File
+    Middlewares -> Controllers --++: uploadFile
+else File is not a .py
+    autonumber 5
+    Controllers --[#red]> Controllers: Invalid file extension. Only .py files are allowed
+    Controllers --[#red]> User: Invalid file extension. Only .py files are allowed
+else 
+    autonumber 5
+    Controllers -> Docker++: upload.single()
+    Docker --[#green]> Controllers: 200 OK
+    Controllers --[#green]> User: 200 OK
+else Upload Failed
+    autonumber 6
+    Controllers --[#red]> Controllers: 400 Bad Request
+    Controllers --[#red]> User: 400 Bad Request
+    autonumber 6
+    Controllers --[#red]> Controllers: 500 Internal Server Error
+    Controllers --[#red]> User: 500 Internal Server Error
+else No File
+    autonumber 4
+    Controllers --[#red]> User : 400 Bad Request - No file was provided
+end
+
+@enduml
