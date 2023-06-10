@@ -21,10 +21,10 @@ group step: Ownership
     autonumber 3
     Middlewares -> Middlewares : CheckOwner
 else Unauthorized
-    autonumber 3
+    autonumber 4
     Middlewares --[#red]> User : 401 Unauthorized - You are not the owner of this model
 else Not Found
-    autonumber 3
+    autonumber 4
     Middlewares --[#red]> User : 404 Not Found - Model not found
 end
 
@@ -47,7 +47,7 @@ else Bad Request
 else Not Found
     autonumber 8
     Postgres --[#red]> Controllers --: 404 Not Found - Model not found
-    Controllers --[#red]> User --: 404 Not Found - Dataset not found
+    Controllers --[#red]> User --: 404 Not Found - Model not found
 end
 
 @enduml

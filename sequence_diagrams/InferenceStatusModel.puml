@@ -1,0 +1,32 @@
+@startuml inferenceStatusModel
+
+actor User
+participant Middlewares
+participant Controllers
+participant Producer
+
+autonumber
+User -> Middlewares ++: GET/models/inference/:id
+
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Unauthorized
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+group step: UpdateUser
+    autonumber 3
+    Middlewares -> Controllers ++: status
+    Controllers -> Producer ++: status
+    Producer --> Controllers : status
+    Controllers --[#green]> User : 200 OK - status
+else Status Failed
+    autonumber 5
+    Producer --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User : 500 Internal Server Error
+end
+
+@enduml
