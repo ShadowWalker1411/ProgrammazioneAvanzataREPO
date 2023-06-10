@@ -1,0 +1,41 @@
+@startuml
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: GET/Models/all
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+autonumber 3 
+group step: Authentication Admin
+    Middlewares -> Middlewares : CheckAdmin 
+else Auth Failed
+autonumber 4
+    Middlewares --[#red]> User : 404 Unauthorized
+end
+
+autonumber 4
+group step: GetAllModels
+    Middlewares -> Controllers --++: getAll
+    Controllers -> Postgres ++: findAll
+    Postgres -> Controllers: return Models
+    Controllers --> User : 200 OK - Models
+else Get Failed
+    autonumber 6
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+
+end
+
+
+@enduml

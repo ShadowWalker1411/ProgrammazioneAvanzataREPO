@@ -1,0 +1,39 @@
+@startuml
+
+actor User
+
+participant Middlewares
+participant Controllers
+database Postgres
+
+User -> Middlewares ++: GET/datasets/id
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+group step: CheckOwner 
+    autonumber 3
+    Middlewares -> Middlewares : CheckOwner 
+else CheckOwner Failed
+autonumber 4
+    Middlewares --[#red]> User : 404 Unauthorized
+else CheckOwner 
+    Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
+end
+autonumber 4
+group step: GetSingleDataset
+    Middlewares -> Controllers --++: getById
+    Controllers -> Postgres ++: getOneById
+    Postgres --> Controllers : return Datasets
+    Controllers --[#green]> User : 200 OK - Datasets
+else dataset not found
+    autonumber 6
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Errorend
+end
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml createUser
+
+actor User
+participant Middlewares
+participant Controllers
+database Postgres
+
+autonumber
+User -> Middlewares ++: POST/models/
+group step: Authentication
+    Middlewares -> Middlewares : CheckAuth
+else Auth Failed
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not provided
+    autonumber 3
+    Middlewares --[#red]> User : 401 Unauthorized - Token not valid
+end
+
+autonumber 3
+group step: Create Model
+    Middlewares -> Controllers --++: create
+else Bad Request
+    Controllers --[#red]> User : 400 Bad Request
+else
+    autonumber 4
+    Controllers -> Postgres ++: create
+    Postgres --> Controllers: return Model
+    Controllers --[#green]> User : 201 Created - Model
+else Creation Failed
+    autonumber 5
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
+end
+
+@enduml
