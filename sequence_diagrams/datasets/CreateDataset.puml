@@ -1,4 +1,4 @@
-@startuml
+@startuml createDataset
 
 actor User
 
@@ -8,9 +8,10 @@ database Postgres
 
 autonumber
 User -> Middlewares ++: POST/datasets/
+
 group step: Authentication
     Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
@@ -25,9 +26,6 @@ else Bad Request
 else
     autonumber 4
     Controllers -> Postgres ++: create
-    Postgres --> Controllers : return Dataset
-    Controllers --[#green]> User : 201 Created - Dataset
-else
     Postgres --> Controllers : return Dataset
     Controllers --[#green]> User : 201 Created - Dataset
 else Creation Failed
