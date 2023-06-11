@@ -8,8 +8,8 @@ database Postgres
 autonumber
 User -> Middlewares ++: GET/users/:id
 group step: Ownership
-    Middlewares -> Middlewares : CheckOwner
-else Ownership Failed
+    Middlewares -> Middlewares : checkOwner
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
@@ -17,7 +17,7 @@ else Ownership Failed
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized
 end
-group step: GetUser
+group step: Get User
     autonumber 3
     Middlewares -> Controllers --++: getById
     Controllers -> Postgres ++: findByPk
@@ -25,8 +25,8 @@ group step: GetUser
     Controllers --[#green]> User : 200 OK - User
 else Not Found
     autonumber 5
-    Postgres --[#red]> Controllers --: 404 Not Found
-    Controllers --[#red]> User --: 404 Not Found - User not found
+    Postgres --[#red]> Controllers : 404 Not Found
+    Controllers --[#red]> User : 404 Not Found - User not found
 else Get Failed
     autonumber 5
     Postgres --[#red]> Controllers --: 500 Internal Server Error

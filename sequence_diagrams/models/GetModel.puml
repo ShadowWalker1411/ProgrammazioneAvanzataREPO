@@ -27,7 +27,7 @@ end
 autonumber 4
 group step: GetModel
     Middlewares -> Controllers --++: getById
-    Controllers -> Postgres ++: getOneById
+    Controllers -> Postgres ++: findByPk
     Postgres --> Controllers : return Model
     Controllers --[#green]> User : 200 OK - Model
 else dataset not found

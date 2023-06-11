@@ -1,4 +1,4 @@
-@startuml
+@startuml GetMineModels
 
 actor User
 
@@ -17,10 +17,10 @@ else Auth Failed
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
 
-group step: GetMineModels   
+group step: Get Mine Models   
     autonumber 3
     Middlewares -> Controllers --++: getAllMine
-    Controllers -> Postgres ++: getAllByUseruid
+    Controllers -> Postgres ++: findAll
     Postgres --> Controllers : return Models
     Controllers --[#green]> User : 200 OK - Models
 else Internal Server Error

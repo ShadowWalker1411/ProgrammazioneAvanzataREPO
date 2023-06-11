@@ -8,6 +8,11 @@ autonumber
 User -> Controllers ++: POST/users/
 group step: CreateUser
     Controllers -> Postgres ++: create
+else Bad Request
+    autonumber 2
+    Controllers --[#red]> User : 400 Bad Request
+else
+    autonumber 3
     Postgres --> Controllers: return User
     Controllers --[#green]> User : 201 Created - User
 else Create Failed

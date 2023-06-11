@@ -6,40 +6,48 @@ participant Middlewares
 participant Controllers
 database Postgres
 
+autonumber
 User -> Middlewares ++: PUT/datasets/id
 group step: Authentication
     Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
-group step: CheckOwner 
+group step: Ownership 
     autonumber 3
     Middlewares -> Middlewares : checkOwner 
-else CheckOwner Failed
-autonumber 4
+else Unauthorized
+    autonumber 4
     Middlewares --[#red]> User : 404 Unauthorized
-else CheckOwner 
+else Forbidden 
+    autonumber 4
     Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
 end
 
 group step: Update Dataset
+    autonumber 4
     Middlewares -> Controllers --++: update
 else Bad Request
     Controllers --[#red]> User : 400 Bad Request
 else
-    autonumber 6
+    autonumber 5
     Controllers -> Postgres ++: update
     Postgres --> Controllers : return NROWS
     Controllers -> Postgres : findOne
     Postgres --> Controllers : return Dataset
     Controllers --[#green]> User : 200 OK - Dataset
+else Not Found
+    autonumber 6
+    Postgres --[#red]> Controllers : 404 Not Found 
+    Controllers --[#red]> User : 404 Not Found - Dataset not found
 else Update Failed
-    autonumber 7
+    autonumber 8
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
+
 end
 
 @enduml

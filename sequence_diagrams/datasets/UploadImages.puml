@@ -1,22 +1,21 @@
-@startuml
+@startuml UploadImages
 
 actor User
 
 participant Middlewares
 participant Controllers
-database Postgres
-participant Docker 
+database Postgres 
 
-User -> Middlewares ++: GET/datasets/id
+User -> Middlewares ++: GET/datasets/images/id
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+    Middlewares -> Middlewares : checkAuth
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
-group step: CheckOwner 
+group step: Ownership 
     autonumber 3
     Middlewares -> Middlewares : checkOwner 
 else CheckOwner Failed
@@ -25,35 +24,35 @@ autonumber 4
 else CheckOwner 
     Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
 end
-group Upload Image
-    Middlewares -> Controllers --: uploadImages
+group Upload Images
     autonumber 4
-    Controllers -> Postgres++: CheckCredit
-    activate Controllers    
+    Middlewares -> Controllers --++: uploadImage
+    Controllers -> Postgres ++: findByPk  
+    Postgres --> Controllers --: return User
+    Controllers -> Controllers: checkCredits
 else Insufficient credits
-    autonumber 5
-    Postgres --[#red]> Controllers: 400 Bad Request - Insufficient credits
     Controllers --[#red]> User: 400 Bad Request - Insufficient credits
 else File is not an image
-    autonumber 5
-    Controllers --[#red]> Controllers: 400 Bad Request - The uploaded file are not an image
-    Controllers --[#red]> User: 400 Bad Request - The uploaded file are not an image
+    autonumber 8
+    Controllers --[#red]> User: 400 Bad Request - The uploaded file is not an image
 else 
-    autonumber 5
-    Controllers -> Docker++: upload.array()
-    Docker --[#green]> Controllers--: 200 OK
-    Controllers -> Postgres: removeCredits()
-    Postgres --[#green]> Controllers--: 200 OK
-    Controllers --[#green]> User: 200 OK
+    autonumber 8
+    Controllers -> Multer++: upload.array
+    Multer --[#green]> Controllers: 200 OK
 else Upload Failed
-    autonumber 6
-    Controllers --[#red]> Controllers: 400 Bad Request
+    autonumber 9
+    Multer --[#red]> Controllers: 400 Bad Request
     Controllers --[#red]> User: 400 Bad Request
-    autonumber 6
-    Controllers --[#red]> Controllers: 500 Internal Server Error
+    autonumber 9
+    Multer --[#red]> Controllers--: 500 Internal Server Error
     Controllers --[#red]> User: 500 Internal Server Error
+else
+    autonumber 10
+    Controllers -> Postgres ++: removeCredits
+    Postgres --[#green]> Controllers --: 200 OK   
+    Controllers --[#green]> User: 200 OK - Upload completed successfully
 else No File
-    autonumber 4
+    autonumber 8
     Controllers --[#red]> User --: 400 Bad Request - No file was provided
 end
 

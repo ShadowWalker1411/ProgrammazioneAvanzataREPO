@@ -9,17 +9,16 @@ database Postgres
 autonumber
 User -> Middlewares ++: DELETE/datasets/id
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
+    Middlewares -> Middlewares : checkAuth
 else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
-group step: CheckOwner 
+group step: Ownership 
     autonumber 3
-    group step: Authentication Admin
-    Middlewares -> Middlewares : CheckOwner 
+    Middlewares -> Middlewares : checkOwner 
 else Unauthorized
     autonumber 4
     Middlewares --[#red]> User : 404 Unauthorized
@@ -28,7 +27,7 @@ else Forbidden
     Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
 end
 
-group step: DeleteDataset
+group step: Delete Dataset
     autonumber 4
     Middlewares -> Controllers --++: deleteById
     Controllers -> Postgres ++: findOne

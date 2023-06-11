@@ -165,7 +165,7 @@ const uploadFile = async (request: Request, response: Response, next: NextFuncti
             return response.status(StatusCodes.BAD_REQUEST).json({ error: 'No file to upload' })
         }
 
-        return response.status(StatusCodes.OK).json({ message: 'Upload successful' })
+        return response.status(StatusCodes.OK).json({ message: 'Upload completed successfully' })
     })
 }
 

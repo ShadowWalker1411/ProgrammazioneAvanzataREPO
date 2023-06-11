@@ -19,7 +19,7 @@ else Unauthorized
 end
 
 autonumber 3
-group step: CreateDataset
+group step: Create Dataset
     Middlewares -> Controllers --++: create
 else Bad Request
     Controllers --[#red]> User : 400 Bad Request

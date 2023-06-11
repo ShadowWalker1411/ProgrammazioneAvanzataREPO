@@ -1,4 +1,4 @@
-@startuml
+@startuml GetAllDatasets
 
 actor User
 participant Middlewares
@@ -8,26 +8,26 @@ database Postgres
 autonumber
 User -> Middlewares ++: GET/datasets/all
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+    Middlewares -> Middlewares : checkAuth
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
 autonumber 3 
-group step: Authentication Admin
-    Middlewares -> Middlewares : CheckAdmin 
-else Auth Failed
+group step: Authorization
+    Middlewares -> Middlewares : checkAdmin 
+else Unauthorized
 autonumber 4
     Middlewares --[#red]> User : 404 Unauthorized
 end
 autonumber 4
-group step: GetAllDatasets
+group step: Get All Datasets
     Middlewares -> Controllers --++: getAll
     Controllers -> Postgres ++: findAll
-    Postgres -> Controllers: return Datasets
-    Controllers --> User : 200 OK - Datasets
+    Postgres --> Controllers: return Datasets
+    Controllers --[#green]> User : 200 OK - Datasets
 else Get Failed
     autonumber 6
     Postgres --[#red]> Controllers --: 500 Internal Server Error

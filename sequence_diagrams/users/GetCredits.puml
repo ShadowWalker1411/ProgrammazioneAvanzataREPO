@@ -8,16 +8,16 @@ database Postgres
 autonumber
 User -> Middlewares ++: GET/users/credits/mine
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
-else AUTH Failed
+    Middlewares -> Middlewares : checkAuth
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
-group step: GetCredits
+group step: Get Credits
     autonumber 3
-    Middlewares -> Controllers --++: getById
+    Middlewares -> Controllers --++: getCredits
     Controllers -> Postgres ++: findByPk
     Postgres --> Controllers: return User
     Controllers -> Controllers : getCreds

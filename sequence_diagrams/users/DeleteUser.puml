@@ -8,8 +8,8 @@ database Postgres
 autonumber
 User -> Middlewares ++: DELETE/users/:id
 group step: Ownership
-    Middlewares -> Middlewares : CheckOwner
-else Ownership Failed
+    Middlewares -> Middlewares : checkOwner
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
@@ -17,18 +17,18 @@ else Ownership Failed
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized
 end
-group step: DeleteUser
+group step: Delete User
     autonumber 3
-    Middlewares -> Controllers ++: deleteById
-    Controllers -> Postgres ++: findByPk
+    Middlewares -> Controllers --++: deleteById
+    Controllers -> Postgres ++: findOne
     Postgres --> Controllers: return User
     Controllers -> Postgres : destroy
     Postgres --> Controllers: return NROWS
     Controllers --[#green]> User : 200 OK - User
 else Not Found
     autonumber 5
-    Postgres --[#red]> Controllers --: 404 Not Found
-    Controllers --[#red]> User --: 404 Not Found - User Not Found
+    Postgres --[#red]> Controllers : 404 Not Found
+    Controllers --[#red]> User : 404 Not Found - User Not Found
 else Delete Failed
     autonumber 7
     Postgres --[#red]> Controllers --: 500 Internal Server Error

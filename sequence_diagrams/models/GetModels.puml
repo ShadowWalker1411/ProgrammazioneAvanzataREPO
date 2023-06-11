@@ -1,4 +1,4 @@
-@startuml
+@startuml GetAllModels
 
 actor User
 participant Middlewares
@@ -9,7 +9,7 @@ autonumber
 User -> Middlewares ++: GET/Models/all
 group step: Authentication
     Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
@@ -17,15 +17,15 @@ else Auth Failed
 end
 
 autonumber 3 
-group step: Authentication Admin
+group step: Authorization
     Middlewares -> Middlewares : CheckAdmin 
-else Auth Failed
+else Unauthorized
 autonumber 4
     Middlewares --[#red]> User : 404 Unauthorized
 end
 
 autonumber 4
-group step: GetAllModels
+group step: Get All Models
     Middlewares -> Controllers --++: getAll
     Controllers -> Postgres ++: findAll
     Postgres -> Controllers: return Models

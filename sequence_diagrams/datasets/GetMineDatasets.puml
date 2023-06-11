@@ -1,4 +1,4 @@
-@startuml
+@startuml GetMineDatasets
 
 actor User
 
@@ -9,15 +9,15 @@ database Postgres
 autonumber 
 User -> Middlewares ++: GET/datasets/
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+    Middlewares -> Middlewares : checkAuth
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
 
-group step: GetMineDatasets   
+group step: Get Mine Datasets   
     autonumber 3
     Middlewares -> Controllers --++: getAllMine
     Controllers -> Postgres ++: getAllByUseruid

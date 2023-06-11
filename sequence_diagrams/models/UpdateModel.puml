@@ -28,26 +28,25 @@ else Not Found
     Middlewares --[#red]> User : 404 Not Found - Model not found
 end
 
-group step: UpdateUser
+group step: Update User
     autonumber 4
     Middlewares -> Controllers --++: updateById
+else Bad Request
+    Controllers --[#red]> User : 400 Bad Request
+else
+    autonumber 5
     Controllers -> Postgres ++: update
     Postgres --> Controllers: return NROWS
     Controllers -> Postgres : findByPk
     Postgres --> Controllers: return Model
     Controllers --[#green]> User : 200 OK - Model
-else Update Failed
-    autonumber 6
-    Postgres --[#red]> Controllers : 500 Internal Server Error
-    Controllers --[#red]> User : 500 Internal Server Error
-else Bad Request
-    autonumber 8
-    Postgres --[#red]> Controllers : 400 Bad Request
-    Controllers --[#red]> User : 400 Bad Request
 else Not Found
+    autonumber 7
+    Controllers --[#red]> User : 404 Not Found - Model not found
+else Update Failed
     autonumber 8
-    Postgres --[#red]> Controllers --: 404 Not Found - Model not found
-    Controllers --[#red]> User --: 404 Not Found - Model not found
+    Postgres --[#red]> Controllers --: 500 Internal Server Error
+    Controllers --[#red]> User --: 500 Internal Server Error
 end
 
 @enduml

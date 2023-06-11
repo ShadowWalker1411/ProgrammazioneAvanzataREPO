@@ -41,6 +41,9 @@ const getAll = (request, response, next) => __awaiter(void 0, void 0, void 0, fu
 const getById = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const USER = yield getOneById(parseInt(request.params.id));
+        if (!USER) {
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'User not found' });
+        }
         return response.status(http_status_codes_1.StatusCodes.OK).json(USER);
     }
     catch (error) {
@@ -186,9 +189,9 @@ const addCredits = (request, response, next) => __awaiter(void 0, void 0, void 0
             };
             try {
                 // Aggiorna i crediti dell'utente nel database
-                const NROWS = yield users_1.default.update(USER_MODEL, { where: { email: request.params.email } });
+                yield users_1.default.update(USER_MODEL, { where: { email: request.params.email } });
                 // Restituisci il numero di righe aggiornate come risposta JSON con lo stato StatusCodes.OK
-                return response.status(http_status_codes_1.StatusCodes.OK).json(NROWS);
+                return response.status(http_status_codes_1.StatusCodes.OK).json({ "message": "Success" });
             }
             catch (error) {
                 // Si è verificato un errore nell'aggiornamento dei crediti, restituisci una risposta di errore con lo stato StatusCodes.INTERNAL_SERVER_ERROR

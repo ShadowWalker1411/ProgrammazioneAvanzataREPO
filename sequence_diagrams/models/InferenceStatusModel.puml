@@ -6,10 +6,10 @@ participant Controllers
 participant Producer
 
 autonumber
-User -> Middlewares ++: GET/models/inference/:id
+User -> Middlewares ++: GET/models/status/:job_id
 
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
+    Middlewares -> Middlewares : checkAuth
 else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
@@ -17,7 +17,7 @@ else Unauthorized
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
 
-group step: UpdateUser
+group step: inference Status Model
     autonumber 3
     Middlewares -> Controllers ++: status
     Controllers -> Producer ++: status

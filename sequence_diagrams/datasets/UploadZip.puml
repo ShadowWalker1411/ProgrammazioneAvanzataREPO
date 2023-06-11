@@ -1,63 +1,64 @@
-@startuml
+@startuml UploadImageFromZip
 
 actor User
 
 participant Middlewares
 participant Controllers
 database Postgres
-participant Docker 
+participant Multer 
 
 User -> Middlewares ++: GET/Zip/id
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+    Middlewares -> Middlewares : checkAuth
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
-group step: CheckOwner 
+
+group step:Ownership
     autonumber 3
     Middlewares -> Middlewares : checkOwner 
-else CheckOwner Failed
+else Unauthorized
 autonumber 4
     Middlewares --[#red]> User : 404 Unauthorized
-else CheckOwner 
+else Forbidden 
     Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
 end
-group Upload Image
+
+group Upload Image From Zip
     autonumber 4
     Middlewares -> Controllers --++: uploadZip
-    Controllers -> Postgres++: CheckCredit
-else Insufficient credits
-    autonumber 6
-    Postgres --[#red]> Controllers: 400 Bad Request - Insufficient credits
-    Controllers --[#red]> User: 400 Bad Request - Insufficient credits
-else File is not a zip
-    autonumber 5
-    Controllers --[#red]> Controllers: 400 Bad Request - Invalid file format. Only zip files are allowed
-    Controllers --[#red]> User: 400 Bad Request - Invalid file format. Only zip files are allowed
-else 
-    autonumber 5
-    Controllers --[#red]> Controllers: 400 Bad Request - Invalid file format. Only images are allowed within the zip
-    Controllers --[#red]> User: 400 Bad Request - Invalid file format. Only images are allowed within the zip
+    Controllers -> Controllers : uploads
 else
     autonumber 6
-    Controllers -> Docker++: upload.any()
-    Docker --[#green]> Controllers--: 200 OK
-    Controllers -> Postgres: removeCredits()
-    Postgres --[#green]> Controllers--: 200 OK
-    Controllers --[#green]> User: 200 OK
-else Upload Failed
-    autonumber 7
-    Controllers --[#red]> Controllers: 400 Bad Request
     Controllers --[#red]> User: 400 Bad Request
-    autonumber 7
-    Controllers --[#red]> Controllers: 500 Internal Server Error
+    autonumber 6
+    Controllers --[#red]> User : 400 Bad Request - No file was provided
+else    
+    autonumber 6
     Controllers --[#red]> User: 500 Internal Server Error
-else No File
-    autonumber 4
-    Controllers --[#red]> User --: 400 Bad Request - No file was provided
+    
+else  
+    autonumber 6
+    Controllers -> Postgres ++: findByPk  
+    Postgres --> Controllers --: return User
+    Controllers -> Controllers: checkCredits
+else Insufficient credits
+    Controllers --[#red]> User: 400 Bad Request - Insufficient credits
+else File Format Wrong
+    autonumber 9
+    Controllers --[#red]> User: 400 Bad Request - Invalid file format. Only images are allowed within the zip
+    Controllers --[#red]> User: 400 Bad Request - Invalid file format. Only zip files are allowed
+else 
+    autonumber 8
+    Controllers -> Multer++: uploadedFiles.push
+    Multer --[#green]> Controllers --: 200 OK
+    autonumber 10
+    Controllers -> Postgres ++: removeCredits
+    Postgres --[#green]> Controllers --: 200 OK
+    Controllers --[#green]> User: 200 OK - Upload completed successfully
 end
 
 @enduml

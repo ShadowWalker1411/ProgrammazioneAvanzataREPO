@@ -1,4 +1,4 @@
-@startuml
+@startuml GetSingleDataset
 
 actor User
 
@@ -8,24 +8,24 @@ database Postgres
 
 User -> Middlewares ++: GET/datasets/id
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+    Middlewares -> Middlewares : checkAuth
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not valid
 end
-group step: CheckOwner 
+group step: Ownership 
     autonumber 3
-    Middlewares -> Middlewares : CheckOwner 
-else CheckOwner Failed
+    Middlewares -> Middlewares : checkOwner 
+else Unauthorized
 autonumber 4
     Middlewares --[#red]> User : 404 Unauthorized
-else CheckOwner 
+else Forbidden 
     Middlewares --[#red]> User : 403 Forbidden - You are not the owner of this dataset
 end
 autonumber 4
-group step: GetSingleDataset
+group step: Get Single Dataset
     Middlewares -> Controllers --++: getById
     Controllers -> Postgres ++: getOneById
     Postgres --> Controllers : return Datasets

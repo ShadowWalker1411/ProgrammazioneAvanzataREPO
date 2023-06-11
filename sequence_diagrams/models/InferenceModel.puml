@@ -37,6 +37,14 @@ group step: UpdateUser
     Postgres --> Controllers: return Model
     Controllers -> Postgres : findByPK
     Postgres --> Controllers: return Dataset
+else Not Found
+    autonumber 6
+    Postgres --[#red]> Controllers : 404 Not Found - Model not found
+    Controllers --[#red]> User : 404 Not Found - Model not found
+    autonumber 8
+    Postgres --[#red]> Controllers --: 404 Not Found - Dataset not found
+    Controllers --[#red]> User : 404 Not Found - Dataset not found
+else
     Controllers -> Producer ++: startJob
     Producer -> Worker ++: longtime_add
     Worker -> Worker : inference
@@ -44,23 +52,13 @@ group step: UpdateUser
     Producer -> Controllers : jobId
     Controllers --[#green]> User : 200 OK - jobId
 else Inference Failed
-    autonumber 8
-    Postgres --[#red]> Controllers : 500 Internal Server Error
-    Controllers --[#red]> User : 500 Internal Server Error
     autonumber 12
     Worker --[#red]> Producer --: 500 Internal Server Error
     Producer --[#red]> Controllers : 500 Internal Server Error
     Controllers --[#red]> User : 500 Internal Server Error
-    autonumber 13
+    autonumber 11
     Producer --[#red]> Controllers --: 500 Internal Server Error
-    Controllers --[#red]> User : 500 Internal Server Error
-else Not Found
-    autonumber 6
-    Postgres --[#red]> Controllers : 404 Not Found - Model not found
-    Controllers --[#red]> User : 404 Not Found - Model not found
-    autonumber 8
-    Postgres --[#red]> Controllers --: 404 Not Found - Dataset not found
-    Controllers --[#red]> User --: 404 Not Found - Dataset not found
+    Controllers --[#red]> User --: 500 Internal Server Error
 end
 
 @enduml

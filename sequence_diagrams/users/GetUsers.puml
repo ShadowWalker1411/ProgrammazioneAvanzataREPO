@@ -7,7 +7,7 @@ database Postgres
 autonumber
 User -> Controllers ++: GET/users/
 autonumber 1
-group step: GetUsers
+group step: Get Users
     Controllers -> Postgres ++: findAll
     Postgres --> Controllers: return Users
     Controllers --[#green]> User : 200 OK - Users

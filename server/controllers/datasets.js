@@ -225,7 +225,7 @@ const uploadImages = (request, response, next) => __awaiter(void 0, void 0, void
                     cb(null, true);
                 }
                 else {
-                    cb(new Error('The uploaded file is not an image.'));
+                    cb(new Error('The uploaded file are not an image.'));
                 }
             }
         });
@@ -296,11 +296,11 @@ const uploadZip = (request, response, next) => __awaiter(void 0, void 0, void 0,
                 }
             }
             else {
-                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Not enough credits' });
+                return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'Insufficient credits' });
             }
         }
         yield removeCredits(request.uid, uploadedFiles.length);
-        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload successful', files: uploadedFiles });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload completed successfully', files: uploadedFiles });
     }));
 });
 const createDatasetSchema = joi_1.default.object({

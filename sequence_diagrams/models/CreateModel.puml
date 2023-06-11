@@ -1,4 +1,4 @@
-@startuml createUser
+@startuml createModel
 
 actor User
 participant Middlewares
@@ -9,7 +9,7 @@ autonumber
 User -> Middlewares ++: POST/models/
 group step: Authentication
     Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
@@ -23,11 +23,19 @@ else Bad Request
     Controllers --[#red]> User : 400 Bad Request
 else
     autonumber 4
-    Controllers -> Postgres ++: create
+    Controllers -> Postgres ++: findByPk
+    Postgres --> Controllers: return Dataset
+else Not Found
+    autonumber 5
+    Postgres --[#red]> Controllers : 404 Not Found
+    Controllers --[#red]> User : 404 Not Found - Dataset not found
+else
+    autonumber 6
+    Controllers -> Postgres : create
     Postgres --> Controllers: return Model
     Controllers --[#green]> User : 201 Created - Model
 else Creation Failed
-    autonumber 5
+    autonumber 7
     Postgres --[#red]> Controllers --: 500 Internal Server Error
     Controllers --[#red]> User --: 500 Internal Server Error
 end

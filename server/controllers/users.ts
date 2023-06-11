@@ -32,6 +32,9 @@ const getAll = async (request: Request, response: Response, next: NextFunction) 
 const getById = async (request: Request, response: Response, next: NextFunction) => {
     try {
         const USER = await getOneById(parseInt(request.params.id))
+        if(!USER){
+            return response.status(StatusCodes.NOT_FOUND).json({message: 'User not found'})
+        }
         return response.status(StatusCodes.OK).json(USER)
     } catch (error) {
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)

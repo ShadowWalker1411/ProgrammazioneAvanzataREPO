@@ -274,7 +274,7 @@ const uploadZip = async (request: Request, response: Response, next: NextFunctio
         }
 
         await removeCredits((request as any).uid, uploadedFiles.length);
-        return response.status(StatusCodes.OK).json({ message: 'Upload successful', files: uploadedFiles });
+        return response.status(StatusCodes.OK).json({ message: 'Upload completed successfully', files: uploadedFiles });
     });
 };
 

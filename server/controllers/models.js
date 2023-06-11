@@ -173,7 +173,7 @@ const uploadFile = (request, response, next) => __awaiter(void 0, void 0, void 0
         if (!request.file) {
             return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ error: 'No file to upload' });
         }
-        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload successful' });
+        return response.status(http_status_codes_1.StatusCodes.OK).json({ message: 'Upload completed successfully' });
     }));
 });
 // Funzione per avviare l'inferenza di un modello

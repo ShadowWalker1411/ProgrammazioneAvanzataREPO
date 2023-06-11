@@ -9,8 +9,8 @@ autonumber
 User -> Middlewares ++: DELETE/models/:id
 
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
-else Auth Failed
+    Middlewares -> Middlewares : checkAuth
+else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
     autonumber 3
@@ -19,7 +19,7 @@ end
 
 group step: Ownership
     autonumber 3
-    Middlewares -> Middlewares : CheckOwner
+    Middlewares -> Middlewares : checkOwner
 else Unauthorized
     Middlewares --[#red]> User : 401 Unauthorized - You are not the owner of this model
 else Not Found
@@ -30,7 +30,7 @@ end
 group step: Delete Model
     autonumber 4
     Middlewares -> Controllers --++: deleteById
-    Controllers -> Postgres ++: findByPk
+    Controllers -> Postgres ++: findOne
     Postgres --> Controllers: return Model
     Controllers -> Postgres : destroy
     Postgres --> Controllers : return NROWS

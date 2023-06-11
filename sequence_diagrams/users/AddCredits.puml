@@ -8,7 +8,7 @@ database Postgres
 autonumber
 User -> Middlewares ++: POST/users/credits/:email
 group step: Authentication
-    Middlewares -> Middlewares : CheckAuth
+    Middlewares -> Middlewares : checkAuth
 else Unauthorized
     autonumber 3
     Middlewares --[#red]> User : 401 Unauthorized - Token not provided
@@ -18,19 +18,30 @@ end
 
 group step: Authorization
     autonumber 3
-    Middlewares -> Middlewares : CheckAdmin
+    Middlewares -> Middlewares : checkAdmin
 else Unauthorized
     Middlewares --[#red]> User : 401 Unauthorized
 end
 
 group step: AddCredits
     autonumber 4
-    Middlewares -> Controllers --++: getById
-    Controllers -> Postgres ++: findByPk
+    Middlewares -> Controllers --++: addCredits
+else Bad Request
+    Controllers --[#red]> User : 400 Bad Request
+else
+    autonumber 5
+    Controllers -> Postgres ++: findOne
     Postgres --> Controllers: return User
     Controllers -> Postgres : update
     Postgres --> Controllers: return NROWS
     Controllers --[#green]> User : 200 OK - Success
+else Not Found
+    autonumber 6
+    Postgres --[#red]> Controllers : 404 Not Found 
+    Controllers --[#red]> User : 404 Not Found - User not found
+else Bad Request
+    autonumber 7
+    Controllers --[#red]> User : 400 Bad Request -Total credits cannot exceed 5000
 else Update Failed
     autonumber 8
     Postgres --[#red]> Controllers --: 500 Internal Server Error
