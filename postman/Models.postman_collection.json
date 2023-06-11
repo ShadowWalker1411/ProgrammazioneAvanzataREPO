@@ -1,0 +1,359 @@
+{
+	"info": {
+		"_postman_id": "08158158-3df0-4bd3-ab09-6be2d88909f1",
+		"name": "Models",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13774050",
+		"_collection_link": "https://esameprogrammazione.postman.co/workspace/Programmazione-Avanzata~b18bc2af-0e27-470c-832f-f3241d70a8fb/collection/13809210-08158158-3df0-4bd3-ab09-6be2d88909f1?action=share&creator=13774050&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Get Models",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/models/all",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Mine Models",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/models/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Model",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/models/3",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Model",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Bodies\",\r\n    \"datasetUID\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/models/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Model",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Pippo2\",\r\n    \"datasetUID\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/models/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Model",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/models/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Inference",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/models/inference/3",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"inference",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Status of Inference",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/models/status/9f3e2f37-386f-40f5-a9a1-64a0d42ebb14",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"status",
+						"9f3e2f37-386f-40f5-a9a1-64a0d42ebb14"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Result of Inference",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/models/result/51da763c-d5ac-439f-8ab1-98533c16639d",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"result",
+						"51da763c-d5ac-439f-8ab1-98533c16639d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload File",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Cache-Control",
+						"value": "no-cache",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/massi/Desktop/University/Computer Vision and Deep Learning/Project/CV-DeepLearning copy/tools/test.py"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/models/image/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"models",
+						"image",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

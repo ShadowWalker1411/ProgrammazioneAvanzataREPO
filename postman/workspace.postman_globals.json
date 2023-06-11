@@ -1,0 +1,21 @@
+{
+	"id": "d1d419b5-750b-4e65-8120-0656404f65b4",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:3001",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2023-06-11T15:00:30.193Z",
+	"_postman_exported_using": "Postman/10.14.9"
+}
