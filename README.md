@@ -91,7 +91,9 @@ Se desideri utilizzare le rotte definite in Postman nel tuo progetto, puoi segui
 ## Utilizzo ottimale del Sistema
 
 **Get All Users**
+
 Route: GET /users/
+
 Authorization: Bearer {token}
 
 Response: [
@@ -118,8 +120,11 @@ Response: [
 ]
 
 **Get User**
+
 Route: GET /users/{id}
+
 Authorization: Bearer {token}
+
 
 Response: {
     "uid": 4,
@@ -133,8 +138,11 @@ Response: {
 }
 
 **Create User**
+
 Route: POST /users/
+
 Authorization: Bearer {token}
+
 Body: {
     "username": "massi2",
     "email": "massimilianopiccinini.8@gmail.com",
