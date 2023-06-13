@@ -92,7 +92,10 @@ Se desideri utilizzare le rotte definite in Postman nel tuo progetto, puoi segui
 
 **Get All Users**
 
-Route: GET /users/
+Route: 
+```bash
+GET /users/
+```
 
 Authorization: Bearer {token}
 
