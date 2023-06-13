@@ -90,4 +90,64 @@ Se desideri utilizzare le rotte definite in Postman nel tuo progetto, puoi segui
 
 ## Utilizzo ottimale del Sistema
 
+**Get All Users**
+Route: GET /users/
+Authorization: Bearer {token}
 
+Response: [
+    {
+        "uid": 4,
+        "username": "massiadmin",
+        "email": "massimilianopiccinini.9@gmail.com",
+        "password": "$2b$08$7jZoYiVPwF8hMjlS.LOHnOTCo9VZ5Wj1ymy1etTQIEQBEFqz0mWEy",
+        "credits": 4948.5,
+        "admin": true,
+        "createdAt": "2023-06-05T22:41:31.376Z",
+        "updatedAt": "2023-06-12T20:21:05.836Z"
+    },
+    {
+        "uid": 6,
+        "username": "massi2",
+        "email": "massimilianopiccinini.8@gmail.com",
+        "password": "$2b$08$uux.MPk1QAgJ8UXgG7vuqex6l2sH.rSvnP/diZyDlarMt9.M0vtrK",
+        "credits": 5000,
+        "admin": false,
+        "createdAt": "2023-06-12T16:36:16.059Z",
+        "updatedAt": "2023-06-12T16:36:16.059Z"
+    }
+]
+
+**Get User**
+Route: GET /users/{id}
+Authorization: Bearer {token}
+
+Response: {
+    "uid": 4,
+    "username": "massiadmin",
+    "email": "massimilianopiccinini.9@gmail.com",
+    "password": "$2b$08$7jZoYiVPwF8hMjlS.LOHnOTCo9VZ5Wj1ymy1etTQIEQBEFqz0mWEy",
+    "credits": 4948.5,
+    "admin": true,
+    "createdAt": "2023-06-05T22:41:31.376Z",
+    "updatedAt": "2023-06-12T20:21:05.836Z"
+}
+
+**Create User**
+Route: POST /users/
+Authorization: Bearer {token}
+Body: {
+    "username": "massi2",
+    "email": "massimilianopiccinini.8@gmail.com",
+    "password": "password"
+}
+
+Response: {
+    "credits": 5000,
+    "uid": 10,
+    "username": "massi3",
+    "email": "massimilianopiccinini.12@gmail.com",
+    "password": "$2b$08$tW.1DTHRpUoIMYts4lsoEeOlMzIfwnHvFBGQG.pEihHyRwagFcIWW",
+    "admin": false,
+    "updatedAt": "2023-06-13T17:35:47.712Z",
+    "createdAt": "2023-06-13T17:35:47.712Z"
+}
