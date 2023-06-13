@@ -96,7 +96,9 @@ Route: GET /users/
 
 Authorization: Bearer {token}
 
-Response: ```json[
+Response: 
+```json
+[
     {
         "uid": 4,
         "username": "massiadmin",
