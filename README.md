@@ -97,7 +97,10 @@ Route:
 GET /users/
 ```
 
-Authorization: Bearer {token}
+Authorization: 
+```bash
+Bearer {token}
+```
 
 Response: 
 ```json
@@ -127,9 +130,15 @@ Response:
 
 **Get User**
 
-Route: GET /users/{id}
+Route:
+```bash
+GET /users/{id}
+```
 
-Authorization: Bearer {token}
+Authorization: 
+```bash
+Bearer {token}
+```
 
 
 Response: 
@@ -148,9 +157,15 @@ Response:
 
 **Create User**
 
-Route: POST /users/
+Route: 
+```bash
+POST /users/
+```
 
-Authorization: Bearer {token}
+Authorization: 
+```bash
+Bearer {token}
+```
 
 Body: 
 ```json
