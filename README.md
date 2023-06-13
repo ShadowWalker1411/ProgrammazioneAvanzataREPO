@@ -24,7 +24,7 @@ Il risultato finale è un backend funzionale, affidabile e scalabile che consent
 In questa sezione sono presenti i diagrammi UML che illustrano la progettazione del progetto.
 
 #### Diagramma dei Casi d'Uso
-Come possiamo vedere dalla foto sottostante, abbiamo rappresentato, i casi d'uso e quindi le funzionalità a cui le tipologie di utente potranno accedre. AGGIUNGI IMMAGINE
+Come possiamo vedere dalla foto sottostante, abbiamo rappresentato, i casi d'uso e quindi le funzionalità a cui le tipologie di utente potranno accedre. ![Diagramma dei casi d'uso](./images/UseCase/UseCase.png)
 
 #### Diagrammi delle Sequenze
 Con i diagrammi delle sequenze, siamo andati a rappresentare, come l'utente muovendosi su una singola rotta, vada in realtà ad azionare vari meccanismi sottostanti, possiamo vederne alcuni esempi nelle foto sottostanti e i restanti nella cartella Diagrammi
