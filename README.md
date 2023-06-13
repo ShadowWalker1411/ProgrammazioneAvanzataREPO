@@ -96,7 +96,7 @@ Route: GET /users/
 
 Authorization: Bearer {token}
 
-Response: [
+Response: ```json[
     {
         "uid": 4,
         "username": "massiadmin",
@@ -117,7 +117,7 @@ Response: [
         "createdAt": "2023-06-12T16:36:16.059Z",
         "updatedAt": "2023-06-12T16:36:16.059Z"
     }
-]
+]```
 
 **Get User**
 
