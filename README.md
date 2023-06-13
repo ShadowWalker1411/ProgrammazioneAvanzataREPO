@@ -129,7 +129,9 @@ Route: GET /users/{id}
 Authorization: Bearer {token}
 
 
-Response: {
+Response: 
+```json
+{
     "uid": 4,
     "username": "massiadmin",
     "email": "massimilianopiccinini.9@gmail.com",
@@ -139,6 +141,7 @@ Response: {
     "createdAt": "2023-06-05T22:41:31.376Z",
     "updatedAt": "2023-06-12T20:21:05.836Z"
 }
+```
 
 **Create User**
 
@@ -146,13 +149,18 @@ Route: POST /users/
 
 Authorization: Bearer {token}
 
-Body: {
+Body: 
+```json
+{
     "username": "massi2",
     "email": "massimilianopiccinini.8@gmail.com",
     "password": "password"
 }
+```
 
-Response: {
+Response: 
+```json
+{
     "credits": 5000,
     "uid": 10,
     "username": "massi3",
@@ -162,3 +170,4 @@ Response: {
     "updatedAt": "2023-06-13T17:35:47.712Z",
     "createdAt": "2023-06-13T17:35:47.712Z"
 }
+```
