@@ -6,7 +6,7 @@ participant Middlewares
 participant Controllers
 database Postgres
 
-User -> Middlewares ++: GET/Models/id
+User -> Middlewares ++: GET/models/id
 group step: Authentication
     Middlewares -> Middlewares : checkAuth
 else Auth Failed

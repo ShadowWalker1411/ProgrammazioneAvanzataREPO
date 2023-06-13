@@ -7,7 +7,7 @@ participant Controllers
 database Postgres
 
 autonumber 
-User -> Middlewares ++: GET/Models/
+User -> Middlewares ++: GET/models/
 group step: Authentication
     Middlewares -> Middlewares : CheckAuth
 else Auth Failed
