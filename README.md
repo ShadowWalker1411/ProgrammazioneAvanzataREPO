@@ -140,7 +140,6 @@ Authorization:
 Bearer {token}
 ```
 
-
 Response: 
 ```json
 {
@@ -187,5 +186,432 @@ Response:
     "admin": false,
     "updatedAt": "2023-06-13T17:35:47.712Z",
     "createdAt": "2023-06-13T17:35:47.712Z"
+}
+```
+
+**Update User**
+
+Route: 
+```bash
+PUT /users/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "username": "massi2",
+    "email": "massimilianopiccinini.8@gmail.com",
+}
+```
+
+Response: 
+```json
+{
+    "credits": 5000,
+    "uid": 10,
+    "username": "massi2",
+    "email": "massimilianopiccinini.8@gmail.com",
+    "password": "$2b$08$tW.1DTHRpUoIMYts4lsoEeOlMzIfwnHvFBGQG.pEihHyRwagFcIWW",
+    "admin": false,
+    "updatedAt": "2023-06-13T17:35:47.712Z",
+    "createdAt": "2023-06-13T17:35:47.712Z"
+}
+```
+
+**Delete User**
+
+Route:
+```bash
+DELETE /users/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+
+Response: 
+```json
+{
+    "uid": 4,
+    "username": "massiadmin",
+    "email": "massimilianopiccinini.9@gmail.com",
+    "password": "$2b$08$7jZoYiVPwF8hMjlS.LOHnOTCo9VZ5Wj1ymy1etTQIEQBEFqz0mWEy",
+    "credits": 4948.5,
+    "admin": true,
+    "createdAt": "2023-06-05T22:41:31.376Z",
+    "updatedAt": "2023-06-12T20:21:05.836Z"
+}
+```
+
+**Login**
+
+Route:
+```bash
+POST /users/login
+```
+
+Body: 
+```json
+{
+    "username": "massi2",
+    "password": "massiadmin",
+}
+```
+
+Response: 
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjg2Njg0NDU3LCJleHAiOjE2ODY2ODgwNTd9.gwaG0u5maHO49BtaUih1OynNBW9yfsKSBIONQfvCOpM"
+}
+```
+
+**Get Credits**
+
+Route:
+```bash
+GET /users/credits/mine
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+{
+    "credits": 4948.5
+}
+```
+
+**Add Credits**
+
+Route:
+```bash
+POST /users/credits/{email}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "credits": 50
+}
+```
+
+Response: 
+```json
+{
+    "message": "Success"
+}
+```
+
+
+**Get All Models**
+
+Route: 
+```bash
+GET /models/all
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+[
+    {
+        "uid": 1,
+        "name": "Faces",
+        "datasetUID": 3,
+        "userUID": 5,
+        "createdAt": "2023-06-06T08:11:31.048Z",
+        "updatedAt": "2023-06-06T08:11:31.048Z"
+    },
+    {
+        "uid": 3,
+        "name": "Bodies",
+        "datasetUID": 3,
+        "userUID": 4,
+        "createdAt": "2023-06-08T19:58:55.891Z",
+        "updatedAt": "2023-06-08T19:58:55.891Z"
+    },
+    {
+        "uid": 5,
+        "name": "Dogs",
+        "datasetUID": 4,
+        "userUID": 4,
+        "createdAt": "2023-06-12T21:27:12.698Z",
+        "updatedAt": "2023-06-12T21:27:12.698Z"
+    }
+]
+```
+
+**Get Mine Models**
+
+Route: 
+```bash
+GET /models/
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+[
+    {
+        "uid": 3,
+        "name": "Bodies",
+        "datasetUID": 3,
+        "userUID": 4,
+        "createdAt": "2023-06-08T19:58:55.891Z",
+        "updatedAt": "2023-06-08T19:58:55.891Z"
+    },
+    {
+        "uid": 5,
+        "name": "Dogs",
+        "datasetUID": 4,
+        "userUID": 4,
+        "createdAt": "2023-06-12T21:27:12.698Z",
+        "updatedAt": "2023-06-12T21:27:12.698Z"
+    }
+]
+```
+
+**Get Model**
+
+Route:
+```bash
+GET /models/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+{
+    "uid": 3,
+    "name": "Bodies",
+    "datasetUID": 3,
+    "userUID": 4,
+    "createdAt": "2023-06-08T19:58:55.891Z",
+    "updatedAt": "2023-06-08T19:58:55.891Z"
+}
+```
+
+**Create User**
+
+Route: 
+```bash
+POST /models/
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "name": "Cats",
+    "datasetUID": 4
+}
+```
+
+Response: 
+```json
+{
+    "uid": 6,
+    "name": "Cats",
+    "datasetUID": 4,
+    "userUID": 4,
+    "updatedAt": "2023-06-13T19:34:25.913Z",
+    "createdAt": "2023-06-13T19:34:25.913Z"
+}
+```
+
+**Update User**
+
+Route: 
+```bash
+PUT /models/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "name": "Tigers",
+    "datasetUID": 4
+}
+```
+
+Response: 
+```json
+{
+    "uid": 6,
+    "name": "Cats",
+    "datasetUID": 4,
+    "userUID": 4,
+    "updatedAt": "2023-06-13T19:34:25.913Z",
+    "createdAt": "2023-06-13T19:34:25.913Z"
+}
+```
+
+**Delete User**
+
+Route:
+```bash
+DELETE /models/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+
+Response: 
+```json
+{
+    "uid": 6,
+    "name": "Cats",
+    "datasetUID": 4,
+    "userUID": 4,
+    "updatedAt": "2023-06-13T19:34:25.913Z",
+    "createdAt": "2023-06-13T19:34:25.913Z"
+}
+```
+
+**Add Model File**
+
+Route: 
+```bash
+POST /models/image/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "file": "model.py"
+}
+```
+
+Response: 
+```json
+{
+    "message": "Upload completed successfully"
+}
+```
+
+**Model Inference Request**
+
+Route: 
+```bash
+GET /models/inference/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+{
+    "model": {
+        "uid": 5,
+        "name": "Dogs",
+        "datasetUID": 4,
+        "userUID": 4,
+        "createdAt": "2023-06-12T21:27:12.698Z",
+        "updatedAt": "2023-06-12T21:27:12.698Z"
+    },
+    "dataset": {
+        "uid": 4,
+        "name": "Bodies",
+        "tags": 4,
+        "numClasses": 12,
+        "userUID": 4,
+        "createdAt": "2023-06-12T21:25:34.431Z",
+        "updatedAt": "2023-06-12T21:26:19.128Z"
+    },
+    "message": "Inference request sent successfully",
+    "job_id": "34fed117-f221-499a-8e0b-44dc37cf018b"
+}
+```
+
+**Model Inference Status**
+
+Route: 
+```bash
+GET /models/status/{job_id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+{
+    "status": "SUCCESS",
+    "job_id": "34fed117-f221-499a-8e0b-44dc37cf018b"
+}
+```
+
+**Model Inference Result**
+
+Route: 
+```bash
+GET /models/result/{job_id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+{
+    "result": [
+        [249, 267], [249, 285], [249, 309],
+        [],
+        [],
+        [],
+        [334, 326], [321, 326], [309, 325]
+    ],
+    "job_id": "34fed117-f221-499a-8e0b-44dc37cf018b"
 }
 ```
