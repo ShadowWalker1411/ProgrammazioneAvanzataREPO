@@ -18,9 +18,9 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = require("http-status-codes");
 // Middleware per verificare se l'utente è il proprietario del modello
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Checking owner");
+    const modelUID = request.params.id;
     try {
-        console.log("Checking owner");
-        const modelUID = request.params.id;
         const model = yield models_1.default.getOneById(parseInt(modelUID));
         if (!model) {
             return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
