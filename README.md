@@ -104,7 +104,7 @@ Se desideri utilizzare le rotte definite in Postman nel tuo progetto, puoi segui
 
 Per sfruttare a dovere le potenzialità del sistema, è in necessario:
 
-1. Creare un utente, sfruttando la funzione Create User, come descritto successivamente nella [Documentazione](#Documentazione dell'API).
+1. Creare un utente, sfruttando la funzione Create User, come descritto successivamente nella [Documentazione](#Documentazione-dell'-API).
 
 2. Creare un utente con privilegi da amministratore, usando la funzione Create User Admin.
 
