@@ -28,10 +28,14 @@ Come possiamo vedere dalla foto sottostante, abbiamo rappresentato, i casi d'uso
 
 #### Diagrammi delle Sequenze
 Con i diagrammi delle sequenze, siamo andati a rappresentare, come l'utente muovendosi su una singola rotta, vada in realtà ad azionare vari meccanismi sottostanti, possiamo vederne alcuni esempi nelle foto sottostanti
+**Sequence Diagram per la creazione di un utente con privilegi di Amministratore**
 ![Sequence Diagram per la creazione di un utente con privilegi di Amministratore](./images/Sequence/CreateUserAdmin.png)
-![Sequence Diagram per l'aggiunta da parte di un amministratori di crediti ad un determinato utente'](./images/Sequence/AddCredits.png)
-![Sequence Diagram per l'aggiunta di file da una zip'](./images/Sequence/UploadImageFromZip.png)
-![Sequence Diagram per svolgere un'inferenza di un'immagine su un modello'](./images/Sequence/InferenceModel.png)
+**Sequence** Diagram per l'aggiunta da parte di un amministratori di crediti ad un determinato utente**
+![Sequence Diagram per l'aggiunta da parte di un amministratori di crediti ad un determinato utente](./images/Sequence/AddCredits.png)
+**Sequence Diagram per l'aggiunta di file da una zip**
+![Sequence Diagram per l'aggiunta di file da una zip](./images/Sequence/UploadImageFromZip.png)
+**Sequence Diagram per svolgere un'inferenza di un'immagine su un modello**
+![Sequence Diagram per svolgere un'inferenza di un'immagine su un modello](./images/Sequence/InferenceModel.png)
 e i restanti nella cartella [Diagrammi](./images/Sequence)
 
 #### Diagramma delle classi
