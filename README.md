@@ -9,7 +9,9 @@ PixelHub è un hub di modelli e dataset per la computer vision, che offre risors
   - [Descrizione dei Pattern](#descrizione-dei-pattern)
 - [Avvio del Progetto](#avvio-del-progetto)
   - [Utilizzo di Docker Compose](#utilizzo-di-docker-compose)
-  - [Test del Progetto](#test-del-progetto)
+  - [Importazione delle Rotte da Postman](#importazione-delle-rotte-da-postman)
+  - [Utilizzo ottimale del Sistema](#utilizzo-ottimale-del-sistema)
+-[Documentazione Delle API](#documentazione-dellapi)
 
 ## Obiettivo
 
