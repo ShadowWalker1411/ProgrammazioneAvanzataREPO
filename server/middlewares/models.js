@@ -18,25 +18,20 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const http_status_codes_1 = require("http-status-codes");
 // Middleware per verificare se l'utente è il proprietario del modello
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log("Checking owner");
-        const modelUID = request.params.id;
-        const model = yield models_1.default.getOneById(parseInt(modelUID));
-        if (!model) {
-            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
-        }
-        const userUID = request.uid;
-        if (model.userUID == userUID) {
-            next();
-        }
-        else {
-            response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
-                message: 'You are not the owner of this Model'
-            });
-        }
+    console.log("Checking owner");
+    const modelUID = request.params.id;
+    const model = yield models_1.default.getOneById(parseInt(modelUID));
+    if (!model) {
+        return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
     }
-    catch (error) {
-        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error });
+    const userUID = request.uid;
+    if (model.userUID == userUID) {
+        next();
+    }
+    else {
+        response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+            message: 'You are not the owner of this Model'
+        });
     }
 });
 exports.checkOwner = checkOwner;
