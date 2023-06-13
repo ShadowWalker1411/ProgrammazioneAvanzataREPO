@@ -7,17 +7,21 @@ import { StatusCodes } from 'http-status-codes';
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking owner")
     const datasetUID = request.params.id
-    const dataset = await datasetsController.getOneById(parseInt(datasetUID))
-    if (!dataset) {
-        return response.status(StatusCodes.NOT_FOUND).json({ message: 'Dataset not found' })
-    }
-    const userUID = (request as any).uid
-    if ((dataset as any).userUID == userUID) {
-        next()
-    } else {
-        response.status(StatusCodes.FORBIDDEN).json({
-            message: 'You are not the owner of this dataset'
-        })
+    try {
+        const dataset = await datasetsController.getOneById(parseInt(datasetUID))
+        if (!dataset) {
+            return response.status(StatusCodes.NOT_FOUND).json({ message: 'Dataset not found' })
+        }
+        const userUID = (request as any).uid
+        if ((dataset as any).userUID == userUID) {
+            next()
+        } else {
+            response.status(StatusCodes.FORBIDDEN).json({
+                message: 'You are not the owner of this dataset'
+            })
+        }
+    } catch (error) {
+        return response.status(StatusCodes.BAD_REQUEST).json({ message: error })
     }
 }
 

@@ -20,18 +20,23 @@ const http_status_codes_1 = require("http-status-codes");
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
     const datasetUID = request.params.id;
-    const dataset = yield datasets_1.default.getOneById(parseInt(datasetUID));
-    if (!dataset) {
-        return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Dataset not found' });
+    try {
+        const dataset = yield datasets_1.default.getOneById(parseInt(datasetUID));
+        if (!dataset) {
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Dataset not found' });
+        }
+        const userUID = request.uid;
+        if (dataset.userUID == userUID) {
+            next();
+        }
+        else {
+            response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                message: 'You are not the owner of this dataset'
+            });
+        }
     }
-    const userUID = request.uid;
-    if (dataset.userUID == userUID) {
-        next();
-    }
-    else {
-        response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
-            message: 'You are not the owner of this dataset'
-        });
+    catch (error) {
+        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error });
     }
 });
 exports.checkOwner = checkOwner;

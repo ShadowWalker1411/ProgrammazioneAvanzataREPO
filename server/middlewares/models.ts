@@ -7,17 +7,21 @@ import { StatusCodes } from 'http-status-codes';
 const checkOwner = async (request: Request, response: Response, next: NextFunction) => {
     console.log("Checking owner")
     const modelUID = request.params.id
-    const model = await modelsController.getOneById(parseInt(modelUID))
-    if (!model) {
-        return response.status(StatusCodes.NOT_FOUND).json({ message: 'Model not found' })
-    }
-    const userUID = (request as any).uid
-    if ((model as any).userUID == userUID) {
-        next()
-    } else {
-        response.status(StatusCodes.FORBIDDEN).json({
-            message: 'You are not the owner of this Model'
-        })
+    try {
+        const model = await modelsController.getOneById(parseInt(modelUID))
+        if (!model) {
+            return response.status(StatusCodes.NOT_FOUND).json({ message: 'Model not found' })
+        }
+        const userUID = (request as any).uid
+        if ((model as any).userUID == userUID) {
+            next()
+        } else {
+            response.status(StatusCodes.FORBIDDEN).json({
+                message: 'You are not the owner of this Model'
+            })
+        }
+    } catch (error) {
+        return response.status(StatusCodes.BAD_REQUEST).json({ message: error })
     }
 }
 

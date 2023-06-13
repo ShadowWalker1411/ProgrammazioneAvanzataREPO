@@ -20,18 +20,23 @@ const http_status_codes_1 = require("http-status-codes");
 const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Checking owner");
     const modelUID = request.params.id;
-    const model = yield models_1.default.getOneById(parseInt(modelUID));
-    if (!model) {
-        return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
+    try {
+        const model = yield models_1.default.getOneById(parseInt(modelUID));
+        if (!model) {
+            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
+        }
+        const userUID = request.uid;
+        if (model.userUID == userUID) {
+            next();
+        }
+        else {
+            response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                message: 'You are not the owner of this Model'
+            });
+        }
     }
-    const userUID = request.uid;
-    if (model.userUID == userUID) {
-        next();
-    }
-    else {
-        response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
-            message: 'You are not the owner of this Model'
-        });
+    catch (error) {
+        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error });
     }
 });
 exports.checkOwner = checkOwner;
