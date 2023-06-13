@@ -1,7 +1,5 @@
-# Background Processing with RabbitMQ, Python and Flask
-A simple job worker that uses RabbitMQ for job management. Full doc and explanation [here](https://medium.com/@naveed125/background-processing-with-rabbitmq-python-and-flask-5ca62acf409c).
-
-Questo repository contiene un semplice job worker che utilizza RabbitMQ per la gestione dei job. Lo scopo di questo progetto è mostrare come eseguire attività di elaborazione in background utilizzando RabbitMQ, Python e Flask.
+# PixelHub
+PixelHub è un hub di modelli e dataset per la computer vision, che offre risorse per lo sviluppo e l'implementazione di algoritmi e applicazioni visive avanzate.
 
 ## Indice
 - [Obiettivo](#obiettivo)

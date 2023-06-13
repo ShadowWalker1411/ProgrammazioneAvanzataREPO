@@ -33,26 +33,6 @@ const checkOwner = (request, response, next) => __awaiter(void 0, void 0, void 0
             message: 'You are not the owner of this Model'
         });
     }
-    console.log("Checking owner");
-    const modelUID = request.params.id;
-    try {
-        const model = yield models_1.default.getOneById(parseInt(modelUID));
-        if (!model) {
-            return response.status(http_status_codes_1.StatusCodes.NOT_FOUND).json({ message: 'Model not found' });
-        }
-        const userUID = request.uid;
-        if (model.userUID == userUID) {
-            next();
-        }
-        else {
-            response.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
-                message: 'You are not the owner of this Model'
-            });
-        }
-    }
-    catch (error) {
-        return response.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: error });
-    }
 });
 exports.checkOwner = checkOwner;
 // Middleware per verificare l'autenticazione dell'utente
