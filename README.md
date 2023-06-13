@@ -24,16 +24,19 @@ Il risultato finale è un backend funzionale, affidabile e scalabile che consent
 In questa sezione sono presenti i diagrammi UML che illustrano la progettazione del progetto.
 
 #### Diagramma dei Casi d'Uso
-Come possiamo vedere dalla foto sottostante, abbiamo rappresentato, i casi d'uso e quindi le funzionalità a cui le tipologie di utente potranno accedre. ![Diagramma dei casi d'uso](./images/UseCase/UseCase.png)
+Come possiamo vedere dalla foto sottostante, abbiamo rappresentato, i casi d'uso e quindi le funzionalità a cui le tipologie di utente potranno accedere. ![Diagramma dei casi d'uso](./images/UseCase/UseCase.png)
 
 #### Diagrammi delle Sequenze
-Con i diagrammi delle sequenze, siamo andati a rappresentare, come l'utente muovendosi su una singola rotta, vada in realtà ad azionare vari meccanismi sottostanti, possiamo vederne alcuni esempi nelle foto sottostanti e i restanti nella cartella Diagrammi
-AGGIUNGI IMMAGINI
-(aggiungere cartella con foto).
+Con i diagrammi delle sequenze, siamo andati a rappresentare, come l'utente muovendosi su una singola rotta, vada in realtà ad azionare vari meccanismi sottostanti, possiamo vederne alcuni esempi nelle foto sottostanti
+![Sequence Diagram per la creazione di un utente con privilegi di Amministratore](./images/Sequence/CreateUserAdmin.png)
+![Sequence Diagram per l'aggiunta da parte di un amministratori di crediti ad un determinato utente'](./images/Sequence/AddCredits.png)
+![Sequence Diagram per l'aggiunta di file da una zip'](./images/Sequence/UploadImageFromZip.png)
+![Sequence Diagram per svolgere un'inferenza di un'immagine su un modello'](./images/Sequence/InferenceModel.png)
+e i restanti nella cartella [Diagrammi](./images/Sequence)
 
 #### Diagramma delle classi
 Nell'immagine sottostante, abbiamo rappresentato le classi che abbiamo utilizzato nel progetto.
-AGGIUNGI IMMAGINE
+![Diagramma delle classi](./images/Class/Class.png)
 
 ### Descrizione dei Pattern
 Il progetto utilizza diversi pattern di progettazione per ottenere un'elaborazione in background efficiente e scalabile. Vengono utilizzati i seguenti pattern:
@@ -56,3 +59,23 @@ docker-compose up --build
 Questo comando avvierà i servizi specificati nel Docker Compose, compreso il server RabbitMQ, l'applicazione Flask, il server Node e PostgreSQL.
 
 5. L'applicazione sarà accessibile all'indirizzo `http://localhost:3001`.
+
+### Importazione delle Rotte da Postman
+
+Se desideri utilizzare le rotte definite in Postman nel tuo progetto, puoi seguire i seguenti passaggi:
+
+1. Assicurati di avere Postman installato sul tuo sistema. Puoi scaricarlo da https://www.postman.com/downloads/.
+
+2. Scarica il file di collezione delle API dal repository. Puoi trovarlo nella cartella "postman".
+
+3. Apri Postman e fai clic sul pulsante "Import" nell'angolo in alto a sinistra.
+
+4. Seleziona l'opzione "Import From File" e carica il file di collezione delle API scaricato.
+
+5. Una volta importato il file, dovresti vedere tutte le rotte e le relative configurazioni in Postman.
+
+6. Puoi testare le rotte direttamente in Postman per confermarne il funzionamento.
+
+## Utilizzo ottimale del Sistema
+
+
