@@ -116,7 +116,7 @@ Per eseguire il progetto, è possibile utilizzare Docker Compose per configurare
 docker-compose up --build
 ```
 
-Questo comando avvierà i servizi specificati nel Docker Compose, compreso il server RabbitMQ, l'applicazione Flask, il server Node e PostgreSQL.
+Questo comando avvierà i servizi specificati nel Docker Compose, compreso il server RabbitMQ, l'applicazione Flask, il server Node e PostgreSQL. Se durante il primo avvio dovessero esserci dei problemi, riprovare con lo stesso comendo.
 
 5. L'applicazione sarà accessibile all'indirizzo `http://localhost:3001`.
 
