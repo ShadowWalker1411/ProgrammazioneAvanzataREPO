@@ -28,26 +28,6 @@ services:
       - rabbitmq
       - server
 
-  server:
-    container_name: server
-    image: server:0.0.5
-    build: 
-      context: server
-    ports:
-      - "3001:3001"
-    environment:
-    - EXTERNAL_PORT=3001
-    - PGDATABASE=pgdb
-    - PGUSER=pguser
-    - PGPASSWORD=pguser
-    - PGHOST=postgres
-    - CREDITS=5000
-    - SECRET_KEY=califragilisticospiralitoso
-    - RABBITMQ_PORT=5672
-    volumes:
-      - shared_models:/images
-      - shared_files:/models
-
   postgres:
     container_name: postgres
     image: "postgres:12"
@@ -68,6 +48,26 @@ services:
       - '3002:5000'
     depends_on:
     - rabbitmq
+
+  server:
+    container_name: server
+    image: server:0.0.5
+    build: 
+      context: server
+    ports:
+      - "3001:3001"
+    environment:
+    - EXTERNAL_PORT=3001
+    - PGDATABASE=pgdb
+    - PGUSER=pguser
+    - PGPASSWORD=pguser
+    - PGHOST=postgres
+    - CREDITS=5000
+    - SECRET_KEY=califragilisticospiralitoso
+    - RABBITMQ_PORT=5672
+    volumes:
+      - shared_models:/images
+      - shared_files:/models
   
 
 
