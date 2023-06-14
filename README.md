@@ -3,6 +3,7 @@
 PixelHub è un hub di modelli e dataset per la computer vision, che offre risorse per lo sviluppo e l'implementazione di algoritmi e applicazioni visive avanzate.
 
 ## Indice
+
 - [Obiettivo](#obiettivo)
 - [Progettazione](#progettazione)
   - [Diagrammi UML](#diagrammi-uml)
@@ -11,7 +12,7 @@ PixelHub è un hub di modelli e dataset per la computer vision, che offre risors
   - [Utilizzo di Docker Compose](#utilizzo-di-docker-compose)
   - [Importazione delle Rotte da Postman](#importazione-delle-rotte-da-postman)
   - [Utilizzo ottimale del Sistema](#utilizzo-ottimale-del-sistema)
--[Documentazione Delle API](#documentazione-dellapi)
+- [Documentazione Delle API](#documentazione-dellapi)
 
 ## Obiettivo
 
@@ -500,7 +501,7 @@ Response:
 ```json
 {
     "uid": 6,
-    "name": "Cats",
+    "name": "Tigers",
     "datasetUID": 4,
     "userUID": 4,
     "updatedAt": "2023-06-13T19:34:25.913Z",
@@ -525,7 +526,7 @@ Response:
 ```json
 {
     "uid": 6,
-    "name": "Cats",
+    "name": "Tigers",
     "datasetUID": 4,
     "userUID": 4,
     "updatedAt": "2023-06-13T19:34:25.913Z",
@@ -639,5 +640,286 @@ Response:
         [334, 326], [321, 326], [309, 325]
     ],
     "job_id": "34fed117-f221-499a-8e0b-44dc37cf018b"
+}
+```
+
+**Get Datasets**
+
+Route: 
+```bash
+GET /datasets/all
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+[
+    {
+        "uid": 1,
+        "name": "Face",
+        "tags": 4,
+        "numClasses": 3,
+        "userUID": 1,
+        "createdAt": "2023-06-13T20:34:18.489Z",
+        "updatedAt": "2023-06-13T20:34:18.489Z"
+    },
+    {
+        "uid": 2,
+        "name": "Prova1",
+        "tags": 5,
+        "numClasses": 2,
+        "userUID": 1,
+        "createdAt": "2023-06-13T20:34:27.991Z",
+        "updatedAt": "2023-06-13T20:34:27.991Z"
+    },
+    {
+        "uid": 3,
+        "name": "Prova2",
+        "tags": 1,
+        "numClasses": 9,
+        "userUID": 1,
+        "createdAt": "2023-06-13T20:34:46.635Z",
+        "updatedAt": "2023-06-13T20:34:46.635Z"
+    }
+]
+```
+
+**Get Mine Datasets**
+
+Route: 
+```bash
+GET /datasets/
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+[
+    {
+        "uid": 1,
+        "name": "Face",
+        "tags": 4,
+        "numClasses": 3,
+        "userUID": 1,
+        "createdAt": "2023-06-13T20:34:18.489Z",
+        "updatedAt": "2023-06-13T20:34:18.489Z"
+    },
+    {
+        "uid": 2,
+        "name": "Prova1",
+        "tags": 5,
+        "numClasses": 2,
+        "userUID": 1,
+        "createdAt": "2023-06-13T20:34:27.991Z",
+        "updatedAt": "2023-06-13T20:34:27.991Z"
+    }
+]
+```
+
+**Get Dataset**
+
+Route:
+```bash
+GET /datasets/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Response: 
+```json
+{
+    "uid": 3,
+    "name": "Prova2",
+    "tags": 1,
+    "numClasses": 9,
+    "userUID": 1,
+    "updatedAt": "2023-06-13T20:34:46.635Z",
+    "createdAt": "2023-06-13T20:34:46.635Z"
+}
+```
+
+
+**Create Dataset**
+
+Route: 
+```bash
+POST /datasets/
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "name": "Prova2",
+    "tags": 1,
+    "numClasses": 9
+}
+```
+
+Response: 
+```json
+{
+    "uid": 3,
+    "name": "Prova2",
+    "tags": 1,
+    "numClasses": 9,
+    "userUID": 1,
+    "updatedAt": "2023-06-13T20:34:46.635Z",
+    "createdAt": "2023-06-13T20:34:46.635Z"
+}
+```
+
+**Update Dataset**
+
+Route: 
+```bash
+PUT /datasets/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "name": "Prova2",
+    "tags": 10,
+    "numClasses": 10
+}
+```
+
+Response: 
+```json
+{
+    "uid": 3,
+    "name": "Prova2",
+    "tags": 10,
+    "numClasses": 10,
+    "userUID": 1,
+    "createdAt": "2023-06-13T20:34:46.635Z",
+    "updatedAt": "2023-06-14T07:50:01.347Z"
+}
+```
+
+**Delete Dataset**
+
+Route:
+```bash
+DELETE /datasets/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+
+Response: 
+```json
+{
+    "uid": 3,
+    "name": "Prova2",
+    "tags": 10,
+    "numClasses": 10,
+    "userUID": 1,
+    "createdAt": "2023-06-13T20:34:46.635Z",
+    "updatedAt": "2023-06-14T07:50:01.347Z"
+}
+```
+
+**Add Dataset Image**
+
+Route: 
+```bash
+POST /datasets/image/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "file": "image.png"
+}
+```
+
+Response: 
+```json
+{
+    "message": "Upload completed successfully"
+}
+```
+
+**Add Dataset Images**
+
+Route: 
+```bash
+POST /datasets/images/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "files": "image.png",
+    "files": "image1.png",
+    "files": "image2.png"
+}
+```
+
+Response: 
+```json
+{
+    "message": "Upload completed successfully"
+}
+```
+
+**Add Dataset Zip**
+
+Route: 
+```bash
+POST /datasets/zip/{id}
+```
+
+Authorization: 
+```bash
+Bearer {token}
+```
+
+Body: 
+```json
+{
+    "file": "test.zip"
+}
+```
+
+Response: 
+```json
+{
+    "message": "Upload completed successfully"
 }
 ```
