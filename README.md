@@ -62,9 +62,42 @@ Nell'immagine sottostante, abbiamo rappresentato le classi che abbiamo utilizzat
 ### Descrizione dei Pattern
 
 Il progetto utilizza diversi pattern di progettazione per ottenere un'elaborazione in background efficiente e scalabile. Vengono utilizzati i seguenti pattern:
-- MVC(Model-View-Controller) 
-- Pattern 
+- MVVM(Model-View-ViewModel) 
+- DAO 
+- Chain Of Responsibility
+- Message Queue
 
+#### MVVM(Model-View-ViewModel)
+
+Il Model-View-ViewModel (MVVM) è un pattern architetturale utilizzato nel design del software per separare la logica di presentazione dall'implementazione dei dati sottostanti.
+
+Abbiamo adattato il pattern Model-View-ViewModel (MVVM) per gestire l'organizzazione del codice e la separazione delle responsabilità. Utilizzando Express, abbiamo esposto le rotte tramite URL, consentendo l'interazione con l'applicazione attraverso strumenti come Postman.
+
+Il controller agisce come il ViewModel nel contesto di MVVM. È responsabile di elaborare la richiesta ricevuta, interagire con i modelli di dati pertinenti e preparare i dati per la risposta. Il controller può richiamare metodi nel modello di dati per accedere, manipolare o recuperare informazioni dal database PostgreSQL.
+
+La separazione tra controller e modello consente di gestire in modo modulare la logica di business e di mantenere un codice pulito e ben strutturato. In questo modo, è possibile riutilizzare i modelli di dati in diverse parti dell'applicazione, facilitando la manutenzione e il testing.
+
+#### DAO
+
+Abbiamo implementato il pattern architetturale DAO (Data Access Object) utilizzando Sequelize come ORM (Object-Relational Mapping) con Postgres nel nostro progetto. Sequelize semplifica la comunicazione con il database e ci permette di definire modelli di dati in modo intuitivo. Sequelize crea automaticamente DAO per ogni entità del nostro sistema, come User, Model e Dataset. 
+
+Ogni DAO offre metodi per eseguire operazioni CRUD (Create, Read, Update, Delete) sul database utilizzando le funzionalità fornite da Sequelize. Questa implementazione ci consente di separare la logica di accesso ai dati dal resto del codice, garantendo una maggiore modularità e facilitando la manutenzione del sistema.
+
+#### Chain Of Responsibility
+
+Abbiamo implementato il pattern Chain of Responsibility nel nostro server utilizzando i middlewares "checkAuth", "checkOwner" e "checkAdmin". Ogni middleware svolge un ruolo specifico nel processo di elaborazione delle richieste. 
+
+In particolare, "checkAuth" si occupa di verificare l'autenticazione degli utenti, "checkOwner" si assicura che gli utenti siano i proprietari delle risorse richieste e "checkAdmin" verifica i privilegi di amministrazione. 
+
+Abbiamo organizzato questi middlewares in una catena sequenziale, consentendo una gestione flessibile e modulare delle richieste. Grazie a questa implementazione, il nostro server garantisce la sicurezza, l'accesso appropriato alle risorse e una struttura di codice altamente scalabile e manutenibile.
+
+#### Message Queue
+
+Abbiamo utilizzato il pattern architetturale Message Queue per implementare un sistema distribuito composto da un producer (produttore) e un worker (lavoratore). La comunicazione asincrona tra il producer e i worker è gestita utilizzando RabbitMQ come sistema di messaggistica e Celery come framework per la gestione delle code dei job.
+
+Il producer è responsabile di generare i job o le attività da eseguire. Questi job vengono incapsulati in messaggi e inviati a una coda specifica all'interno di RabbitMQ utilizzando il protocollo AMQP (Advanced Message Queuing Protocol). Il producer non deve attendere una risposta immediata dai worker, ma può continuare a generare e inviare ulteriori job.
+
+I worker, d'altra parte, sono i destinatari dei messaggi contenenti i job. Essi sono costantemente in ascolto delle code di RabbitMQ per prelevare i messaggi pendenti. Quando un messaggio contenente un job viene ricevuto, il worker lo estrae dalla coda, lo elabora e produce il risultato desiderato. Una volta completato il job, il worker può inviare eventuali risultati o informazioni di stato ad altre code o sistemi, se necessario.
 
 ## Avvio del Progetto
 Per eseguire il progetto, è possibile utilizzare Docker Compose per configurare facilmente i servizi necessari.
